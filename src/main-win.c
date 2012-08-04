@@ -115,6 +115,7 @@ static int get_new_angle( int orig_angle, int rotate_angle );
 static void main_win_set_zoom_scale(MainWin* mw, double scale);
 static void main_win_set_zoom_mode(MainWin* mw, ZoomMode mode);
 static void main_win_update_zoom_buttons_state(MainWin* mw);
+static void main_win_update_buttons_sensitivity(MainWin* mw);
 
 // Begin of GObject-related stuff
 
@@ -301,9 +302,9 @@ void create_nav_bar( MainWin* mw, GtkWidget* box )
     gtk_box_pack_start( (GtkBox*)mw->nav_bar, gtk_vseparator_new(), FALSE, FALSE, 0 );
 
     add_nav_btn( mw, GTK_STOCK_OPEN, _("Open File"), G_CALLBACK(on_open), FALSE );
-    add_nav_btn( mw, GTK_STOCK_SAVE, _("Save File"), G_CALLBACK(on_save), FALSE );
-    add_nav_btn( mw, GTK_STOCK_SAVE_AS, _("Save File As"), G_CALLBACK(on_save_as), FALSE );
-    add_nav_btn( mw, GTK_STOCK_DELETE, _("Delete File"), G_CALLBACK(on_delete), FALSE );
+    mw->btn_save_file = add_nav_btn( mw, GTK_STOCK_SAVE, _("Save File"), G_CALLBACK(on_save), FALSE );
+    mw->btn_save_as = add_nav_btn( mw, GTK_STOCK_SAVE_AS, _("Save File As"), G_CALLBACK(on_save_as), FALSE );
+    mw->btn_delete_file = add_nav_btn( mw, GTK_STOCK_DELETE, _("Delete File"), G_CALLBACK(on_delete), FALSE );
 
     gtk_box_pack_start( (GtkBox*)mw->nav_bar, gtk_vseparator_new(), FALSE, FALSE, 0 );
     add_nav_btn( mw, GTK_STOCK_PREFERENCES, _("Preferences"), G_CALLBACK(on_preference), FALSE );
@@ -355,15 +356,6 @@ gboolean on_animation_timeout( MainWin* mw )
     return FALSE;
 }
 
-static void update_btns(MainWin* mw)
-{
-    gboolean enable = (mw->animation == NULL);
-    gtk_widget_set_sensitive(mw->btn_rotate_cw, enable);
-    gtk_widget_set_sensitive(mw->btn_rotate_ccw, enable);
-    gtk_widget_set_sensitive(mw->btn_flip_v, enable);
-    gtk_widget_set_sensitive(mw->btn_flip_h, enable);
-}
-
 gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
 {
     if (g_file_test(file_path, G_FILE_TEST_IS_DIR))
@@ -389,7 +381,7 @@ gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
     {
         main_win_show_error( mw, err->message );
         g_error_free(err);
-        update_btns( mw );
+        main_win_update_buttons_sensitivity(mw);
         return FALSE;
     }
 
@@ -410,7 +402,7 @@ gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
         delay = gdk_pixbuf_animation_iter_get_delay_time( mw->animation_iter );
         mw->animation_timeout = g_timeout_add( delay, (GSourceFunc) on_animation_timeout, mw );
     }
-    update_btns( mw );
+    main_win_update_buttons_sensitivity(mw);
 
     if(!strcmp(type,"jpeg"))
     {
@@ -763,6 +755,8 @@ void on_slideshow( GtkToggleButton* btn, MainWin* mw )
         gtk_widget_set_tooltip_text( GTK_WIDGET(btn), _("Stop Slideshow") );
         mw->slide_timeout = g_timeout_add(1000 * pref.slide_delay, (GSourceFunc) next_slide, mw);
     }
+
+    main_win_update_buttons_sensitivity(mw);
 }
 
 //////////////////// rotate & flip
@@ -1438,49 +1432,58 @@ void show_popup_menu( MainWin* mw, GdkEventButton* evt )
 
     static PtkMenuItemEntry menu_def[] =
     {
-        PTK_MENU_ITEM( N_( "File" ), NULL, 0, 0),
-        PTK_IMG_MENU_ITEM( N_( "Previous" ), GTK_STOCK_GO_BACK, on_prev, GDK_leftarrow, 0 ),
-        PTK_IMG_MENU_ITEM( N_( "Next" ), GTK_STOCK_GO_FORWARD, on_next, GDK_rightarrow, 0 ),
-        PTK_IMG_MENU_ITEM( N_( "Start/Stop Slideshow" ), GTK_STOCK_MEDIA_PLAY, on_slideshow_menu, GDK_W, 0 ),
-        PTK_SEPARATOR_MENU_ITEM,
-        PTK_IMG_MENU_ITEM( N_( "Zoom Out" ), GTK_STOCK_ZOOM_OUT, on_zoom_out, GDK_minus, 0 ),
-        PTK_IMG_MENU_ITEM( N_( "Zoom In" ), GTK_STOCK_ZOOM_IN, on_zoom_in, GDK_plus, 0 ),
-        PTK_IMG_MENU_ITEM( N_( "Fit Image To Window Size" ), GTK_STOCK_ZOOM_FIT, on_zoom_fit_menu, GDK_F, 0 ),
-        PTK_IMG_MENU_ITEM( N_( "Original Size" ), GTK_STOCK_ZOOM_100, on_orig_size_menu, GDK_G, 0 ),
-        PTK_SEPARATOR_MENU_ITEM,
-        PTK_IMG_MENU_ITEM( N_( "Full Screen" ), GTK_STOCK_FULLSCREEN, on_full_screen, GDK_F11, 0 ),
-        PTK_SEPARATOR_MENU_ITEM,
-        PTK_IMG_MENU_ITEM( N_( "Rotate Counterclockwise" ), "object-rotate-left", on_rotate_counterclockwise, GDK_L, 0 ),
-        PTK_IMG_MENU_ITEM( N_( "Rotate Clockwise" ), "object-rotate-right", on_rotate_clockwise, GDK_R, 0 ),
-        PTK_IMG_MENU_ITEM( N_( "Flip Horizontal" ), "object-flip-horizontal", on_flip_horizontal, GDK_H, 0 ),
-        PTK_IMG_MENU_ITEM( N_( "Flip Vertical" ), "object-flip-vertical", on_flip_vertical, GDK_V, 0 ),
-        PTK_SEPARATOR_MENU_ITEM,
-        PTK_IMG_MENU_ITEM( N_("Open File"), GTK_STOCK_OPEN, G_CALLBACK(on_open), GDK_O, 0 ),
-        PTK_IMG_MENU_ITEM( N_("Save File"), GTK_STOCK_SAVE, G_CALLBACK(on_save), GDK_S, 0 ),
-        PTK_IMG_MENU_ITEM( N_("Save As"), GTK_STOCK_SAVE_AS, G_CALLBACK(on_save_as), GDK_A, 0 ),
+        /*  0 */ PTK_MENU_ITEM( N_( "File" ), NULL, 0, 0),
+        /*  1 */ PTK_IMG_MENU_ITEM( N_( "Previous" ), GTK_STOCK_GO_BACK, on_prev, GDK_leftarrow, 0 ),
+        /*  2 */ PTK_IMG_MENU_ITEM( N_( "Next" ), GTK_STOCK_GO_FORWARD, on_next, GDK_rightarrow, 0 ),
+        /*  3 */ PTK_IMG_MENU_ITEM( N_( "Start/Stop Slideshow" ), GTK_STOCK_MEDIA_PLAY, on_slideshow_menu, GDK_W, 0 ),
+        /*  4 */ PTK_SEPARATOR_MENU_ITEM,
+        /*  5 */ PTK_IMG_MENU_ITEM( N_( "Zoom Out" ), GTK_STOCK_ZOOM_OUT, on_zoom_out, GDK_minus, 0 ),
+        /*  6 */ PTK_IMG_MENU_ITEM( N_( "Zoom In" ), GTK_STOCK_ZOOM_IN, on_zoom_in, GDK_plus, 0 ),
+        /*  7 */ PTK_IMG_MENU_ITEM( N_( "Fit Image To Window Size" ), GTK_STOCK_ZOOM_FIT, on_zoom_fit_menu, GDK_F, 0 ),
+        /*  8 */ PTK_IMG_MENU_ITEM( N_( "Original Size" ), GTK_STOCK_ZOOM_100, on_orig_size_menu, GDK_G, 0 ),
+        /*  9 */ PTK_SEPARATOR_MENU_ITEM,
+        /* 10 */ PTK_IMG_MENU_ITEM( N_( "Full Screen" ), GTK_STOCK_FULLSCREEN, on_full_screen, GDK_F11, 0 ),
+        /* 11 */ PTK_SEPARATOR_MENU_ITEM,
+        /* 12 */ PTK_IMG_MENU_ITEM( N_( "Rotate Counterclockwise" ), "object-rotate-left", on_rotate_counterclockwise, GDK_L, 0 ),
+        /* 13 */ PTK_IMG_MENU_ITEM( N_( "Rotate Clockwise" ), "object-rotate-right", on_rotate_clockwise, GDK_R, 0 ),
+        /* 14 */ PTK_IMG_MENU_ITEM( N_( "Flip Horizontal" ), "object-flip-horizontal", on_flip_horizontal, GDK_H, 0 ),
+        /* 15 */ PTK_IMG_MENU_ITEM( N_( "Flip Vertical" ), "object-flip-vertical", on_flip_vertical, GDK_V, 0 ),
+        /* 16 */ PTK_SEPARATOR_MENU_ITEM,
+        /* 17 */ PTK_IMG_MENU_ITEM( N_("Open File"), GTK_STOCK_OPEN, G_CALLBACK(on_open), GDK_O, 0 ),
+        /* 18 */ PTK_IMG_MENU_ITEM( N_("Save File"), GTK_STOCK_SAVE, G_CALLBACK(on_save), GDK_S, 0 ),
+        /* 19 */ PTK_IMG_MENU_ITEM( N_("Save As"), GTK_STOCK_SAVE_AS, G_CALLBACK(on_save_as), GDK_A, 0 ),
 //        PTK_IMG_MENU_ITEM( N_("Save As Other Size"), GTK_STOCK_SAVE_AS, G_CALLBACK(on_save_as), GDK_A, 0 ),
-        PTK_IMG_MENU_ITEM( N_("Delete File"), GTK_STOCK_DELETE, G_CALLBACK(on_delete), GDK_Delete, 0 ),
-        PTK_SEPARATOR_MENU_ITEM,
-        PTK_IMG_MENU_ITEM( N_("Preferences"), GTK_STOCK_PREFERENCES, G_CALLBACK(on_preference), GDK_P, 0 ),
-        PTK_IMG_MENU_ITEM( N_("Show/Hide toolbar"), NULL, G_CALLBACK(on_toggle_toolbar), GDK_T, 0 ),
-        PTK_STOCK_MENU_ITEM( GTK_STOCK_ABOUT, on_about ),
-        PTK_SEPARATOR_MENU_ITEM,
-        PTK_IMG_MENU_ITEM( N_("Quit"), GTK_STOCK_QUIT, G_CALLBACK(on_quit), GDK_Q, 0 ),
+        /* 20 */ PTK_IMG_MENU_ITEM( N_("Delete File"), GTK_STOCK_DELETE, G_CALLBACK(on_delete), GDK_Delete, 0 ),
+        /* 21 */ PTK_SEPARATOR_MENU_ITEM,
+        /* 22 */ PTK_IMG_MENU_ITEM( N_("Preferences"), GTK_STOCK_PREFERENCES, G_CALLBACK(on_preference), GDK_P, 0 ),
+        /* 23 */ PTK_IMG_MENU_ITEM( N_("Show/Hide toolbar"), NULL, G_CALLBACK(on_toggle_toolbar), GDK_T, 0 ),
+        /* 24 */ PTK_STOCK_MENU_ITEM( GTK_STOCK_ABOUT, on_about ),
+        /* 25 */ PTK_SEPARATOR_MENU_ITEM,
+        /* 26 */ PTK_IMG_MENU_ITEM( N_("Quit"), GTK_STOCK_QUIT, G_CALLBACK(on_quit), GDK_Q, 0 ),
         PTK_MENU_END
     };
-    GtkWidget* rotate_cw = NULL;
-    GtkWidget* rotate_ccw = NULL;
-    GtkWidget* flip_v = NULL;
-    GtkWidget* flip_h = NULL;
 
     GtkWidget* file_menu_item = NULL;
 
+    GtkWidget* rotate_cw_menu_item = NULL;
+    GtkWidget* rotate_ccw_menu_item = NULL;
+    GtkWidget* flip_v_menu_item = NULL;
+    GtkWidget* flip_h_menu_item = NULL;
+
+    GtkWidget* save_file_menu_item = NULL;
+    GtkWidget* save_as_menu_item = NULL;
+    GtkWidget* delete_file_menu_item = NULL;
+
     menu_def[0].ret = &file_menu_item;
 
-    menu_def[11].ret = &rotate_ccw;
-    menu_def[12].ret = &rotate_cw;
-    menu_def[13].ret = &flip_h;
-    menu_def[14].ret = &flip_v;
+    menu_def[12].ret = &rotate_ccw_menu_item;
+    menu_def[13].ret = &rotate_cw_menu_item;
+    menu_def[14].ret = &flip_h_menu_item;
+    menu_def[15].ret = &flip_v_menu_item;
+
+    menu_def[18].ret = &save_file_menu_item;
+    menu_def[19].ret = &save_as_menu_item;
+    menu_def[20].ret = &delete_file_menu_item;
 
     // mw accel group is useless. It's only used to display accels in popup menu
     GtkAccelGroup* accel_group = gtk_accel_group_new();
@@ -1488,10 +1491,24 @@ void show_popup_menu( MainWin* mw, GdkEventButton* evt )
 
     if( mw->animation )
     {
-        gtk_widget_set_sensitive( rotate_ccw, FALSE );
-        gtk_widget_set_sensitive( rotate_cw, FALSE );
-        gtk_widget_set_sensitive( flip_h, FALSE );
-        gtk_widget_set_sensitive( flip_v, FALSE );
+        gtk_widget_set_sensitive( rotate_ccw_menu_item, FALSE );
+        gtk_widget_set_sensitive( rotate_cw_menu_item, FALSE );
+        gtk_widget_set_sensitive( flip_h_menu_item, FALSE );
+        gtk_widget_set_sensitive( flip_v_menu_item, FALSE );
+    }
+
+    if (mw->slideshow_running)
+    {
+        gtk_widget_set_sensitive( file_menu_item, FALSE );
+
+        gtk_widget_set_sensitive( rotate_ccw_menu_item, FALSE );
+        gtk_widget_set_sensitive( rotate_cw_menu_item, FALSE );
+        gtk_widget_set_sensitive( flip_h_menu_item, FALSE );
+        gtk_widget_set_sensitive( flip_v_menu_item, FALSE );
+
+        gtk_widget_set_sensitive( save_file_menu_item, FALSE );
+        gtk_widget_set_sensitive( save_as_menu_item, FALSE );
+        gtk_widget_set_sensitive( delete_file_menu_item, FALSE );
     }
 
     gtk_widget_show_all( (GtkWidget*)popup );
@@ -1635,4 +1652,18 @@ static void main_win_update_zoom_buttons_state(MainWin* mw)
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(mw->btn_orig), button_orig_active);
 }
 
+static void main_win_update_buttons_sensitivity(MainWin* mw)
+{
+    gboolean s1 = (mw->animation == NULL);
+    gboolean s2 = !mw->slideshow_running;
+
+    gtk_widget_set_sensitive(mw->btn_rotate_cw, s1 && s2);
+    gtk_widget_set_sensitive(mw->btn_rotate_ccw, s1 && s2);
+    gtk_widget_set_sensitive(mw->btn_flip_v, s1 && s2);
+    gtk_widget_set_sensitive(mw->btn_flip_h, s1 && s2);
+    gtk_widget_set_sensitive(mw->btn_save_file, s2);
+    gtk_widget_set_sensitive(mw->btn_save_as, s2);
+    gtk_widget_set_sensitive(mw->btn_delete_file, s2);
+
+}
 

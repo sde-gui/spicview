@@ -67,6 +67,9 @@ typedef struct _MainWin
     GtkWidget* btn_rotate_ccw;
     GtkWidget* btn_flip_v;
     GtkWidget* btn_flip_h;
+    GtkWidget* btn_save_file;
+    GtkWidget* btn_save_as;
+    GtkWidget* btn_delete_file;
     GtkWidget* btn_orig;
     GtkWidget* btn_fit;
     GtkWidget* btn_play_stop;
