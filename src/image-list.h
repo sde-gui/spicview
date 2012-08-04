@@ -51,12 +51,14 @@ gboolean image_list_set_current( ImageList* il, const char* name );
 const char* image_list_get_current( ImageList* il );
 
 const char* image_list_get_first( ImageList* il );
-
 const char* image_list_get_next( ImageList* il );
-
 const char* image_list_get_prev( ImageList* il );
-
 const char* image_list_get_last( ImageList* il );
+
+const char* image_list_to_first( ImageList* il );
+const char* image_list_to_next( ImageList* il );
+const char* image_list_to_prev( ImageList* il );
+const char* image_list_to_last( ImageList* il );
 
 void image_list_free( ImageList* il );
 
@@ -66,7 +68,9 @@ gboolean image_list_is_empty( ImageList* il );
 
 gboolean image_list_has_multiple_files( ImageList* il );
 
-char* image_list_get_current_file_path( ImageList* il );
+gchar* image_list_get_current_file_path( ImageList* il );
+
+gchar* image_list_get_file_path_for_item( ImageList* il, const char * name );
 
 void image_list_sort_by_name( ImageList* il, GtkSortType type );
 

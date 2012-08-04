@@ -123,3 +123,8 @@ void image_cache_put(ImageCacheItem* item)
 
 }
 
+unsigned image_cache_get_limit(void)
+{
+    return get_cache_limit();
+}
+

@@ -118,6 +118,9 @@ static void main_win_set_zoom_mode(MainWin* mw, ZoomMode mode);
 static void main_win_update_zoom_buttons_state(MainWin* mw);
 static void main_win_update_sensitivity(MainWin* mw);
 
+static gboolean on_preload_next_timeout(MainWin* mw);
+static gboolean on_preload_prev_timeout(MainWin* mw);
+
 // Begin of GObject-related stuff
 
 G_DEFINE_TYPE( MainWin, main_win, GTK_TYPE_WINDOW )
@@ -152,6 +155,12 @@ void main_win_finalize( GObject* obj )
 #else
     gdk_cursor_unref( mw->hand_cursor );
 #endif
+
+    if (mw->preload_next_timeout)
+        g_source_remove(mw->preload_next_timeout);
+    if (mw->preload_prev_timeout)
+        g_source_remove(mw->preload_prev_timeout);
+
     // FIXME: Put this here is weird
     gtk_main_quit();
 }
@@ -357,19 +366,8 @@ gboolean on_animation_timeout( MainWin* mw )
     return FALSE;
 }
 
-gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
+static load_image( MainWin* mw, const char* file_path, GdkPixbuf** _pix, GdkPixbufAnimation** _animation)
 {
-    if (g_file_test(file_path, G_FILE_TEST_IS_DIR))
-    {
-        image_list_open_dir( mw->img_list, file_path, NULL );
-        image_list_sort_by_name( mw->img_list, GTK_SORT_DESCENDING );
-        if (image_list_get_first(mw->img_list))
-            main_win_open(mw, image_list_get_current_file_path(mw->img_list), zoom);
-        return;
-    }
-
-    main_win_close( mw );
-
     GdkPixbuf* pix = NULL;
     GdkPixbufAnimation* animation = NULL;
 
@@ -386,14 +384,14 @@ gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
         {
             pix = item.pix;
             animation = item.animation;
-            //g_print("cache hit : %s\n", file_path);
+            g_print("cache hit : %s\n", file_path);
         }
     }
 
     /* read image from file */
     if (!pix && !animation)
     {
-        //g_print("cache miss: %s\n", file_path);
+        g_print("cache miss: %s\n", file_path);
 
         GError* err = NULL;
         GdkPixbufFormat* info;
@@ -438,6 +436,38 @@ gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
         image_cache_put(&item);
     }
 
+    if (_pix)
+        *_pix = pix;
+    else if (pix)
+        g_object_unref(pix);
+
+    if (_animation)
+        *_animation = animation;
+    else if (animation)
+        g_object_unref(animation);
+}
+
+gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
+{
+    if (g_file_test(file_path, G_FILE_TEST_IS_DIR))
+    {
+        image_list_open_dir( mw->img_list, file_path, NULL );
+        image_list_sort_by_name( mw->img_list, GTK_SORT_DESCENDING );
+        if (image_list_to_first(mw->img_list))
+        {
+            gchar* path = image_list_get_current_file_path(mw->img_list);
+            main_win_open(mw, path, zoom);
+            g_free(path);
+        }
+        return;
+    }
+
+    main_win_close( mw );
+
+    GdkPixbuf* pix = NULL;
+    GdkPixbufAnimation* animation = NULL;
+
+    load_image(mw, file_path, &pix, &animation);
 
     if (mw->animation)
         g_object_unref(mw->animation);
@@ -456,7 +486,6 @@ gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
     }
 
     main_win_update_sensitivity(mw);
-
 
     mw->zoom_mode = zoom;
 
@@ -524,7 +553,55 @@ gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
 
     main_win_update_zoom_buttons_state(mw);
 
+    if (image_cache_get_limit() > 5)
+    {
+        if (mw->preload_next_timeout == 0)
+            mw->preload_next_timeout = g_timeout_add(500, (GSourceFunc) on_preload_next_timeout, mw);
+        if (mw->preload_prev_timeout == 0)
+            mw->preload_prev_timeout = g_timeout_add(500, (GSourceFunc) on_preload_prev_timeout, mw);
+    }
+
     return TRUE;
+}
+
+gboolean on_preload_next_timeout(MainWin* mw)
+{
+    gchar* path = NULL;
+
+    if (!image_list_is_empty(mw->img_list))
+    {
+        const char* name = image_list_get_next(mw->img_list);
+        path = image_list_get_file_path_for_item(mw->img_list, name);
+    }
+
+    if (path)
+    {
+        load_image(mw, path, NULL, NULL);
+        g_free(path);
+    }
+
+    mw->preload_next_timeout = 0;
+    return FALSE;
+}
+
+gboolean on_preload_prev_timeout(MainWin* mw)
+{
+    gchar* path = NULL;
+
+    if (!image_list_is_empty(mw->img_list))
+    {
+        const char* name = image_list_get_prev(mw->img_list);
+        path = image_list_get_file_path_for_item(mw->img_list, name);
+    }
+
+    if (path)
+    {
+        load_image(mw, path, NULL, NULL);
+        g_free(path);
+    }
+
+    mw->preload_prev_timeout = 0;
+    return FALSE;
 }
 
 void main_win_start_slideshow( MainWin* mw )
@@ -727,17 +804,17 @@ void on_prev( GtkWidget* btn, MainWin* mw )
     if( image_list_is_empty( mw->img_list ) )
         return;
 
-    name = image_list_get_prev( mw->img_list );
+    name = image_list_to_prev( mw->img_list );
 
     if( ! name && image_list_has_multiple_files( mw->img_list ) )
     {
         // FIXME: need to ask user first?
-        name = image_list_get_last( mw->img_list );
+        name = image_list_to_last( mw->img_list );
     }
 
     if( name )
     {
-        char* file_path = image_list_get_current_file_path( mw->img_list );
+        gchar* file_path = image_list_get_current_file_path( mw->img_list );
         main_win_open( mw, file_path, mw->zoom_mode );
         g_free( file_path );
     }
@@ -748,17 +825,17 @@ void on_next( GtkWidget* btn, MainWin* mw )
     if( image_list_is_empty( mw->img_list ) )
         return;
 
-    const char* name = image_list_get_next( mw->img_list );
+    const char* name = image_list_to_next( mw->img_list );
 
     if( ! name && image_list_has_multiple_files( mw->img_list ) )
     {
         // FIXME: need to ask user first?
-        name = image_list_get_first( mw->img_list );
+        name = image_list_to_first( mw->img_list );
     }
 
     if( name )
     {
-        char* file_path = image_list_get_current_file_path( mw->img_list );
+        gchar* file_path = image_list_get_current_file_path( mw->img_list );
         main_win_open( mw, file_path, mw->zoom_mode );
         g_free( file_path );
     }
@@ -1435,7 +1512,7 @@ void on_delete( GtkWidget* btn, MainWin* mw )
         return;
 
     cancel_slideshow(mw);
-    char* file_path = image_list_get_current_file_path( mw->img_list );
+    gchar* file_path = image_list_get_current_file_path( mw->img_list );
     if( file_path )
     {
         int resp = GTK_RESPONSE_YES;
@@ -1460,9 +1537,9 @@ void on_delete( GtkWidget* btn, MainWin* mw )
 		main_win_show_error( mw, g_strerror(errno) );
 	    else
 	    {
-		const char* next_name = image_list_get_next( mw->img_list );
+		const char* next_name = image_list_to_next( mw->img_list );
 		if( ! next_name )
-		    next_name = image_list_get_prev( mw->img_list );
+		    next_name = image_list_to_prev( mw->img_list );
 
 		if( next_name )
 		{

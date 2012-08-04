@@ -127,11 +127,40 @@ gboolean image_list_set_current(  ImageList* il,const char* name )
 
 const char* image_list_get_first( ImageList* il )
 {
+    return il->list ? il->list->data : NULL;
+}
+
+const char* image_list_get_next( ImageList* il )
+{
+    if( il->current && il->current->next )
+    {
+        return il->current->next->data;
+    }
+    return NULL;
+}
+
+const char* image_list_get_prev( ImageList* il )
+{
+    if( il->current && il->current->prev )
+    {
+        return il->current->prev->data;
+    }
+    return NULL;
+}
+
+const char* image_list_get_last( ImageList* il )
+{
+    GList* item = g_list_last( il->list );
+    return item ? item->data : NULL;
+}
+
+const char* image_list_to_first( ImageList* il )
+{
     il->current = il->list;
     return image_list_get_current( il );
 }
 
-const char* image_list_get_next( ImageList* il )
+const char* image_list_to_next( ImageList* il )
 {
     if( il->current && il->current->next )
     {
@@ -141,7 +170,7 @@ const char* image_list_get_next( ImageList* il )
     return NULL;
 }
 
-const char* image_list_get_prev( ImageList* il )
+const char* image_list_to_prev( ImageList* il )
 {
     if( il->current && il->current->prev )
     {
@@ -151,7 +180,7 @@ const char* image_list_get_prev( ImageList* il )
     return NULL;
 }
 
-const char* image_list_get_last( ImageList* il )
+const char* image_list_to_last( ImageList* il )
 {
     il->current = g_list_last( il->list );
     return image_list_get_current( il );
@@ -178,12 +207,24 @@ static gboolean image_list_is_file_supported( const char* name )
     return !!g_slist_find_custom ( supported_formats, ext,  (GCompareFunc)g_ascii_strcasecmp);
 }
 
-char* image_list_get_current_file_path( ImageList* il )
+gchar* image_list_get_current_file_path( ImageList* il )
 {
     const char* name;
     if( il->dir_path && (name = image_list_get_current( il )) )
         return g_build_filename( il->dir_path, name, NULL );
     return NULL;
+}
+
+gchar* image_list_get_file_path_for_item( ImageList* il, const char * name )
+{
+    if( ! il->list || !name )
+        return NULL;
+
+    GList* cur = g_list_find_custom( il->list, name, (GCompareFunc)strcmp );
+    if( ! cur )
+        return NULL;
+
+    return g_build_filename( il->dir_path, name, NULL );
 }
 
 static int comp_by_name( char* name1, char* name2, GtkSortType type )

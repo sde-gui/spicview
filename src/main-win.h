@@ -99,6 +99,9 @@ typedef struct _MainWin
     int drag_old_y;
     int rotation_angle;
     ImageList* img_list;
+
+    guint preload_next_timeout;
+    guint preload_prev_timeout;
 } MainWin;
 
 GtkWidget* main_win_new();
