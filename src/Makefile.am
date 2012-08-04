@@ -26,6 +26,7 @@ gpicview_SOURCES = \
 	jhead.c \
 	exif.c \
 	jpgfile.c \
+	image-cache.c \
 	libfm.c
 
 # the library search path.
@@ -44,6 +45,7 @@ noinst_HEADERS = \
 	tran-supp.h \
 	pref.h \
 	jhead.h \
+	image-cache.h \
 	libfm.h
 
 noinst_PROGRAMS=xml-purge

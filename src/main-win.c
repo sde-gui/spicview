@@ -37,6 +37,7 @@
 
 #include "pref.h"
 
+#include "image-cache.h"
 #include "image-view.h"
 #include "image-list.h"
 #include "working-area.h"
@@ -367,51 +368,95 @@ gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
         return;
     }
 
-
-    GError* err = NULL;
-    GdkPixbufFormat* info;
-    info = gdk_pixbuf_get_file_info( file_path, NULL, NULL );
-    char* type = ((info != NULL) ? gdk_pixbuf_format_get_name(info) : "");
-
     main_win_close( mw );
 
-    /* grabs a file as if it were an animation */
-    mw->animation = gdk_pixbuf_animation_new_from_file( file_path, &err );
-    if( ! mw->animation )
+    GdkPixbuf* pix = NULL;
+    GdkPixbufAnimation* animation = NULL;
+
+    /* trying read image from cache */
+
+    GStatBuf stat_info;
+    if (g_stat(file_path, &stat_info) == 0)
     {
-        main_win_show_error( mw, err->message );
-        g_error_free(err);
-        main_win_update_sensitivity(mw);
-        return FALSE;
+        ImageCacheItem item;
+        item.name = (char *) file_path;
+        item.mtime = stat_info.st_mtime;
+        item.size = stat_info.st_size;
+        if (image_cache_get(&item))
+        {
+            pix = item.pix;
+            animation = item.animation;
+            //g_print("cache hit : %s\n", file_path);
+        }
     }
 
-    /* tests if the file is actually just a normal picture */
-    if ( gdk_pixbuf_animation_is_static_image( mw->animation ) )
+    /* read image from file */
+    if (!pix && !animation)
     {
-       mw->pix = gdk_pixbuf_animation_get_static_image( mw->animation );
-       g_object_ref(mw->pix);
-       g_object_unref(mw->animation);
-       mw->animation = NULL;
+        //g_print("cache miss: %s\n", file_path);
+
+        GError* err = NULL;
+        GdkPixbufFormat* info;
+        info = gdk_pixbuf_get_file_info( file_path, NULL, NULL );
+        char* type = ((info != NULL) ? gdk_pixbuf_format_get_name(info) : "");
+
+        /* grabs a file as if it were an animation */
+        animation = gdk_pixbuf_animation_new_from_file( file_path, &err );
+        if( ! animation )
+        {
+            main_win_show_error( mw, err->message );
+            g_error_free(err);
+            main_win_update_sensitivity(mw);
+            return FALSE;
+        }
+
+        /* tests if the file is actually just a normal picture */
+        if ( gdk_pixbuf_animation_is_static_image( animation ) )
+        {
+            pix = gdk_pixbuf_animation_get_static_image( animation );
+            g_object_ref(pix);
+            g_object_unref(animation);
+            animation = NULL;
+
+            /* rotate jpeg image by EXIF */
+            if (strcmp(type,"jpeg") == 0)
+            {
+                GdkPixbuf* tmp;
+                tmp = gdk_pixbuf_apply_embedded_orientation(pix);
+                g_object_unref(pix);
+                pix = tmp;
+            }
+        }
+
+        /* put image into cache */
+        ImageCacheItem item;
+        item.name = (char *) file_path;
+        item.mtime = stat_info.st_mtime;
+        item.size = stat_info.st_size;
+        item.pix = pix;
+        item.animation = animation;
+        image_cache_put(&item);
     }
-    else
+
+
+    if (mw->animation)
+        g_object_unref(mw->animation);
+    if (mw->pix)
+        g_object_unref(mw->pix);
+    mw->animation = animation;
+    mw->pix = pix;
+
+    /* initialize animation iterator and callback */
+    if (mw->animation)
     {
-        int delay;
-        /* we found an animation */
         mw->animation_iter = gdk_pixbuf_animation_get_iter( mw->animation, NULL );
         mw->pix = gdk_pixbuf_animation_iter_get_pixbuf( mw->animation_iter );
-        delay = gdk_pixbuf_animation_iter_get_delay_time( mw->animation_iter );
+        int delay = gdk_pixbuf_animation_iter_get_delay_time( mw->animation_iter );
         mw->animation_timeout = g_timeout_add( delay, (GSourceFunc) on_animation_timeout, mw );
     }
+
     main_win_update_sensitivity(mw);
 
-    if(!strcmp(type,"jpeg"))
-    {
-        GdkPixbuf* tmp;
-        // Only jpeg should rotate by EXIF
-        tmp = gdk_pixbuf_apply_embedded_orientation(mw->pix);
-        g_object_unref(mw->pix);
-        mw->pix = tmp;
-    }
 
     mw->zoom_mode = zoom;
 
@@ -497,6 +542,11 @@ void main_win_close( MainWin* mw )
         {
             g_source_remove( mw->animation_timeout );
             mw->animation_timeout = 0;
+        }
+        if (mw->animation_iter)
+        {
+            g_object_unref( mw->animation_iter );
+            mw->animation_iter = NULL;
         }
     }
     else if( mw->pix )
