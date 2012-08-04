@@ -19,15 +19,42 @@
 #include "image-cache.h"
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 
-#define CACHE_SIZE 5
+#define CACHE_SIZE 20
 
 static ImageCacheItem cache[CACHE_SIZE];
 
+
+static unsigned get_cache_limit(void)
+{
+    static unsigned value = 0;
+
+    if (value)
+        return value;
+
+    /* some heuristics to estimate cache size limit */
+    unsigned long long totalmem = sysconf(_SC_PHYS_PAGES) * sysconf(_SC_PAGE_SIZE);
+    totalmem /= 1024 * 1024; // to MiB
+    totalmem /= 5; // 1/5 of total memory
+    unsigned limit = 1 + totalmem / 20; // guess each cache item is about 20MiB
+
+    if (limit > CACHE_SIZE)
+        limit = CACHE_SIZE;
+
+    value = limit;
+
+    //g_print("cache size limit is %u items\n", value);
+
+    return value;
+}
+
+
 static ImageCacheItem* lookup_item(ImageCacheItem* item)
 {
-    int i;
-    for (i = 0; i < CACHE_SIZE; i++)
+    unsigned i;
+    unsigned limit = get_cache_limit();
+    for (i = 0; i < limit; i++)
     {
         ImageCacheItem* item2 = &cache[i];
         if (item->mtime == item2->mtime &&
@@ -70,7 +97,9 @@ void image_cache_put(ImageCacheItem* item)
 
     if (!cache_item)
     {
-        unsigned index = (((unsigned)rand()) ^ ((unsigned)time(NULL)) ^ (unsigned)item->mtime) % CACHE_SIZE;
+        unsigned index =
+            (((unsigned)rand()) ^ ((unsigned)time(NULL)) ^ (unsigned)item->mtime) % get_cache_limit();
+
         cache_item = &cache[index];
         if (cache_item->name)
             g_free(cache_item->name);
