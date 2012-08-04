@@ -26,7 +26,7 @@ static void image_view_finalize(GObject *iv);
 static void image_view_clear( ImageView* iv );
 static gboolean on_idle( ImageView* iv );
 static void calc_image_area( ImageView* iv );
-static void paint(  ImageView* iv, GdkRectangle* invalid_rect, GdkInterpType type );
+static gboolean paint(  ImageView* iv, GdkRectangle* invalid_rect, GdkInterpType type );
 
 #if GTK_CHECK_VERSION(3, 0, 0)
 
@@ -258,22 +258,24 @@ static gboolean on_draw_event( GtkWidget* widget, cairo_t *cr )
 
 void image_view_paint( ImageView* iv, cairo_t *cr )
 {
-    if( iv->pix )
+    if ( iv->pix )
     {
         cairo_region_t * region = eel_cairo_get_clip_region(cr);
         int n_rects = cairo_region_num_rectangles(region);
+
+        gboolean idle_update = FALSE;
 
         int i;
         for( i = 0; i < n_rects; ++i )
         {
             cairo_rectangle_int_t rectangle;
             cairo_region_get_rectangle(region, i, &rectangle);
-            paint( iv, &rectangle, GDK_INTERP_NEAREST );
+            idle_update |= paint( iv, &rectangle, GDK_INTERP_NEAREST );
         }
 
         cairo_region_destroy (region);
 
-        if( 0 == iv->idle_handler )
+        if( idle_update && 0 == iv->idle_handler )
             iv->idle_handler = g_idle_add( (GSourceFunc)on_idle, iv );
     }
 }
@@ -289,30 +291,21 @@ gboolean on_expose_event( GtkWidget* widget, GdkEventExpose* evt )
 
 void image_view_paint( ImageView* iv, GdkEventExpose* evt )
 {
-/*
-    GtkWidget* widget = (GtkWidget*)iv;
-    if( cached )
-    {
-//        gdk_draw_drawable( drawable, widget->style->fg_gc[GTK_STATE_NORMAL], buffer,
-//                         0, 0,  );
-        return;
-    }
-*/
-
     if( iv->pix )
     {
         GdkRectangle* rects = NULL;
         int i, n_rects = 0;
         gdk_region_get_rectangles( evt->region, &rects, &n_rects );
 
+        gboolean idle_update = FALSE;
+
         for( i = 0; i < n_rects; ++i )
         {
-            // GdkRectangle& rect = rects[i];
-            paint( iv, rects + i, GDK_INTERP_NEAREST );
+            idle_update |= paint( iv, rects + i, GDK_INTERP_NEAREST );
         }
         g_free( rects );
 
-        if( 0 == iv->idle_handler )
+        if( idle_update && 0 == iv->idle_handler )
             iv->idle_handler = g_idle_add( (GSourceFunc)on_idle, iv );
     }
 }
@@ -428,6 +421,8 @@ gboolean on_idle( ImageView* iv )
         rect.height = iv->allocation.height;
     }
 
+    //g_print("%d, %d, %d, %d\n", rect.x, rect.y, rect.width, rect.height);
+
     paint( iv, &rect, iv->interp_type );
 
     GDK_THREADS_LEAVE();
@@ -460,11 +455,13 @@ void calc_image_area( ImageView* iv )
     }
 }
 
-void paint( ImageView* iv, GdkRectangle* invalid_rect, GdkInterpType type )
+gboolean paint( ImageView* iv, GdkRectangle* invalid_rect, GdkInterpType type )
 {
     GdkRectangle rect;
     if( ! gdk_rectangle_intersect( invalid_rect, &iv->img_area, &rect ) )
-        return;
+        return FALSE;
+
+     gboolean result = FALSE;
 
     int dest_x;
     int dest_y;
@@ -506,6 +503,7 @@ void paint( ImageView* iv, GdkRectangle* invalid_rect, GdkInterpType type )
             src_pix = scaled_pix;
         }
 
+        result = TRUE;
     }
 
     if( G_LIKELY(src_pix) )
@@ -518,6 +516,8 @@ void paint( ImageView* iv, GdkRectangle* invalid_rect, GdkInterpType type )
 
         g_object_unref( src_pix );
     }
+
+    return result;
 }
 
 void image_view_get_size( ImageView* iv, int* w, int* h )
