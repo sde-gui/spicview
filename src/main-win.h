@@ -63,21 +63,37 @@ typedef struct _MainWin
     GtkWidget* scroll;
     GtkWidget* evt_box;
     GtkWidget* nav_bar;
+
+    GtkWidget* btn_prev;
+    GtkWidget* btn_next;
+    GtkWidget* btn_play_stop;
+
+    GtkWidget* btn_zoom_out;
+    GtkWidget* btn_zoom_in;
+    GtkWidget* btn_fit;
+    GtkWidget* btn_orig;
+
     GtkWidget* btn_rotate_cw;
     GtkWidget* btn_rotate_ccw;
     GtkWidget* btn_flip_v;
     GtkWidget* btn_flip_h;
+
     GtkWidget* btn_save_file;
     GtkWidget* btn_save_as;
     GtkWidget* btn_delete_file;
-    GtkWidget* btn_orig;
-    GtkWidget* btn_fit;
-    GtkWidget* btn_play_stop;
+
     GtkWidget* img_play_stop;
     GtkWidget* percent;
     GdkCursor* hand_cursor;
 
     gboolean file_action_enabled;
+    gboolean prev_action_enabled;
+    gboolean next_action_enabled;
+    gboolean play_stop_action_enabled;
+    gboolean zoom_out_action_enabled;
+    gboolean zoom_in_action_enabled;
+    gboolean fit_action_enabled;
+    gboolean orig_action_enabled;
     gboolean rotate_cw_action_enabled;
     gboolean rotate_ccw_action_enabled;
     gboolean flip_v_action_enabled;
