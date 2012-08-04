@@ -1815,6 +1815,8 @@ static void main_win_set_zoom_scale(MainWin* mw, double scale)
 
     if (mw->scale != scale)
         main_win_scale_image(mw, scale, GDK_INTERP_BILINEAR);
+
+    main_win_update_sensitivity(mw);
 }
 
 static void main_win_set_zoom_mode(MainWin* mw, ZoomMode mode)
@@ -1872,8 +1874,8 @@ static void main_win_update_sensitivity(MainWin* mw)
     mw->next_action_enabled        = image && multiple_images;
     mw->play_stop_action_enabled   = image && multiple_images;
 
-    mw->zoom_out_action_enabled    = image;
-    mw->zoom_in_action_enabled     = image;
+    mw->zoom_out_action_enabled    = image && mw->scale > 0.02;
+    mw->zoom_in_action_enabled     = image && mw->scale < 20.0;
     mw->fit_action_enabled         = image;
     mw->orig_action_enabled        = image;
 
