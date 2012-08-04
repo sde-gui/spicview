@@ -366,7 +366,7 @@ gboolean on_animation_timeout( MainWin* mw )
     return FALSE;
 }
 
-static load_image( MainWin* mw, const char* file_path, GdkPixbuf** _pix, GdkPixbufAnimation** _animation)
+static load_image( MainWin* mw, const char* file_path, GdkPixbuf** _pix, GdkPixbufAnimation** _animation, GError** _err)
 {
     GdkPixbuf* pix = NULL;
     GdkPixbufAnimation* animation = NULL;
@@ -384,45 +384,47 @@ static load_image( MainWin* mw, const char* file_path, GdkPixbuf** _pix, GdkPixb
         {
             pix = item.pix;
             animation = item.animation;
-            g_print("cache hit : %s\n", file_path);
+            //g_print("cache hit : %s\n", file_path);
         }
     }
 
     /* read image from file */
     if (!pix && !animation)
     {
-        g_print("cache miss: %s\n", file_path);
+        //g_print("cache miss: %s\n", file_path);
 
-        GError* err = NULL;
         GdkPixbufFormat* info;
         info = gdk_pixbuf_get_file_info( file_path, NULL, NULL );
         char* type = ((info != NULL) ? gdk_pixbuf_format_get_name(info) : "");
 
-        /* grabs a file as if it were an animation */
-        animation = gdk_pixbuf_animation_new_from_file( file_path, &err );
-        if( ! animation )
+        if (strcmp(type,"jpeg") == 0 || strcmp(type,"tiff") == 0)
         {
-            main_win_show_error( mw, err->message );
-            g_error_free(err);
-            main_win_update_sensitivity(mw);
-            return FALSE;
-        }
-
-        /* tests if the file is actually just a normal picture */
-        if ( gdk_pixbuf_animation_is_static_image( animation ) )
-        {
-            pix = gdk_pixbuf_animation_get_static_image( animation );
-            g_object_ref(pix);
-            g_object_unref(animation);
-            animation = NULL;
-
-            /* rotate jpeg image by EXIF */
-            if (strcmp(type,"jpeg") == 0)
+            animation =  NULL;
+            GdkPixbuf* tmp = gdk_pixbuf_new_from_file(file_path, _err);
+            if( ! tmp )
             {
-                GdkPixbuf* tmp;
-                tmp = gdk_pixbuf_apply_embedded_orientation(pix);
-                g_object_unref(pix);
-                pix = tmp;
+                return FALSE;
+            }
+
+            pix = gdk_pixbuf_apply_embedded_orientation(tmp);
+            g_object_unref(tmp);
+        }
+        else
+        {
+            /* grabs a file as if it were an animation */
+            animation = gdk_pixbuf_animation_new_from_file( file_path, _err );
+            if( ! animation )
+            {
+                return FALSE;
+            }
+
+            /* tests if the file is actually just a normal picture */
+            if ( gdk_pixbuf_animation_is_static_image( animation ) )
+            {
+                pix = gdk_pixbuf_animation_get_static_image( animation );
+                g_object_ref(pix);
+                g_object_unref(animation);
+                animation = NULL;
             }
         }
 
@@ -464,10 +466,22 @@ gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
 
     main_win_close( mw );
 
+    GError* err = NULL;
     GdkPixbuf* pix = NULL;
     GdkPixbufAnimation* animation = NULL;
 
-    load_image(mw, file_path, &pix, &animation);
+    load_image(mw, file_path, &pix, &animation, &err);
+
+    if (!pix && !animation)
+    {
+        if (err)
+        {
+            main_win_show_error(mw, err->message);
+            g_error_free(err);
+        }
+        main_win_update_sensitivity(mw);
+        return FALSE;
+    }
 
     if (mw->animation)
         g_object_unref(mw->animation);
@@ -576,7 +590,7 @@ gboolean on_preload_next_timeout(MainWin* mw)
 
     if (path)
     {
-        load_image(mw, path, NULL, NULL);
+        load_image(mw, path, NULL, NULL, NULL);
         g_free(path);
     }
 
@@ -596,7 +610,7 @@ gboolean on_preload_prev_timeout(MainWin* mw)
 
     if (path)
     {
-        load_image(mw, path, NULL, NULL);
+        load_image(mw, path, NULL, NULL, NULL);
         g_free(path);
     }
 
