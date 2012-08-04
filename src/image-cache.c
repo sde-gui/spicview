@@ -36,8 +36,8 @@ static unsigned get_cache_limit(void)
     /* some heuristics to estimate cache size limit */
     unsigned long long totalmem = sysconf(_SC_PHYS_PAGES) * sysconf(_SC_PAGE_SIZE);
     totalmem /= 1024 * 1024; // to MiB
-    totalmem /= 5; // 1/5 of total memory
-    unsigned limit = 1 + totalmem / 20; // guess each cache item is about 20MiB
+    totalmem /= 6; // 1/6 of total memory
+    unsigned limit = 2 + totalmem / 20; // guess each cache item is about 20MiB
 
     if (limit > CACHE_SIZE)
         limit = CACHE_SIZE;
@@ -97,8 +97,23 @@ void image_cache_put(ImageCacheItem* item)
 
     if (!cache_item)
     {
-        unsigned index =
-            (((unsigned)rand()) ^ ((unsigned)time(NULL)) ^ (unsigned)item->mtime) % get_cache_limit();
+        unsigned limit = get_cache_limit();
+        unsigned index = 0;
+
+        if (limit >= 5)
+        {
+            /* make sure we keep 2 recently loaded items */
+            index = (((unsigned)rand()) ^ ((unsigned)time(NULL)) ^ (unsigned)item->mtime) % (limit - 2);
+            ImageCacheItem tmp = cache[index];
+            cache[index] = cache[limit- 2];
+            cache[limit- 2] = cache[limit- 1];
+            cache[limit- 1] = tmp;
+            index = limit- 1;
+        }
+        else
+        {
+            index = (((unsigned)rand()) ^ ((unsigned)time(NULL)) ^ (unsigned)item->mtime) % limit;
+        }
 
         cache_item = &cache[index];
         if (cache_item->name)
