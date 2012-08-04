@@ -115,7 +115,7 @@ static int get_new_angle( int orig_angle, int rotate_angle );
 static void main_win_set_zoom_scale(MainWin* mw, double scale);
 static void main_win_set_zoom_mode(MainWin* mw, ZoomMode mode);
 static void main_win_update_zoom_buttons_state(MainWin* mw);
-static void main_win_update_buttons_sensitivity(MainWin* mw);
+static void main_win_update_sensitivity(MainWin* mw);
 
 // Begin of GObject-related stuff
 
@@ -381,7 +381,7 @@ gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
     {
         main_win_show_error( mw, err->message );
         g_error_free(err);
-        main_win_update_buttons_sensitivity(mw);
+        main_win_update_sensitivity(mw);
         return FALSE;
     }
 
@@ -402,7 +402,7 @@ gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
         delay = gdk_pixbuf_animation_iter_get_delay_time( mw->animation_iter );
         mw->animation_timeout = g_timeout_add( delay, (GSourceFunc) on_animation_timeout, mw );
     }
-    main_win_update_buttons_sensitivity(mw);
+    main_win_update_sensitivity(mw);
 
     if(!strcmp(type,"jpeg"))
     {
@@ -756,7 +756,7 @@ void on_slideshow( GtkToggleButton* btn, MainWin* mw )
         mw->slide_timeout = g_timeout_add(1000 * pref.slide_delay, (GSourceFunc) next_slide, mw);
     }
 
-    main_win_update_buttons_sensitivity(mw);
+    main_win_update_sensitivity(mw);
 }
 
 //////////////////// rotate & flip
@@ -796,6 +796,9 @@ void on_rotate_auto_save( GtkWidget* btn, MainWin* mw )
 
 void on_rotate_clockwise( GtkWidget* btn, MainWin* mw )
 {
+    if (!mw->rotate_cw_action_enabled)
+        return;
+
     cancel_slideshow(mw);
     rotate_image( mw, GDK_PIXBUF_ROTATE_CLOCKWISE );
     mw->rotation_angle = get_new_angle(mw->rotation_angle, 90);
@@ -804,6 +807,9 @@ void on_rotate_clockwise( GtkWidget* btn, MainWin* mw )
 
 void on_rotate_counterclockwise( GtkWidget* btn, MainWin* mw )
 {
+    if (!mw->rotate_ccw_action_enabled)
+        return;
+
     cancel_slideshow(mw);
     rotate_image( mw, GDK_PIXBUF_ROTATE_COUNTERCLOCKWISE );
     mw->rotation_angle = get_new_angle(mw->rotation_angle, 270);
@@ -812,6 +818,9 @@ void on_rotate_counterclockwise( GtkWidget* btn, MainWin* mw )
 
 void on_flip_vertical( GtkWidget* btn, MainWin* mw )
 {
+    if (!mw->flip_v_action_enabled)
+        return;
+
     cancel_slideshow(mw);
     rotate_image( mw, -180 );
     mw->rotation_angle = get_new_angle(mw->rotation_angle, -180);
@@ -820,6 +829,9 @@ void on_flip_vertical( GtkWidget* btn, MainWin* mw )
 
 void on_flip_horizontal( GtkWidget* btn, MainWin* mw )
 {
+    if (!mw->flip_h_action_enabled)
+        return;
+
     cancel_slideshow(mw);
     rotate_image( mw, -90 );
     mw->rotation_angle = get_new_angle(mw->rotation_angle, -90);
@@ -830,6 +842,9 @@ void on_flip_horizontal( GtkWidget* btn, MainWin* mw )
 
 void on_save_as( GtkWidget* btn, MainWin* mw )
 {
+    if (!mw->save_as_action_enabled)
+        return;
+
     char *file, *type;
 
     cancel_slideshow(mw);
@@ -864,6 +879,9 @@ void on_save_as( GtkWidget* btn, MainWin* mw )
 
 void on_save( GtkWidget* btn, MainWin* mw )
 {
+    if (!mw->save_file_action_enabled)
+        return;
+
     cancel_slideshow(mw);
     if( ! mw->pix )
         return;
@@ -1363,6 +1381,9 @@ gboolean main_win_save( MainWin* mw, const char* file_path, const char* type, gb
 
 void on_delete( GtkWidget* btn, MainWin* mw )
 {
+    if (!mw->delete_file_action_enabled)
+        return;
+
     cancel_slideshow(mw);
     char* file_path = image_list_get_current_file_path( mw->img_list );
     if( file_path )
@@ -1489,27 +1510,17 @@ void show_popup_menu( MainWin* mw, GdkEventButton* evt )
     GtkAccelGroup* accel_group = gtk_accel_group_new();
     GtkMenuShell* popup = (GtkMenuShell*)ptk_menu_new_from_data( menu_def, mw, accel_group );
 
-    if( mw->animation )
-    {
-        gtk_widget_set_sensitive( rotate_ccw_menu_item, FALSE );
-        gtk_widget_set_sensitive( rotate_cw_menu_item, FALSE );
-        gtk_widget_set_sensitive( flip_h_menu_item, FALSE );
-        gtk_widget_set_sensitive( flip_v_menu_item, FALSE );
-    }
+    gtk_widget_set_sensitive( file_menu_item, mw->file_action_enabled );
 
-    if (mw->slideshow_running)
-    {
-        gtk_widget_set_sensitive( file_menu_item, FALSE );
+    gtk_widget_set_sensitive( rotate_ccw_menu_item, mw->rotate_ccw_action_enabled );
+    gtk_widget_set_sensitive( rotate_cw_menu_item, mw->rotate_cw_action_enabled );
+    gtk_widget_set_sensitive( flip_h_menu_item, mw->flip_h_action_enabled );
+    gtk_widget_set_sensitive( flip_v_menu_item, mw->flip_v_action_enabled );
 
-        gtk_widget_set_sensitive( rotate_ccw_menu_item, FALSE );
-        gtk_widget_set_sensitive( rotate_cw_menu_item, FALSE );
-        gtk_widget_set_sensitive( flip_h_menu_item, FALSE );
-        gtk_widget_set_sensitive( flip_v_menu_item, FALSE );
+    gtk_widget_set_sensitive( save_file_menu_item, mw->save_file_action_enabled );
+    gtk_widget_set_sensitive( save_as_menu_item, mw->save_as_action_enabled );
+    gtk_widget_set_sensitive( delete_file_menu_item, mw->delete_file_action_enabled );
 
-        gtk_widget_set_sensitive( save_file_menu_item, FALSE );
-        gtk_widget_set_sensitive( save_as_menu_item, FALSE );
-        gtk_widget_set_sensitive( delete_file_menu_item, FALSE );
-    }
 
     gtk_widget_show_all( (GtkWidget*)popup );
 
@@ -1652,18 +1663,26 @@ static void main_win_update_zoom_buttons_state(MainWin* mw)
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(mw->btn_orig), button_orig_active);
 }
 
-static void main_win_update_buttons_sensitivity(MainWin* mw)
+static void main_win_update_sensitivity(MainWin* mw)
 {
     gboolean s1 = (mw->animation == NULL);
     gboolean s2 = !mw->slideshow_running;
 
-    gtk_widget_set_sensitive(mw->btn_rotate_cw, s1 && s2);
-    gtk_widget_set_sensitive(mw->btn_rotate_ccw, s1 && s2);
-    gtk_widget_set_sensitive(mw->btn_flip_v, s1 && s2);
-    gtk_widget_set_sensitive(mw->btn_flip_h, s1 && s2);
-    gtk_widget_set_sensitive(mw->btn_save_file, s2);
-    gtk_widget_set_sensitive(mw->btn_save_as, s2);
-    gtk_widget_set_sensitive(mw->btn_delete_file, s2);
+    mw->file_action_enabled = s2;
+    mw->rotate_cw_action_enabled = s1 && s2;
+    mw->rotate_ccw_action_enabled = s1 && s2;
+    mw->flip_v_action_enabled = s1 && s2;
+    mw->flip_h_action_enabled = s1 && s2;
+    mw->save_file_action_enabled = s2;
+    mw->save_as_action_enabled = s2;
+    mw->delete_file_action_enabled = s2;
 
+    gtk_widget_set_sensitive(mw->btn_rotate_cw, mw->rotate_cw_action_enabled);
+    gtk_widget_set_sensitive(mw->btn_rotate_ccw, mw->rotate_ccw_action_enabled);
+    gtk_widget_set_sensitive(mw->btn_flip_v, mw->flip_v_action_enabled);
+    gtk_widget_set_sensitive(mw->btn_flip_h, mw->flip_h_action_enabled);
+    gtk_widget_set_sensitive(mw->btn_save_file, mw->save_file_action_enabled);
+    gtk_widget_set_sensitive(mw->btn_save_as, mw->save_as_action_enabled);
+    gtk_widget_set_sensitive(mw->btn_delete_file, mw->delete_file_action_enabled);
 }
 

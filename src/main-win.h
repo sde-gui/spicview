@@ -77,6 +77,15 @@ typedef struct _MainWin
     GtkWidget* percent;
     GdkCursor* hand_cursor;
 
+    gboolean file_action_enabled;
+    gboolean rotate_cw_action_enabled;
+    gboolean rotate_ccw_action_enabled;
+    gboolean flip_v_action_enabled;
+    gboolean flip_h_action_enabled;
+    gboolean save_file_action_enabled;
+    gboolean save_as_action_enabled;
+    gboolean delete_file_action_enabled;
+
     GtkAllocation scroll_allocation;
 
     ZoomMode zoom_mode;
