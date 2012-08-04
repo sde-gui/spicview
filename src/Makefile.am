@@ -5,6 +5,8 @@ INCLUDES = $(all_includes) \
 	$(X11_CFLAGS) \
         $(GTK_CFLAGS) \
         $(ADDITIONAL_FLAGS) \
+        $(LIBFM_CFLAGS) \
+        $(GMODULE_CFLAGS) \
 	-I$(top_srcdir) \
 	-DPACKAGE_DATA_DIR=\""$(datadir)"\" \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\"
@@ -23,11 +25,12 @@ gpicview_SOURCES = \
 	pref.c \
 	jhead.c \
 	exif.c \
-	jpgfile.c 
+	jpgfile.c \
+	libfm.c
 
 # the library search path.
 # use -nodefaultlibs to prevent linking libstdc++
-gpicview_LDADD = $(X11_LIBS) $(GTK_LIBS) -lm
+gpicview_LDADD = $(X11_LIBS) $(GTK_LIBS) $(GMODULE_LIBS) -lm
 
 noinst_HEADERS = \
 	glib-mem.h \
@@ -40,7 +43,8 @@ noinst_HEADERS = \
 	jpeg-tran.h \
 	tran-supp.h \
 	pref.h \
-	jhead.h
+	jhead.h \
+	libfm.h
 
 noinst_PROGRAMS=xml-purge
 xml_purge_SOURCES=xml-purge.c

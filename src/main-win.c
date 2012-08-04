@@ -43,6 +43,7 @@
 #include "ptk-menu.h"
 #include "file-dlgs.h"
 #include "jpeg-tran.h"
+#include "libfm.h"
 
 /* For drag & drop */
 static GtkTargetEntry drop_targets[] =
@@ -1433,8 +1434,11 @@ void on_toggle_toolbar( GtkMenuItem* item, MainWin* mw )
 
 void show_popup_menu( MainWin* mw, GdkEventButton* evt )
 {
+    GtkMenu * file_submenu = get_fm_file_menu_for_path(image_list_get_current_file_path(mw->img_list));
+
     static PtkMenuItemEntry menu_def[] =
     {
+        PTK_MENU_ITEM( N_( "File" ), NULL, 0, 0),
         PTK_IMG_MENU_ITEM( N_( "Previous" ), GTK_STOCK_GO_BACK, on_prev, GDK_leftarrow, 0 ),
         PTK_IMG_MENU_ITEM( N_( "Next" ), GTK_STOCK_GO_FORWARD, on_next, GDK_rightarrow, 0 ),
         PTK_IMG_MENU_ITEM( N_( "Start/Stop Slideshow" ), GTK_STOCK_MEDIA_PLAY, on_slideshow_menu, GDK_W, 0 ),
@@ -1464,15 +1468,19 @@ void show_popup_menu( MainWin* mw, GdkEventButton* evt )
         PTK_IMG_MENU_ITEM( N_("Quit"), GTK_STOCK_QUIT, G_CALLBACK(on_quit), GDK_Q, 0 ),
         PTK_MENU_END
     };
-    GtkWidget* rotate_cw;
-    GtkWidget* rotate_ccw;
-    GtkWidget* flip_v;
-    GtkWidget* flip_h;
+    GtkWidget* rotate_cw = NULL;
+    GtkWidget* rotate_ccw = NULL;
+    GtkWidget* flip_v = NULL;
+    GtkWidget* flip_h = NULL;
 
-    menu_def[10].ret = &rotate_ccw;
-    menu_def[11].ret = &rotate_cw;
-    menu_def[12].ret = &flip_h;
-    menu_def[13].ret = &flip_v;
+    GtkWidget* file_menu_item = NULL;
+
+    menu_def[0].ret = &file_menu_item;
+
+    menu_def[11].ret = &rotate_ccw;
+    menu_def[12].ret = &rotate_cw;
+    menu_def[13].ret = &flip_h;
+    menu_def[14].ret = &flip_v;
 
     // mw accel group is useless. It's only used to display accels in popup menu
     GtkAccelGroup* accel_group = gtk_accel_group_new();
@@ -1487,6 +1495,16 @@ void show_popup_menu( MainWin* mw, GdkEventButton* evt )
     }
 
     gtk_widget_show_all( (GtkWidget*)popup );
+
+    if (file_submenu)
+    {
+        gtk_menu_item_set_submenu(GTK_MENU_ITEM(file_menu_item), GTK_WIDGET(file_submenu));
+    }
+    else
+    {
+        gtk_widget_hide(file_menu_item);
+    }
+
     g_signal_connect( popup, "selection-done", G_CALLBACK(gtk_widget_destroy), NULL );
     gtk_menu_popup( (GtkMenu*)popup, NULL, NULL, NULL, NULL, evt->button, evt->time );
 }
