@@ -46,6 +46,19 @@
 #include "jpeg-tran.h"
 #include "libfm.h"
 
+/*
+   REFACTORING IN PROGRESS!
+
+  UI <------------------------------+
+  |                                 |
+  v                                 |
+  on_someevent() handlers           UI state control handlers
+  |                                 ^
+  v                                 |
+  main_win_action_*() handlers ---> internal functions
+
+*/
+
 /* For drag & drop */
 static GtkTargetEntry drop_targets[] =
 {
@@ -68,17 +81,22 @@ static void rotate_image( MainWin* mw, int angle );
 static void show_popup_menu( MainWin* mw, GdkEventButton* evt );
 
 /* signal handlers */
+
 static gboolean on_delete_event( GtkWidget* widget, GdkEventAny* evt );
 static void on_size_allocate( GtkWidget* widget, GtkAllocation    *allocation );
 static gboolean on_win_state_event( GtkWidget* widget, GdkEventWindowState* state );
 static void on_scroll_size_allocate(GtkWidget* widget, GtkAllocation* allocation, MainWin* mv);
-static void on_zoom_fit( GtkToggleButton* btn, MainWin* mw );
-static void on_zoom_fit_menu( GtkMenuItem* item, MainWin* mw );
-static void on_full_screen( GtkWidget* btn, MainWin* mw );
+static void on_full_screen( GtkWidget* widget, MainWin* mw );
 static void on_next( GtkWidget* btn, MainWin* mw );
-static void on_orig_size( GtkToggleButton* btn, MainWin* mw );
-static void on_orig_size_menu( GtkToggleButton* btn, MainWin* mw );
 static void on_prev( GtkWidget* btn, MainWin* mw );
+
+static void on_zoom_in( GtkWidget* btn, MainWin* mw );
+static void on_zoom_out( GtkWidget* btn, MainWin* mw );
+static void on_zoom_fit( GtkWidget* widget, MainWin* mw );
+static void on_zoom_fit_menu( GtkWidget* widget, MainWin* mw );
+static void on_orig_size( GtkWidget* widget, MainWin* mw );
+static void on_orig_size_menu( GtkWidget* widget, MainWin* mw );
+
 static void on_rotate_auto_save( GtkWidget* btn, MainWin* mw );
 static void on_rotate_clockwise( GtkWidget* btn, MainWin* mw );
 static void on_rotate_counterclockwise( GtkWidget* btn, MainWin* mw );
@@ -89,8 +107,6 @@ static gboolean next_slide(MainWin* mw);
 static void on_slideshow_menu( GtkMenuItem* item, MainWin* mw );
 static void on_slideshow( GtkToggleButton* btn, MainWin* mw );
 static void on_open( GtkWidget* btn, MainWin* mw );
-static void on_zoom_in( GtkWidget* btn, MainWin* mw );
-static void on_zoom_out( GtkWidget* btn, MainWin* mw );
 static void on_preference( GtkWidget* btn, MainWin* mw );
 static void on_toggle_toolbar( GtkMenuItem* item, MainWin* mw );
 static void on_quit( GtkWidget* btn, MainWin* mw );
@@ -112,6 +128,11 @@ void on_flip_vertical( GtkWidget* btn, MainWin* mw );
 void on_flip_horizontal( GtkWidget* btn, MainWin* mw );
 static int trans_angle_to_id(int i);
 static int get_new_angle( int orig_angle, int rotate_angle );
+
+static void main_win_action_zoom_in(MainWin* mw);
+static void main_win_action_zoom_out(MainWin* mw);
+static void main_win_action_zoom_orig(MainWin* mw);
+static void main_win_action_zoom_fit(MainWin* mw);
 
 static void main_win_set_zoom_scale(MainWin* mw, double scale);
 static void main_win_set_zoom_mode(MainWin* mw, ZoomMode mode);
@@ -444,24 +465,20 @@ void on_scroll_size_allocate(GtkWidget* widget, GtkAllocation* allocation, MainW
     mv->scroll_allocation = *allocation;
 }
 
-void on_zoom_fit_menu( GtkMenuItem* item, MainWin* mw )
+void on_zoom_fit_menu( GtkWidget* widget, MainWin* mw )
 {
-    if (!mw->fit_action_enabled)
-        return;
-
-    gtk_button_clicked( (GtkButton*)mw->btn_fit );
+    main_win_action_zoom_fit(mw);
 }
 
-void on_zoom_fit( GtkToggleButton* btn, MainWin* mw )
+void on_zoom_fit( GtkWidget* widget, MainWin* mw )
 {
-    if (!mw->fit_action_enabled)
-        return;
-
-    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn)))
-        main_win_set_zoom_mode(mw, ZOOM_FIT);
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(mw->btn_fit)))
+        main_win_action_zoom_fit(mw);
+    else
+        main_win_update_zoom_buttons_state(mw);
 }
 
-void on_full_screen( GtkWidget* btn, MainWin* mw )
+void on_full_screen( GtkWidget* widget, MainWin* mw )
 {
     if( ! mw->full_screen )
         gtk_window_fullscreen( (GtkWindow*)mw );
@@ -469,28 +486,17 @@ void on_full_screen( GtkWidget* btn, MainWin* mw )
         gtk_window_unfullscreen( (GtkWindow*)mw );
 }
 
-void on_orig_size_menu( GtkToggleButton* btn, MainWin* mw )
+void on_orig_size_menu( GtkWidget* widget, MainWin* mw )
 {
-    if (!mw->orig_action_enabled)
-        return;
-
-    gtk_button_clicked( (GtkButton*)mw->btn_orig );
+    main_win_action_zoom_orig(mw);
 }
 
-void on_orig_size( GtkToggleButton* btn, MainWin* mw )
+void on_orig_size( GtkWidget* widget, MainWin* mw )
 {
-    if (!mw->orig_action_enabled)
-        return;
-
-    // this callback could be called from activate signal of menu item.
-    if( GTK_IS_MENU_ITEM(btn) )
-    {
-        gtk_button_clicked( (GtkButton*)mw->btn_orig );
-        return;
-    }
-
-    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(btn)))
-        main_win_set_zoom_mode(mw, ZOOM_ORIG);
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(mw->btn_orig)))
+        main_win_action_zoom_orig(mw);
+    else
+        main_win_update_zoom_buttons_state(mw);
 }
 
 void on_prev( GtkWidget* btn, MainWin* mw )
@@ -763,24 +769,14 @@ void on_open( GtkWidget* btn, MainWin* mw )
     }
 }
 
-void on_zoom_in( GtkWidget* btn, MainWin* mw )
+void on_zoom_in( GtkWidget* widget, MainWin* mw )
 {
-    if (!mw->zoom_in_action_enabled)
-        return;
-
-    double scale = mw->scale;
-    scale *= 1.05;
-    main_win_set_zoom_scale(mw, scale);
+    main_win_action_zoom_in(mw);
 }
 
-void on_zoom_out( GtkWidget* btn, MainWin* mw )
+void on_zoom_out( GtkWidget* widget, MainWin* mw )
 {
-    if (!mw->zoom_out_action_enabled)
-        return;
-
-    double scale = mw->scale;
-    scale /= 1.05;
-    main_win_set_zoom_scale(mw, scale);
+    main_win_action_zoom_out(mw);
 }
 
 void on_preference( GtkWidget* btn, MainWin* mw )
@@ -913,13 +909,13 @@ gboolean on_scroll_event( GtkWidget* widget, GdkEventScroll* evt, MainWin* mw )
     {
     case GDK_SCROLL_UP:
         if ((evt->state & modifiers) == GDK_CONTROL_MASK)
-            on_zoom_in( NULL, mw );
+            main_win_action_zoom_in(mw);
         else
             on_prev( NULL, mw );
         break;
     case GDK_SCROLL_DOWN:
         if ((evt->state & modifiers) == GDK_CONTROL_MASK)
-            on_zoom_out( NULL, mw );
+            main_win_action_zoom_out(mw);
         else
             on_next( NULL, mw );
         break;
@@ -982,11 +978,11 @@ gboolean on_key_press_event(GtkWidget* widget, GdkEventKey * key)
         case GDK_KP_Add:
         case GDK_plus:
         case GDK_equal:
-            on_zoom_in( NULL, mw );
+            main_win_action_zoom_in(mw);
             break;
         case GDK_KP_Subtract:
         case GDK_minus:
-            on_zoom_out( NULL, mw );
+            main_win_action_zoom_out(mw);
             break;
         case GDK_s:
         case GDK_S:
@@ -1006,13 +1002,11 @@ gboolean on_key_press_event(GtkWidget* widget, GdkEventKey * key)
             break;
         case GDK_f:
         case GDK_F:
-            if( mw->zoom_mode != ZOOM_FIT )
-                on_zoom_fit_menu(NULL, mw);
+            main_win_action_zoom_fit(mw);
             break;
         case GDK_g:
         case GDK_G:
-            if( mw->zoom_mode != ZOOM_ORIG )
-                on_orig_size_menu(NULL, mw);
+            main_win_action_zoom_orig(mw);
             break;
         case GDK_h:
         case GDK_H:
@@ -1469,6 +1463,44 @@ void on_drag_data_received( GtkWidget* widget, GdkDragContext *drag_context,
         main_win_open( mw, file, ZOOM_FIT );
         g_free( file );
     }
+}
+
+/****************************************************************************/
+
+/* action handlers */
+
+static void main_win_action_zoom_in(MainWin* mw)
+{
+    if (!mw->zoom_in_action_enabled)
+        return;
+
+    double scale = mw->scale;
+    scale *= 1.05;
+    main_win_set_zoom_scale(mw, scale);
+}
+
+static void main_win_action_zoom_out(MainWin* mw)
+{
+    if (!mw->zoom_out_action_enabled)
+        return;
+
+    double scale = mw->scale;
+    scale /= 1.05;
+    main_win_set_zoom_scale(mw, scale);
+}
+
+static void main_win_action_zoom_orig(MainWin* mw)
+{
+    if (!mw->orig_action_enabled)
+        return;
+    main_win_set_zoom_mode(mw, ZOOM_ORIG);
+}
+
+static void main_win_action_zoom_fit(MainWin* mw)
+{
+    if (!mw->fit_action_enabled)
+        return;
+    main_win_set_zoom_mode(mw, ZOOM_FIT);
 }
 
 /****************************************************************************/
