@@ -227,7 +227,7 @@ void main_win_init( MainWin*mw )
     g_signal_connect( mw->evt_box, "scroll-event", G_CALLBACK(on_scroll_event), mw );
     // Set bg color to white
 
-    gtk_widget_modify_bg( mw->evt_box, GTK_STATE_NORMAL, &pref.bg );
+    main_win_update_bg_color(mw);
 
     mw->img_view = image_view_new();
     gtk_container_add( (GtkContainer*)mw->evt_box, (GtkWidget*)mw->img_view);
@@ -446,17 +446,17 @@ gboolean on_win_state_event( GtkWidget* widget, GdkEventWindowState* state )
     MainWin* mw = (MainWin*)widget;
     if( state->new_window_state == GDK_WINDOW_STATE_FULLSCREEN )
     {
-        gtk_widget_modify_bg( mw->evt_box, GTK_STATE_NORMAL, &pref.bg_full );
         gtk_widget_hide( gtk_widget_get_parent(mw->nav_bar) );
         mw->full_screen = TRUE;
     }
     else
     {
-        gtk_widget_modify_bg( mw->evt_box, GTK_STATE_NORMAL, &pref.bg );
         if (pref.show_toolbar)
             gtk_widget_show( gtk_widget_get_parent(mw->nav_bar) );
         mw->full_screen = FALSE;
     }
+
+    main_win_update_bg_color(mw);
 
     int previous = pref.open_maximized;
     pref.open_maximized = (state->new_window_state == GDK_WINDOW_STATE_MAXIMIZED);
@@ -1485,7 +1485,6 @@ static void main_win_action_next(MainWin* mw)
     }
 }
 
-
 static void main_win_action_zoom_in(MainWin* mw)
 {
     if (!mw->zoom_in_action_enabled)
@@ -1524,7 +1523,96 @@ static void main_win_action_zoom_fit(MainWin* mw)
 
 /* image loading */
 
-static load_image( MainWin* mw, const char* file_path, GdkPixbuf** _pix, GdkPixbufAnimation** _animation, GError** _err)
+static void eval_bg_color_for_image(MainWin* mw)
+{
+    mw->bg_color_from_image_valid = FALSE;
+
+    if (mw->animation)
+        return;
+
+    GdkPixbuf* pixbuf = mw->pix;
+    if (!pixbuf)
+        return;
+
+    int n_channels = gdk_pixbuf_get_n_channels(pixbuf);
+
+    if ((n_channels != 3 && n_channels != 4)  ||
+        gdk_pixbuf_get_colorspace(pixbuf) != GDK_COLORSPACE_RGB ||
+        gdk_pixbuf_get_bits_per_sample (pixbuf) != 8)
+    {
+        return;
+    }
+
+    int width = gdk_pixbuf_get_width (pixbuf);
+    int height = gdk_pixbuf_get_height (pixbuf);
+    int rowstride = gdk_pixbuf_get_rowstride (pixbuf);
+    guchar* pixels = gdk_pixbuf_get_pixels (pixbuf);
+
+#define P(x, y) pixels[(y) * rowstride + (x) * n_channels]
+#define HANDLE_PIXEL \
+    if (n_channels == 4 && p[3] < 20) \
+    { \
+        skipped_pixel_count++; \
+    } \
+    else \
+    { \
+       r += p[0]; g += p[1]; b += p[2]; \
+       pixel_count++; \
+    }
+
+    gdouble r = 0, g = 0, b = 0;
+    int pixel_count = 0;
+    int skipped_pixel_count = 0;
+    int i;
+
+    for (i = 0; i < width; i++)
+    {
+        guchar* p = &P(i, 0);
+        HANDLE_PIXEL
+
+        p = &P(i, height - 1);
+        HANDLE_PIXEL
+    }
+
+    for (i = 1; i < height - 1; i++)
+    {
+        guchar* p = &P(0, i);
+        HANDLE_PIXEL
+
+        p = &P(height - 1, i);
+        HANDLE_PIXEL
+    }
+
+    if (skipped_pixel_count > pixel_count * 2)
+        return;
+
+#undef P
+#undef HANDLE_PIXEL
+
+    r /= pixel_count;
+    g /= pixel_count;
+    b /= pixel_count;
+
+    //g_print("%f, %f, %f\n", (float)r, (float)g, (float)b);
+
+    unsigned ur = r * 256;
+    unsigned ug = g * 256;
+    unsigned ub = b * 256;
+    if (ur > 65535)
+        ur = 65535;
+    if (ug > 65535)
+        ug = 65535;
+    if (ub > 65535)
+        ub = 65535;
+
+    mw->bg_color_from_image.red   = ur;
+    mw->bg_color_from_image.green = ug;
+    mw->bg_color_from_image.blue  = ub;
+
+    mw->bg_color_from_image_valid = TRUE;
+}
+
+static load_image(MainWin* mw, const char* file_path, GdkPixbuf** _pix, GdkPixbufAnimation** _animation, GError** _err)
 {
     GdkPixbuf* pix = NULL;
     GdkPixbufAnimation* animation = NULL;
@@ -1639,6 +1727,7 @@ gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
             g_error_free(err);
         }
         main_win_update_sensitivity(mw);
+        main_win_update_bg_color(mw);
         return FALSE;
     }
 
@@ -1704,6 +1793,8 @@ gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
         main_win_center_image( mw );
     }
 
+    eval_bg_color_for_image(mw);
+
     image_view_set_pixbuf( (ImageView*)mw->img_view, mw->pix );
 
 //    while (gtk_events_pending ())
@@ -1726,6 +1817,7 @@ gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
 
     main_win_update_sensitivity(mw);
     main_win_update_zoom_buttons_state(mw);
+    main_win_update_bg_color(mw);
 
     if (image_cache_get_limit() > 5)
     {
@@ -1800,6 +1892,8 @@ void main_win_close( MainWin* mw )
         g_object_unref( mw->pix );
     }
     mw->pix = NULL;
+
+    mw->bg_color_from_image_valid = FALSE;
 }
 
 /****************************************************************************/
@@ -1966,4 +2060,22 @@ static void update_title(const char *filename, MainWin *mw )
     gtk_window_set_title( (GtkWindow*)mw, buf );
 
     return;
+}
+
+void main_win_update_bg_color(MainWin* mw)
+{
+    GdkColor * color = NULL;
+
+    if (!mw->evt_box)
+        return;
+
+    if (pref.bg_auto_select && mw->bg_color_from_image_valid)
+        color = &mw->bg_color_from_image;
+    else if (mw->full_screen)
+        color = &pref.bg_full;
+    else
+        color = &pref.bg;
+
+    gtk_widget_modify_bg(mw->evt_box, GTK_STATE_NORMAL, color);
+    gtk_widget_queue_draw(mw->evt_box);
 }

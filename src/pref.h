@@ -36,6 +36,7 @@ typedef struct _Pref
     int slide_delay;
     GdkColor bg;
     GdkColor bg_full;
+    gboolean bg_auto_select;
 
     int jpg_quality;
     int png_compression;

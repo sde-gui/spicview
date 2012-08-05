@@ -79,6 +79,7 @@ void load_preferences()
     /* pref.open_maximized = FALSE; */
     pref.bg.red = pref.bg.green = pref.bg.blue = 65535;
     pref.bg_full.red = pref.bg_full.green = pref.bg_full.blue = 0;
+    pref.bg_auto_select = TRUE;
 
     pref.jpg_quality = 90;
     pref.png_compression = 9;
@@ -100,6 +101,8 @@ void load_preferences()
         kf_get_int( kf, "General", "png_compression", &pref.png_compression );
 
         kf_get_bool( kf, "General", "show_toolbar", &pref.show_toolbar );
+
+        kf_get_bool( kf, "General", "bg_auto_select", &pref.bg_auto_select );
 
         color = g_key_file_get_string(kf, "General", "bg", NULL);
         if( color )
@@ -144,6 +147,7 @@ void save_preferences()
         fprintf( f, "open_maximized=%d\n", pref.open_maximized );
         fprintf( f, "bg=#%02x%02x%02x\n", pref.bg.red/256, pref.bg.green/256, pref.bg.blue/256 );
         fprintf( f, "bg_full=#%02x%02x%02x\n", pref.bg_full.red/256, pref.bg_full.green/256, pref.bg_full.blue/256 );
+        fprintf( f, "bg_auto_select=%d\n", pref.bg_auto_select );
         fprintf( f, "slide_delay=%d\n", pref.slide_delay );
 
         fprintf( f, "jpg_quality=%d\n", pref.jpg_quality );
@@ -176,28 +180,28 @@ static void on_set_bg( GtkColorButton* btn, gpointer user_data )
 {
     MainWin* parent=(MainWin*)user_data;
     gtk_color_button_get_color(GTK_COLOR_BUTTON(btn), &pref.bg);
-    if( !parent->full_screen )
-    {
-        gtk_widget_modify_bg( parent->evt_box, GTK_STATE_NORMAL, &pref.bg );
-        gtk_widget_queue_draw(parent->evt_box );
-    }
+    main_win_update_bg_color(parent);
 }
 
 static void on_set_bg_full( GtkColorButton* btn, gpointer user_data )
 {
     MainWin* parent=(MainWin*)user_data;
     gtk_color_button_get_color(GTK_COLOR_BUTTON(btn), &pref.bg_full);
-    if( parent->full_screen )
-    {
-        gtk_widget_modify_bg( parent->evt_box, GTK_STATE_NORMAL, &pref.bg_full );
-        gtk_widget_queue_draw(parent->evt_box );
-    }
+    main_win_update_bg_color(parent);
+}
+
+static void on_bg_auto_select( GtkCheckButton* btn, gpointer user_data )
+{
+    MainWin* parent=(MainWin*)user_data;
+    pref.bg_auto_select = gtk_toggle_button_get_active( (GtkToggleButton*)btn );
+    main_win_update_bg_color(parent);
 }
 
 void edit_preferences( GtkWindow* parent )
 {
     GtkWidget *auto_save_btn, *ask_before_save_btn, *set_default_btn,
-              *rotate_exif_only_btn, *slide_delay_spinner, *ask_before_del_btn, *bg_btn, *bg_full_btn;
+              *rotate_exif_only_btn, *slide_delay_spinner, *ask_before_del_btn,
+              *bg_btn, *bg_full_btn, *bg_auto_select_btn;
     GtkBuilder* builder = gtk_builder_new();
     GtkDialog* dlg;
     gtk_builder_add_from_file(builder, PACKAGE_DATA_DIR "/gpicview/ui/pref-dlg.ui", NULL);
@@ -231,6 +235,10 @@ void edit_preferences( GtkWindow* parent )
     gtk_color_button_set_color(GTK_COLOR_BUTTON(bg_full_btn), &pref.bg_full);
     g_signal_connect( bg_full_btn, "color-set", G_CALLBACK(on_set_bg_full), parent );
 
+    bg_auto_select_btn = (GtkWidget*)gtk_builder_get_object(builder, "bg_auto_select");
+    gtk_toggle_button_set_active( (GtkToggleButton*)bg_auto_select_btn, pref.bg_auto_select );
+    g_signal_connect( bg_auto_select_btn, "clicked", G_CALLBACK(on_bg_auto_select), parent );
+
     g_object_unref( builder );
 
     gtk_dialog_run( dlg );
@@ -240,6 +248,7 @@ void edit_preferences( GtkWindow* parent )
     pref.auto_save_rotated = gtk_toggle_button_get_active( (GtkToggleButton*)auto_save_btn );
     pref.rotate_exif_only = gtk_toggle_button_get_active( (GtkToggleButton*)rotate_exif_only_btn );
     pref.slide_delay = gtk_spin_button_get_value_as_int( (GtkSpinButton*)slide_delay_spinner );
+    pref.bg_auto_select = gtk_toggle_button_get_active( (GtkToggleButton*)bg_auto_select_btn );
 
     gtk_widget_destroy( (GtkWidget*)dlg );
 }

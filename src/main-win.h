@@ -118,6 +118,9 @@ typedef struct _MainWin
 
     guint preload_next_timeout;
     guint preload_prev_timeout;
+
+    GdkColor bg_color_from_image;
+    gboolean bg_color_from_image_valid;
 } MainWin;
 
 GtkWidget* main_win_new();
@@ -139,6 +142,8 @@ void main_win_fit_window_size( MainWin* mw, gboolean can_strech, GdkInterpType t
 void main_win_center_image( MainWin* mw );
 
 gboolean main_win_scale_image(  MainWin* mw, double new_scale, GdkInterpType type );
+
+void main_win_update_bg_color(MainWin* mw);
 
 
 GType main_win_get_type();
