@@ -87,8 +87,9 @@ static void on_size_allocate( GtkWidget* widget, GtkAllocation    *allocation );
 static gboolean on_win_state_event( GtkWidget* widget, GdkEventWindowState* state );
 static void on_scroll_size_allocate(GtkWidget* widget, GtkAllocation* allocation, MainWin* mv);
 static void on_full_screen( GtkWidget* widget, MainWin* mw );
-static void on_next( GtkWidget* btn, MainWin* mw );
-static void on_prev( GtkWidget* btn, MainWin* mw );
+
+static void on_next( GtkWidget* widget, MainWin* mw );
+static void on_prev( GtkWidget* widget, MainWin* mw );
 
 static void on_zoom_in( GtkWidget* btn, MainWin* mw );
 static void on_zoom_out( GtkWidget* btn, MainWin* mw );
@@ -122,13 +123,14 @@ static void on_delete( GtkWidget* btn, MainWin* mw );
 static void on_about( GtkWidget* menu, MainWin* mw );
 static gboolean on_animation_timeout( MainWin* mw );
 
-static void update_title(const char *filename, MainWin *mw );
-
 void on_flip_vertical( GtkWidget* btn, MainWin* mw );
 void on_flip_horizontal( GtkWidget* btn, MainWin* mw );
 static int trans_angle_to_id(int i);
 static int get_new_angle( int orig_angle, int rotate_angle );
 
+/* action handlers */
+static void main_win_action_prev(MainWin* mw);
+static void main_win_action_next(MainWin* mw);
 static void main_win_action_zoom_in(MainWin* mw);
 static void main_win_action_zoom_out(MainWin* mw);
 static void main_win_action_zoom_orig(MainWin* mw);
@@ -136,8 +138,11 @@ static void main_win_action_zoom_fit(MainWin* mw);
 
 static void main_win_set_zoom_scale(MainWin* mw, double scale);
 static void main_win_set_zoom_mode(MainWin* mw, ZoomMode mode);
+
+/* UI state */
 static void main_win_update_zoom_buttons_state(MainWin* mw);
 static void main_win_update_sensitivity(MainWin* mw);
+static void update_title(const char *filename, MainWin *mw );
 
 static gboolean on_preload_next_timeout(MainWin* mw);
 static gboolean on_preload_prev_timeout(MainWin* mw);
@@ -465,49 +470,6 @@ void on_scroll_size_allocate(GtkWidget* widget, GtkAllocation* allocation, MainW
     mv->scroll_allocation = *allocation;
 }
 
-void on_prev( GtkWidget* btn, MainWin* mw )
-{
-    const char* name;
-    if( image_list_is_empty( mw->img_list ) )
-        return;
-
-    name = image_list_to_prev( mw->img_list );
-
-    if( ! name && image_list_has_multiple_files( mw->img_list ) )
-    {
-        // FIXME: need to ask user first?
-        name = image_list_to_last( mw->img_list );
-    }
-
-    if( name )
-    {
-        gchar* file_path = image_list_get_current_file_path( mw->img_list );
-        main_win_open( mw, file_path, mw->zoom_mode );
-        g_free( file_path );
-    }
-}
-
-void on_next( GtkWidget* btn, MainWin* mw )
-{
-    if( image_list_is_empty( mw->img_list ) )
-        return;
-
-    const char* name = image_list_to_next( mw->img_list );
-
-    if( ! name && image_list_has_multiple_files( mw->img_list ) )
-    {
-        // FIXME: need to ask user first?
-        name = image_list_to_first( mw->img_list );
-    }
-
-    if( name )
-    {
-        gchar* file_path = image_list_get_current_file_path( mw->img_list );
-        main_win_open( mw, file_path, mw->zoom_mode );
-        g_free( file_path );
-    }
-}
-
 void cancel_slideshow(MainWin* mw)
 {
     mw->slideshow_cancelled = TRUE;
@@ -521,7 +483,7 @@ gboolean next_slide(MainWin* mw)
 {
     /* Timeout causes an implicit "Next". */
     if (mw->slideshow_running)
-        on_next( NULL, mw );
+        main_win_action_next(mw);
 
     return mw->slideshow_running;
 }
@@ -557,6 +519,16 @@ void on_slideshow( GtkToggleButton* btn, MainWin* mw )
     }
 
     main_win_update_sensitivity(mw);
+}
+
+void on_prev( GtkWidget* widget, MainWin* mw )
+{
+    main_win_action_prev(mw);
+}
+
+void on_next( GtkWidget* widget, MainWin* mw )
+{
+    main_win_action_next(mw);
 }
 
 void on_zoom_in( GtkWidget* widget, MainWin* mw )
@@ -912,25 +884,25 @@ gboolean on_scroll_event( GtkWidget* widget, GdkEventScroll* evt, MainWin* mw )
         if ((evt->state & modifiers) == GDK_CONTROL_MASK)
             main_win_action_zoom_in(mw);
         else
-            on_prev( NULL, mw );
+            main_win_action_prev(mw);
         break;
     case GDK_SCROLL_DOWN:
         if ((evt->state & modifiers) == GDK_CONTROL_MASK)
             main_win_action_zoom_out(mw);
         else
-            on_next( NULL, mw );
+            main_win_action_next(mw);
         break;
     case GDK_SCROLL_LEFT:
         if( gtk_widget_get_default_direction () == GTK_TEXT_DIR_RTL )
-            on_next( NULL, mw );
+            main_win_action_next(mw);
         else
-            on_prev( NULL, mw );
+            main_win_action_prev(mw);
         break;
     case GDK_SCROLL_RIGHT:
         if( gtk_widget_get_default_direction () == GTK_TEXT_DIR_RTL )
-            on_prev( NULL, mw );
+            main_win_action_prev(mw);
         else
-            on_next( NULL, mw );
+            main_win_action_next(mw);
         break;
     }
     return TRUE;
@@ -945,9 +917,9 @@ gboolean on_key_press_event(GtkWidget* widget, GdkEventKey * key)
         case GDK_KP_Right:
         case GDK_rightarrow:
             if( gtk_widget_get_default_direction () == GTK_TEXT_DIR_RTL )
-                on_prev( NULL, mw );
+                main_win_action_prev(mw);
             else
-                on_next( NULL, mw );
+                main_win_action_next(mw);
             break;
         case GDK_Return:
         case GDK_space:
@@ -955,22 +927,22 @@ gboolean on_key_press_event(GtkWidget* widget, GdkEventKey * key)
         case GDK_KP_Down:
         case GDK_Down:
         case GDK_downarrow:
-            on_next( NULL, mw );
+            main_win_action_next(mw);
             break;
         case GDK_Left:
         case GDK_KP_Left:
         case GDK_leftarrow:
             if( gtk_widget_get_default_direction () == GTK_TEXT_DIR_RTL )
-                on_next( NULL, mw );
+                main_win_action_next(mw);
             else
-                on_prev( NULL, mw );
+                main_win_action_prev(mw);
             break;
         case GDK_Prior:
         case GDK_BackSpace:
         case GDK_KP_Up:
         case GDK_Up:
         case GDK_uparrow:
-            on_prev( NULL, mw );
+            main_win_action_prev(mw);
             break;
         case GDK_w:
         case GDK_W:
@@ -1469,6 +1441,50 @@ void on_drag_data_received( GtkWidget* widget, GdkDragContext *drag_context,
 /****************************************************************************/
 
 /* action handlers */
+
+static void main_win_action_prev(MainWin* mw)
+{
+    const char* name;
+    if( image_list_is_empty( mw->img_list ) )
+        return;
+
+    name = image_list_to_prev( mw->img_list );
+
+    if( ! name && image_list_has_multiple_files( mw->img_list ) )
+    {
+        // FIXME: need to ask user first?
+        name = image_list_to_last( mw->img_list );
+    }
+
+    if( name )
+    {
+        gchar* file_path = image_list_get_current_file_path( mw->img_list );
+        main_win_open( mw, file_path, mw->zoom_mode );
+        g_free( file_path );
+    }
+}
+
+static void main_win_action_next(MainWin* mw)
+{
+    if( image_list_is_empty( mw->img_list ) )
+        return;
+
+    const char* name = image_list_to_next( mw->img_list );
+
+    if( ! name && image_list_has_multiple_files( mw->img_list ) )
+    {
+        // FIXME: need to ask user first?
+        name = image_list_to_first( mw->img_list );
+    }
+
+    if( name )
+    {
+        gchar* file_path = image_list_get_current_file_path( mw->img_list );
+        main_win_open( mw, file_path, mw->zoom_mode );
+        g_free( file_path );
+    }
+}
+
 
 static void main_win_action_zoom_in(MainWin* mw)
 {
