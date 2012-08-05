@@ -70,8 +70,8 @@ typedef struct _MainWin
 
     GtkWidget* btn_zoom_out;
     GtkWidget* btn_zoom_in;
-    GtkWidget* btn_fit;
-    GtkWidget* btn_orig;
+    GtkWidget* btn_zoom_fit;
+    GtkWidget* btn_zoom_orig;
 
     GtkWidget* btn_rotate_cw;
     GtkWidget* btn_rotate_ccw;
@@ -92,8 +92,8 @@ typedef struct _MainWin
     gboolean play_stop_action_enabled;
     gboolean zoom_out_action_enabled;
     gboolean zoom_in_action_enabled;
-    gboolean fit_action_enabled;
-    gboolean orig_action_enabled;
+    gboolean zoom_fit_action_enabled;
+    gboolean zoom_orig_action_enabled;
     gboolean rotate_cw_action_enabled;
     gboolean rotate_ccw_action_enabled;
     gboolean flip_v_action_enabled;

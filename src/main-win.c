@@ -94,8 +94,8 @@ static void on_zoom_in( GtkWidget* btn, MainWin* mw );
 static void on_zoom_out( GtkWidget* btn, MainWin* mw );
 static void on_zoom_fit( GtkWidget* widget, MainWin* mw );
 static void on_zoom_fit_menu( GtkWidget* widget, MainWin* mw );
-static void on_orig_size( GtkWidget* widget, MainWin* mw );
-static void on_orig_size_menu( GtkWidget* widget, MainWin* mw );
+static void on_zoom_orig( GtkWidget* widget, MainWin* mw );
+static void on_zoom_orig_menu( GtkWidget* widget, MainWin* mw );
 
 static void on_rotate_auto_save( GtkWidget* btn, MainWin* mw );
 static void on_rotate_clockwise( GtkWidget* btn, MainWin* mw );
@@ -311,11 +311,11 @@ void create_nav_bar( MainWin* mw, GtkWidget* box )
 //    gtk_widget_set_size_request( percent, 45, -1 );
 //    gtk_box_pack_start( (GtkBox*)nav_bar, percent, FALSE, FALSE, 2 );
 
-    mw->btn_fit = add_nav_btn( mw, GTK_STOCK_ZOOM_FIT, _("Fit Image To Window Size"),
+    mw->btn_zoom_fit = add_nav_btn( mw, GTK_STOCK_ZOOM_FIT, _("Fit Image To Window Size"),
                            G_CALLBACK(on_zoom_fit), TRUE );
-    mw->btn_orig = add_nav_btn( mw, GTK_STOCK_ZOOM_100, _("Original Size"),
-                           G_CALLBACK(on_orig_size), TRUE );
-    gtk_toggle_button_set_active( (GtkToggleButton*)mw->btn_fit, TRUE );
+    mw->btn_zoom_orig = add_nav_btn( mw, GTK_STOCK_ZOOM_100, _("Original Size"),
+                           G_CALLBACK(on_zoom_orig), TRUE );
+    gtk_toggle_button_set_active( (GtkToggleButton*)mw->btn_zoom_fit, TRUE );
 
 #ifndef GTK_STOCK_FULLSCREEN
 #define GTK_STOCK_FULLSCREEN    "gtk-fullscreen"
@@ -465,40 +465,6 @@ void on_scroll_size_allocate(GtkWidget* widget, GtkAllocation* allocation, MainW
     mv->scroll_allocation = *allocation;
 }
 
-void on_zoom_fit_menu( GtkWidget* widget, MainWin* mw )
-{
-    main_win_action_zoom_fit(mw);
-}
-
-void on_zoom_fit( GtkWidget* widget, MainWin* mw )
-{
-    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(mw->btn_fit)))
-        main_win_action_zoom_fit(mw);
-    else
-        main_win_update_zoom_buttons_state(mw);
-}
-
-void on_full_screen( GtkWidget* widget, MainWin* mw )
-{
-    if( ! mw->full_screen )
-        gtk_window_fullscreen( (GtkWindow*)mw );
-    else
-        gtk_window_unfullscreen( (GtkWindow*)mw );
-}
-
-void on_orig_size_menu( GtkWidget* widget, MainWin* mw )
-{
-    main_win_action_zoom_orig(mw);
-}
-
-void on_orig_size( GtkWidget* widget, MainWin* mw )
-{
-    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(mw->btn_orig)))
-        main_win_action_zoom_orig(mw);
-    else
-        main_win_update_zoom_buttons_state(mw);
-}
-
 void on_prev( GtkWidget* btn, MainWin* mw )
 {
     const char* name;
@@ -592,6 +558,51 @@ void on_slideshow( GtkToggleButton* btn, MainWin* mw )
 
     main_win_update_sensitivity(mw);
 }
+
+void on_zoom_in( GtkWidget* widget, MainWin* mw )
+{
+    main_win_action_zoom_in(mw);
+}
+
+void on_zoom_out( GtkWidget* widget, MainWin* mw )
+{
+    main_win_action_zoom_out(mw);
+}
+
+void on_zoom_fit_menu( GtkWidget* widget, MainWin* mw )
+{
+    main_win_action_zoom_fit(mw);
+}
+
+void on_zoom_fit( GtkWidget* widget, MainWin* mw )
+{
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(mw->btn_zoom_fit)))
+        main_win_action_zoom_fit(mw);
+    else
+        main_win_update_zoom_buttons_state(mw);
+}
+
+void on_zoom_orig_menu( GtkWidget* widget, MainWin* mw )
+{
+    main_win_action_zoom_orig(mw);
+}
+
+void on_zoom_orig( GtkWidget* widget, MainWin* mw )
+{
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(mw->btn_zoom_orig)))
+        main_win_action_zoom_orig(mw);
+    else
+        main_win_update_zoom_buttons_state(mw);
+}
+
+void on_full_screen( GtkWidget* widget, MainWin* mw )
+{
+    if( ! mw->full_screen )
+        gtk_window_fullscreen( (GtkWindow*)mw );
+    else
+        gtk_window_unfullscreen( (GtkWindow*)mw );
+}
+
 
 //////////////////// rotate & flip
 
@@ -767,16 +778,6 @@ void on_open( GtkWidget* btn, MainWin* mw )
         main_win_open( mw, file, ZOOM_NONE );
         g_free( file );
     }
-}
-
-void on_zoom_in( GtkWidget* widget, MainWin* mw )
-{
-    main_win_action_zoom_in(mw);
-}
-
-void on_zoom_out( GtkWidget* widget, MainWin* mw )
-{
-    main_win_action_zoom_out(mw);
 }
 
 void on_preference( GtkWidget* btn, MainWin* mw )
@@ -1121,7 +1122,7 @@ gboolean main_win_scale_image( MainWin* mw, double new_scale, GdkInterpType type
 {
     if( G_UNLIKELY( new_scale == 1.0 ) )
     {
-        gtk_toggle_button_set_active( (GtkToggleButton*)mw->btn_orig, TRUE );
+        gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(mw->btn_zoom_orig), TRUE );
         mw->scale = 1.0;
         return TRUE;
     }
@@ -1291,7 +1292,7 @@ void show_popup_menu( MainWin* mw, GdkEventButton* evt )
         /*  5 */ PTK_IMG_MENU_ITEM( N_( "Zoom Out" ), GTK_STOCK_ZOOM_OUT, on_zoom_out, GDK_minus, 0 ),
         /*  6 */ PTK_IMG_MENU_ITEM( N_( "Zoom In" ), GTK_STOCK_ZOOM_IN, on_zoom_in, GDK_plus, 0 ),
         /*  7 */ PTK_IMG_MENU_ITEM( N_( "Fit Image To Window Size" ), GTK_STOCK_ZOOM_FIT, on_zoom_fit_menu, GDK_F, 0 ),
-        /*  8 */ PTK_IMG_MENU_ITEM( N_( "Original Size" ), GTK_STOCK_ZOOM_100, on_orig_size_menu, GDK_G, 0 ),
+        /*  8 */ PTK_IMG_MENU_ITEM( N_( "Original Size" ), GTK_STOCK_ZOOM_100, on_zoom_orig_menu, GDK_G, 0 ),
         /*  9 */ PTK_SEPARATOR_MENU_ITEM,
         /* 10 */ PTK_IMG_MENU_ITEM( N_( "Full Screen" ), GTK_STOCK_FULLSCREEN, on_full_screen, GDK_F11, 0 ),
         /* 11 */ PTK_SEPARATOR_MENU_ITEM,
@@ -1322,8 +1323,8 @@ void show_popup_menu( MainWin* mw, GdkEventButton* evt )
 
     GtkWidget* zoom_out_menu_item = NULL;
     GtkWidget* zoom_in_menu_item = NULL;
-    GtkWidget* fit_menu_item = NULL;
-    GtkWidget* orig_menu_item = NULL;
+    GtkWidget* zoom_fit_menu_item = NULL;
+    GtkWidget* zoom_orig_menu_item = NULL;
 
     GtkWidget* rotate_cw_menu_item = NULL;
     GtkWidget* rotate_ccw_menu_item = NULL;
@@ -1342,8 +1343,8 @@ void show_popup_menu( MainWin* mw, GdkEventButton* evt )
 
     menu_def[5].ret = &zoom_out_menu_item;
     menu_def[6].ret = &zoom_in_menu_item;
-    menu_def[7].ret = &fit_menu_item;
-    menu_def[8].ret = &orig_menu_item;
+    menu_def[7].ret = &zoom_fit_menu_item;
+    menu_def[8].ret = &zoom_orig_menu_item;
 
     menu_def[12].ret = &rotate_ccw_menu_item;
     menu_def[13].ret = &rotate_cw_menu_item;
@@ -1366,8 +1367,8 @@ void show_popup_menu( MainWin* mw, GdkEventButton* evt )
 
     gtk_widget_set_sensitive( zoom_out_menu_item, mw->zoom_out_action_enabled );
     gtk_widget_set_sensitive( zoom_in_menu_item, mw->zoom_in_action_enabled );
-    gtk_widget_set_sensitive( fit_menu_item, mw->fit_action_enabled );
-    gtk_widget_set_sensitive( orig_menu_item, mw->orig_action_enabled );
+    gtk_widget_set_sensitive( zoom_fit_menu_item, mw->zoom_fit_action_enabled );
+    gtk_widget_set_sensitive( zoom_orig_menu_item, mw->zoom_orig_action_enabled );
 
     gtk_widget_set_sensitive( rotate_ccw_menu_item, mw->rotate_ccw_action_enabled );
     gtk_widget_set_sensitive( rotate_cw_menu_item, mw->rotate_cw_action_enabled );
@@ -1491,14 +1492,14 @@ static void main_win_action_zoom_out(MainWin* mw)
 
 static void main_win_action_zoom_orig(MainWin* mw)
 {
-    if (!mw->orig_action_enabled)
+    if (!mw->zoom_orig_action_enabled)
         return;
     main_win_set_zoom_mode(mw, ZOOM_ORIG);
 }
 
 static void main_win_action_zoom_fit(MainWin* mw)
 {
-    if (!mw->fit_action_enabled)
+    if (!mw->zoom_fit_action_enabled)
         return;
     main_win_set_zoom_mode(mw, ZOOM_FIT);
 }
@@ -1874,14 +1875,14 @@ static void main_win_set_zoom_mode(MainWin* mw, ZoomMode mode)
 
 static void main_win_update_zoom_buttons_state(MainWin* mw)
 {
-    gboolean button_fit_active = mw->zoom_mode == ZOOM_FIT;
-    gboolean button_orig_active = mw->zoom_mode == ZOOM_ORIG;
+    gboolean button_zoom_fit_active = mw->zoom_mode == ZOOM_FIT;
+    gboolean button_zoom_orig_active = mw->zoom_mode == ZOOM_ORIG;
 
-    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(mw->btn_fit)) != button_fit_active)
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(mw->btn_fit), button_fit_active);
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(mw->btn_zoom_fit)) != button_zoom_fit_active)
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(mw->btn_zoom_fit), button_zoom_fit_active);
 
-    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(mw->btn_orig)) != button_orig_active)
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(mw->btn_orig), button_orig_active);
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(mw->btn_zoom_orig)) != button_zoom_orig_active)
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(mw->btn_zoom_orig), button_zoom_orig_active);
 }
 
 static void main_win_update_sensitivity(MainWin* mw)
@@ -1899,8 +1900,8 @@ static void main_win_update_sensitivity(MainWin* mw)
 
     mw->zoom_out_action_enabled    = image && mw->scale > 0.02;
     mw->zoom_in_action_enabled     = image && mw->scale < 20.0;
-    mw->fit_action_enabled         = image;
-    mw->orig_action_enabled        = image;
+    mw->zoom_fit_action_enabled    = image;
+    mw->zoom_orig_action_enabled   = image;
 
     mw->rotate_cw_action_enabled   = image && !animation && !slideshow;
     mw->rotate_ccw_action_enabled  = image && !animation && !slideshow;
@@ -1917,8 +1918,8 @@ static void main_win_update_sensitivity(MainWin* mw)
 
     gtk_widget_set_sensitive(mw->btn_zoom_out, mw->zoom_out_action_enabled);
     gtk_widget_set_sensitive(mw->btn_zoom_in, mw->zoom_in_action_enabled);
-    gtk_widget_set_sensitive(mw->btn_fit, mw->fit_action_enabled);
-    gtk_widget_set_sensitive(mw->btn_orig, mw->orig_action_enabled);
+    gtk_widget_set_sensitive(mw->btn_zoom_fit, mw->zoom_fit_action_enabled);
+    gtk_widget_set_sensitive(mw->btn_zoom_orig, mw->zoom_orig_action_enabled);
 
     gtk_widget_set_sensitive(mw->btn_rotate_cw, mw->rotate_cw_action_enabled);
     gtk_widget_set_sensitive(mw->btn_rotate_ccw, mw->rotate_ccw_action_enabled);
