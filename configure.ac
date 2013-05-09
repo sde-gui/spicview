@@ -1,22 +1,18 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT(configure.in)
-AM_INIT_AUTOMAKE(gpicview, 0.2.3)
-AM_CONFIG_HEADER(config.h)
-AM_MAINTAINER_MODE
+AC_INIT(gpicview, 0.2.3)
+AM_INIT_AUTOMAKE
+AM_MAINTAINER_MODE([enable])
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
+AC_CONFIG_HEADER([config.h])
 
 AC_LANG_C
 AM_PROG_LIBTOOL
 
 AC_ISC_POSIX
 AC_PROG_CC
-AM_PROG_CC_STDC
 AM_PROG_CC_C_O
 AC_HEADER_STDC
-
-# Support silent build rules. Disable by either passing --disable-silent-rules
-# to configure or passing V=1 to make
-AM_SILENT_RULES([yes])
 
 AC_ARG_ENABLE(more_warnings,
        [AC_HELP_STRING([--enable-more-warnings],
