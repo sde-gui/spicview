@@ -1,4 +1,5 @@
 /***************************************************************************
+ *   Copyright (C) 2012-2013 Vadim Ushakov                                 *
  *   Copyright (C) 2007, 2008 by PCMan (Hong Jen Yee)                      *
  *   pcman.tw@gmail.com                                                    *
  *                                                                         *
@@ -37,6 +38,7 @@
 
 #include "pref.h"
 
+#include "gtkcompat.h"
 #include "image-cache.h"
 #include "image-view.h"
 #include "image-list.h"
@@ -213,11 +215,7 @@ void main_win_init( MainWin*mw )
 
     // image area
     mw->evt_box = gtk_event_box_new();
-#if GTK_CHECK_VERSION(2, 18, 0)
-    gtk_widget_set_can_focus(mw->evt_box,TRUE);
-#else
-    GTK_WIDGET_SET_FLAGS( mw->evt_box, GTK_CAN_FOCUS );
-#endif
+    gtk_widget_set_can_focus(mw->evt_box, TRUE);
     gtk_widget_add_events( mw->evt_box,
                            GDK_POINTER_MOTION_MASK|GDK_BUTTON_PRESS_MASK|
                            GDK_BUTTON_RELEASE_MASK|GDK_SCROLL_MASK );
@@ -423,11 +421,7 @@ void main_win_show_error( MainWin* mw, const char* message )
 void on_size_allocate( GtkWidget* widget, GtkAllocation    *allocation )
 {
     GTK_WIDGET_CLASS(main_win_parent_class)->size_allocate( widget, allocation );
-#if GTK_CHECK_VERSION(2, 20, 0)
     if(gtk_widget_get_realized (widget) )
-#else
-    if( GTK_WIDGET_REALIZED (widget) )
-#endif
     {
         MainWin* mw = (MainWin*)widget;
 
@@ -765,11 +759,7 @@ void on_quit( GtkWidget* btn, MainWin* mw )
 
 gboolean on_button_press( GtkWidget* widget, GdkEventButton* evt, MainWin* mw )
 {
-#if GTK_CHECK_VERSION(2, 14, 0)
     if( ! gtk_widget_has_focus( widget ) )
-#else
-    if( ! GTK_WIDGET_HAS_FOCUS( widget ) )
-#endif
         gtk_widget_grab_focus( widget );
 
     if( evt->type == GDK_BUTTON_PRESS)

@@ -36,6 +36,7 @@ spicview_LDADD = $(X11_LIBS) $(GTK_LIBS) $(LIBFM_LIBS) -lm
 
 noinst_HEADERS = \
 	glib-mem.h \
+	gtkcompat.h \
 	image-list.h \
 	main-win.h \
 	image-view.h \
