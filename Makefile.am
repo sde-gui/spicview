@@ -4,16 +4,16 @@ SUBDIRS = src po data
 
 EXTRA_DIST = \
 	autogen.sh \
-	gpicview.desktop.in \
-	gpicview.png
+	spicview.desktop.in \
+	spicview.png
 
 desktopdir = $(datadir)/applications
-desktop_in_files = gpicview.desktop.in
+desktop_in_files = spicview.desktop.in
 desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
 @INTLTOOL_DESKTOP_RULE@
 
 icondir = $(datadir)/pixmaps
-icon_DATA = gpicview.png
+icon_DATA = spicview.png
 
 install-data-local:
 	@$(NORMAL_INSTALL)

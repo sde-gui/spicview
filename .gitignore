@@ -48,6 +48,6 @@ intltool-extract.in
 intltool-merge.in
 intltool-update.in
 src/xml-purge
-gpicview.desktop
+spicview.desktop
 po/.intltool-merge-cache
-src/gpicview
+src/spicview

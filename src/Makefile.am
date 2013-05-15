@@ -9,11 +9,12 @@ INCLUDES = $(all_includes) \
         $(GMODULE_CFLAGS) \
 	-I$(top_srcdir) \
 	-DPACKAGE_DATA_DIR=\""$(datadir)"\" \
-	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\"
+	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
+	-DPACKAGE_NAME_STR=\""$(PACKAGE_NAME)"\"
 
-bin_PROGRAMS = gpicview
-gpicview_SOURCES = \
-	gpicview.c \
+bin_PROGRAMS = spicview
+spicview_SOURCES = \
+	spicview.c \
 	image-list.c \
 	main-win.c \
 	image-view.c \
@@ -31,7 +32,7 @@ gpicview_SOURCES = \
 
 # the library search path.
 # use -nodefaultlibs to prevent linking libstdc++
-gpicview_LDADD = $(X11_LIBS) $(GTK_LIBS) $(LIBFM_LIBS) -lm
+spicview_LDADD = $(X11_LIBS) $(GTK_LIBS) $(LIBFM_LIBS) -lm
 
 noinst_HEADERS = \
 	glib-mem.h \

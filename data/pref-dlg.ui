@@ -162,7 +162,7 @@
         </child>
         <child>
           <object class="GtkButton" id="make_default">
-            <property name="label" translatable="yes">Make GPicView the default viewer for images</property>
+            <property name="label" translatable="yes">Make SPicView the default viewer for images</property>
             <property name="use_action_appearance">False</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>

@@ -30,8 +30,8 @@
 #include "pref.h"
 #include "main-win.h"
 
-#define CFG_DIR    "gpicview"
-#define CFG_FILE    CFG_DIR"/gpicview.conf"
+#define CFG_DIR    PACKAGE_NAME_STR
+#define CFG_FILE    CFG_DIR"/" PACKAGE_NAME_STR ".conf"
 
 Pref pref = {0};
 
@@ -165,12 +165,12 @@ static void on_set_default( GtkButton* btn, gpointer user_data )
     GtkWindow* parent=(GtkWindow*)user_data;
     GtkWidget* dlg=gtk_message_dialog_new_with_markup( parent, 0,
             GTK_MESSAGE_WARNING, GTK_BUTTONS_OK_CANCEL,
-            _("GPicView will become the default viewer for all supported image files on your system.\n"
+            _("SPicView will become the default viewer for all supported image files on your system.\n"
                 "(This will be done through \'xdg-mime\' program)\n\n"
                 "<b>Are you sure you really want to do this?</b>") );
     if( gtk_dialog_run( (GtkDialog*)dlg ) == GTK_RESPONSE_OK )
     {
-        const char cmd[]="xdg-mime default gpicview.desktop image/bmp image/gif image/jpeg image/jpg image/png image/tiff image/x-bmp image/x-pcx image/x-tga image/x-portable-pixmap image/x-portable-bitmap image/x-targa image/x-portable-greymap application/pcx image/svg+xml image/svg-xml";
+        const char cmd[]="xdg-mime default spicview.desktop image/bmp image/gif image/jpeg image/jpg image/png image/tiff image/x-bmp image/x-pcx image/x-tga image/x-portable-pixmap image/x-portable-bitmap image/x-targa image/x-portable-greymap application/pcx image/svg+xml image/svg-xml";
         g_spawn_command_line_sync( cmd, NULL, NULL, NULL, NULL );
     }
     gtk_widget_destroy( dlg );
@@ -204,8 +204,8 @@ void edit_preferences( GtkWindow* parent )
               *bg_btn, *bg_full_btn, *bg_auto_select_btn;
     GtkBuilder* builder = gtk_builder_new();
     GtkDialog* dlg;
-    gtk_builder_add_from_file(builder, PACKAGE_DATA_DIR "/gpicview/ui/pref-dlg.ui", NULL);
-
+    gtk_builder_add_from_file(builder, PACKAGE_DATA_DIR "/" PACKAGE_NAME_STR "/ui/pref-dlg.ui", NULL);
+g_print(PACKAGE_DATA_DIR "/" PACKAGE_NAME_STR "/ui/pref-dlg.ui\n");
     dlg = (GtkDialog*)gtk_builder_get_object(builder, "dlg");
     gtk_window_set_transient_for((GtkWindow*)dlg, parent);
 

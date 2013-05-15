@@ -201,7 +201,7 @@ GtkWidget* main_win_new()
 void main_win_init( MainWin*mw )
 {
     gtk_window_set_title( (GtkWindow*)mw, _("Image Viewer"));
-    gtk_window_set_icon_from_file( (GtkWindow*)mw, PACKAGE_DATA_DIR"/pixmaps/gpicview.png", NULL );
+    gtk_window_set_icon_from_file( (GtkWindow*)mw, PACKAGE_DATA_DIR"/pixmaps/spicview.png", NULL );
     gtk_window_set_default_size( (GtkWindow*)mw, 640, 480 );
 
 #if GTK_CHECK_VERSION(3, 0, 0)
@@ -1372,6 +1372,7 @@ void on_about( GtkWidget* menu, MainWin* mw )
     GtkWidget * about_dlg;
     const gchar *authors[] =
     {
+        "Vadim Ushakov <igeekless@gmail.com>",
         "洪任諭 Hong Jen Yee <pcman.tw@gmail.com>",
         "Martin Siggel <martinsiggel@googlemail.com>",
         "Hialan Liu <hialan.liu@gmail.com>",
@@ -1388,12 +1389,15 @@ void on_about( GtkWidget* menu, MainWin* mw )
 
     gtk_container_set_border_width ( ( GtkContainer*)about_dlg , 2 );
     gtk_about_dialog_set_version ( (GtkAboutDialog*)about_dlg, VERSION );
-    gtk_about_dialog_set_program_name ( (GtkAboutDialog*)about_dlg, _( "GPicView" ) );
-    gtk_about_dialog_set_logo( (GtkAboutDialog*)about_dlg, gdk_pixbuf_new_from_file(  PACKAGE_DATA_DIR"/pixmaps/gpicview.png", NULL ) );
-    gtk_about_dialog_set_copyright ( (GtkAboutDialog*)about_dlg, _( "Copyright (C) 2007 - 2011" ) );
-    gtk_about_dialog_set_comments ( (GtkAboutDialog*)about_dlg, _( "Lightweight image viewer from LXDE project" ) );
-    gtk_about_dialog_set_license ( (GtkAboutDialog*)about_dlg, "GPicView\n\nCopyright (C) 2007 Hong Jen Yee (PCMan)\n\nThis program is free software; you can redistribute it and/or\nmodify it under the terms of the GNU General Public License\nas published by the Free Software Foundation; either version 2\nof the License, or (at your option) any later version.\n\nThis program is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\nGNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License\nalong with this program; if not, write to the Free Software\nFoundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA." );
-    gtk_about_dialog_set_website ( (GtkAboutDialog*)about_dlg, "http://wiki.lxde.org/en/GPicView" );
+    gtk_about_dialog_set_program_name ( (GtkAboutDialog*)about_dlg, _( "SPicView" ) );
+    gtk_about_dialog_set_logo( (GtkAboutDialog*)about_dlg, gdk_pixbuf_new_from_file(  PACKAGE_DATA_DIR"/pixmaps/spicview.png", NULL ) );
+    gtk_about_dialog_set_copyright ( (GtkAboutDialog*)about_dlg, _( "Copyright (C) 2007 - 2013" ) );
+    gtk_about_dialog_set_comments ( (GtkAboutDialog*)about_dlg, _( "Lightweight image viewer from Stuurman project" ) );
+    gtk_about_dialog_set_license ( (GtkAboutDialog*)about_dlg, "SPicView\n\n"
+    "Copyright (C) 2013 Vadim Ushakov\n"
+    "Copyright (C) 2007 Hong Jen Yee (PCMan)\n\n"
+    "This program is free software; you can redistribute it and/or\nmodify it under the terms of the GNU General Public License\nas published by the Free Software Foundation; either version 2\nof the License, or (at your option) any later version.\n\nThis program is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\nGNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License\nalong with this program; if not, write to the Free Software\nFoundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA." );
+    //gtk_about_dialog_set_website ( (GtkAboutDialog*)about_dlg, "http://wiki.lxde.org/en/GPicView" );
     gtk_about_dialog_set_authors ( (GtkAboutDialog*)about_dlg, authors );
     gtk_about_dialog_set_translator_credits ( (GtkAboutDialog*)about_dlg, translators );
     gtk_window_set_transient_for( (GtkWindow*) about_dlg, GTK_WINDOW( mw ) );

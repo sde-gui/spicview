@@ -16,8 +16,8 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _GPICVIEW_IMAGE_CACHE_H
-#define _GPICVIEW_IMAGE_CACHE_H
+#ifndef _SPICVIEW_IMAGE_CACHE_H
+#define _SPICVIEW_IMAGE_CACHE_H
 
 #include <gtk/gtk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>

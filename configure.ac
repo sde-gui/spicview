@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT(gpicview, 0.2.3)
+AC_INIT(spicview, 0.2.4-alpha)
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE([enable])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
@@ -68,7 +68,7 @@ PKG_CHECK_MODULES(LIBFM, [$pkg_modules])
 AC_SUBST(LIBFM_CFLAGS)
 AC_SUBST(LIBFM_LIBS)
 
-GETTEXT_PACKAGE=gpicview
+GETTEXT_PACKAGE=spicview
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Gettext package.])
 
@@ -80,11 +80,20 @@ po/Makefile.in
 ])
 
 echo
-echo GPicView....................... : Version $VERSION
+echo "$PACKAGE_NAME $VERSION"
 echo
-echo Prefix..........................: $prefix
+echo "Prefix: $prefix"
 echo
-echo The binary will be installed in $prefix/bin
+echo "X11_CFLAGS:   $X11_CFLAGS"
 echo
-echo http://lxde.org/
+echo "X11_LIBS:     $X11_LIBS"
 echo
+echo "GTK_CFLAGS:   $GTK_CFLAGS"
+echo
+echo "GTK_LIBS:     $GTK_LIBS"
+echo
+echo "LIBFM_CFLAGS: $LIBFM_CFLAGS"
+echo
+echo "LIBFM_LIBS:   $LIBFM_LIBS"
+echo
+
