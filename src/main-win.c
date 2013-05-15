@@ -188,9 +188,6 @@ void main_win_finalize( GObject* obj )
         g_source_remove(mw->preload_next_timeout);
     if (mw->preload_prev_timeout)
         g_source_remove(mw->preload_prev_timeout);
-
-    // FIXME: Put this here is weird
-    gtk_main_quit();
 }
 
 GtkWidget* main_win_new()
@@ -205,6 +202,8 @@ void main_win_init( MainWin*mw )
     gtk_window_set_title( (GtkWindow*)mw, _("Image Viewer"));
     gtk_window_set_icon_from_file( (GtkWindow*)mw, PACKAGE_DATA_DIR"/pixmaps/spicview.png", NULL );
     gtk_window_set_default_size( (GtkWindow*)mw, 640, 480 );
+
+    g_signal_connect(G_OBJECT(mw), "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
 #if GTK_CHECK_VERSION(3, 0, 0)
     GtkWidget* box = gtk_box_new( GTK_ORIENTATION_VERTICAL, 0 );
@@ -753,7 +752,7 @@ void on_preference(GtkWidget * btn, MainWin * mw)
 void on_quit( GtkWidget* btn, MainWin* mw )
 {
     cancel_slideshow(mw);
-    gtk_widget_destroy( (GtkWidget*)mw );
+    gtk_main_quit();
 }
 
 gboolean on_button_press( GtkWidget* widget, GdkEventButton* evt, MainWin* mw )
@@ -1224,7 +1223,7 @@ static void popup_menu_position_handler(GtkMenu * menu, gint * x, gint * y, gboo
 
 void show_popup_menu(MainWin * mw, GdkEventButton * evt)
 {
-    GtkMenu * file_submenu = get_fm_file_menu_for_path(image_list_get_current_file_path(mw->img_list));
+    GtkMenu * file_submenu = get_fm_file_menu_for_path((GtkWindow *) mw, image_list_get_current_file_path(mw->img_list));
 
     static PtkMenuItemEntry menu_def[] =
     {

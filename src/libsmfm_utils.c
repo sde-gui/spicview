@@ -28,7 +28,7 @@
 #include <libsmfm/fm-file-menu.h>
 
 
-GtkMenu * get_fm_file_menu_for_path(const char * path)
+GtkMenu * get_fm_file_menu_for_path(GtkWindow* parent, const char * path)
 {
     GFile * gfile = NULL;
     GFileInfo * gfile_info = NULL;
@@ -52,7 +52,7 @@ GtkMenu * get_fm_file_menu_for_path(const char * path)
     if (!fm_file_info)
         goto out;
 
-    FmFileMenu * fm_file_menu = fm_file_menu_new_for_file(NULL,
+    FmFileMenu * fm_file_menu = fm_file_menu_new_for_file(parent,
                                                           fm_file_info,
                                                           /*cwd*/ NULL,
                                                           TRUE);

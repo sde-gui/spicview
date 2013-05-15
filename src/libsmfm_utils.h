@@ -21,6 +21,6 @@
 
 #include <gtk/gtk.h>
 
-GtkMenu * get_fm_file_menu_for_path(const char * path);
+GtkMenu * get_fm_file_menu_for_path(GtkWindow* parent, const char * path);
 
 #endif
