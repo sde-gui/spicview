@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <!-- interface-requires gtk+ 2.12 -->
+  <requires lib="gtk+" version="2.18"/>
   <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkAdjustment" id="adjustment1">
     <property name="lower">1</property>
@@ -18,41 +18,30 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="spacing">6</property>
-        <child internal-child="action_area">
-          <object class="GtkHButtonBox" id="dialog-action_area">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
-            <child>
-              <object class="GtkButton" id="close">
-                <property name="label">gtk-close</property>
-                <property name="use_action_appearance">False</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="pack_type">end</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
         <child>
-          <object class="GtkCheckButton" id="ask_before_save">
-            <property name="label" translatable="yes">Ask before saving images</property>
+          <object class="GtkCheckButton" id="show_toolbar">
+            <property name="label" translatable="yes">Show _Toolbar</property>
             <property name="use_action_appearance">False</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">False</property>
+            <property name="use_underline">True</property>
+            <property name="draw_indicator">True</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="ask_before_delete">
+            <property name="label" translatable="yes">Ask before _deleting images</property>
+            <property name="use_action_appearance">False</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">False</property>
+            <property name="use_underline">True</property>
             <property name="draw_indicator">True</property>
           </object>
           <packing>
@@ -62,12 +51,13 @@
           </packing>
         </child>
         <child>
-          <object class="GtkCheckButton" id="ask_before_delete">
-            <property name="label" translatable="yes">Ask before deleting images</property>
+          <object class="GtkCheckButton" id="ask_before_save">
+            <property name="label" translatable="yes">As_k before saving images</property>
             <property name="use_action_appearance">False</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">False</property>
+            <property name="use_underline">True</property>
             <property name="draw_indicator">True</property>
           </object>
           <packing>
@@ -78,11 +68,12 @@
         </child>
         <child>
           <object class="GtkCheckButton" id="auto_save_rotated">
-            <property name="label" translatable="yes">Automatically save rotated images</property>
+            <property name="label" translatable="yes">_Automatically save rotated images</property>
             <property name="use_action_appearance">False</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">False</property>
+            <property name="use_underline">True</property>
             <property name="draw_indicator">True</property>
           </object>
           <packing>
@@ -94,11 +85,12 @@
         <child>
           <object class="GtkCheckButton" id="rotate_exif_only">
             <property name="label" translatable="yes">Rotate JPEG file by changing EXIF orientation value
-(only if EXIF orientation tag exists)</property>
+(only if _EXIF orientation tag exists)</property>
             <property name="use_action_appearance">False</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">False</property>
+            <property name="use_underline">True</property>
             <property name="draw_indicator">True</property>
           </object>
           <packing>
@@ -115,7 +107,8 @@
               <object class="GtkLabel" id="label1">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Slideshow interval</property>
+                <property name="label" translatable="yes">Slideshow _interval</property>
+                <property name="use_underline">True</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -162,11 +155,12 @@
         </child>
         <child>
           <object class="GtkButton" id="make_default">
-            <property name="label" translatable="yes">Make SPicView the default viewer for images</property>
+            <property name="label" translatable="yes">Make SPicView the default _viewer for images</property>
             <property name="use_action_appearance">False</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
+            <property name="use_underline">True</property>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -198,7 +192,8 @@
                           <object class="GtkLabel" id="label2">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Normal:</property>
+                            <property name="label" translatable="yes">_Normal:</property>
+                            <property name="use_underline">True</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -223,7 +218,8 @@
                           <object class="GtkLabel" id="label3">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Fullscreen:</property>
+                            <property name="label" translatable="yes">_Fullscreen:</property>
+                            <property name="use_underline">True</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -253,11 +249,12 @@
                     </child>
                     <child>
                       <object class="GtkCheckButton" id="bg_auto_select">
-                        <property name="label" translatable="yes">Auto-select background color based on image edge</property>
+                        <property name="label" translatable="yes">Auto-select background color based on image ed_ge</property>
                         <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
+                        <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
                       </object>
                       <packing>
@@ -283,6 +280,34 @@
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">7</property>
+          </packing>
+        </child>
+        <child internal-child="action_area">
+          <object class="GtkHButtonBox" id="dialog-action_area">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
+            <child>
+              <object class="GtkButton" id="close">
+                <property name="label">gtk-close</property>
+                <property name="use_action_appearance">False</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="pack_type">end</property>
+            <property name="position">8</property>
           </packing>
         </child>
       </object>
