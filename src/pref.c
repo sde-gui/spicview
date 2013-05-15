@@ -50,22 +50,20 @@ typedef struct {
 
 #define DEF_OPTION(group, name, type) {#name, #group, &pref.name, OTYPE_##type},
 static OptionDef option_defs[] = {
-    DEF_OPTION(General, auto_save_rotated, BOOLEAN)
-    DEF_OPTION(General, ask_before_save, BOOLEAN)
-    DEF_OPTION(General, ask_before_delete, BOOLEAN)
-    DEF_OPTION(General, rotate_exif_only, BOOLEAN)
-    DEF_OPTION(General, open_maximized, BOOLEAN)
-    DEF_OPTION(General, slide_delay, INT)
+    DEF_OPTION(View, open_maximized, BOOLEAN)
+    DEF_OPTION(View, show_toolbar, BOOLEAN)
+    DEF_OPTION(View, slide_delay, INT)
+    DEF_OPTION(View, bg_auto_select, BOOLEAN)
+    DEF_OPTION(View, bg, COLOR)
+    DEF_OPTION(View, bg_full, COLOR)
 
-    DEF_OPTION(General, jpg_quality, INT)
-    DEF_OPTION(General, png_compression, INT)
+    DEF_OPTION(Edit, auto_save_rotated, BOOLEAN)
+    DEF_OPTION(Edit, ask_before_save, BOOLEAN)
+    DEF_OPTION(Edit, ask_before_delete, BOOLEAN)
+    DEF_OPTION(Edit, rotate_exif_only, BOOLEAN)
+    DEF_OPTION(Edit, jpg_quality, INT)
+    DEF_OPTION(Edit, png_compression, INT)
 
-    DEF_OPTION(General, show_toolbar, BOOLEAN)
-
-    DEF_OPTION(General, bg_auto_select, BOOLEAN)
-
-    DEF_OPTION(General, bg, COLOR)
-    DEF_OPTION(General, bg_full, COLOR)
     {NULL, NULL, NULL, 0}
 };
 #undef DEF_OPTION
