@@ -205,7 +205,7 @@ void edit_preferences( GtkWindow* parent )
     GtkBuilder* builder = gtk_builder_new();
     GtkDialog* dlg;
     gtk_builder_add_from_file(builder, PACKAGE_DATA_DIR "/" PACKAGE_NAME_STR "/ui/pref-dlg.ui", NULL);
-g_print(PACKAGE_DATA_DIR "/" PACKAGE_NAME_STR "/ui/pref-dlg.ui\n");
+
     dlg = (GtkDialog*)gtk_builder_get_object(builder, "dlg");
     gtk_window_set_transient_for((GtkWindow*)dlg, parent);
 

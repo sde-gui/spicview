@@ -25,7 +25,7 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 #include <string.h>
-#include <libsmfm/fm-config.h>
+#include <libsmfm/fm.h>
 
 #include "pref.h"
 #include "main-win.h"
@@ -90,14 +90,21 @@ int main(int argc, char *argv[])
     // FIXME: need to process multiple files...
     if( files )
     {
-        if( G_UNLIKELY( *files[0] != '/' && strstr( files[0], "://" )) )    // This is an URI
-        {
-            char* path = g_filename_from_uri( files[0], NULL, NULL );
-            main_win_open( win, path, ZOOM_NONE );
-            g_free( path );
-        }
+        gchar * local_path_str = NULL;
+        FmPath * path = fm_path_new_for_str(files[0]);
+        if(fm_path_is_native(path))
+            local_path_str = fm_path_to_str(path);
         else
-            main_win_open( win, files[0], ZOOM_NONE );
+        {
+            GFile * gf = fm_path_to_gfile(path);
+            local_path_str = g_file_get_path(gf);
+            g_object_unref(gf);
+        }
+
+        main_win_open(win, local_path_str, ZOOM_NONE);
+
+        g_free(local_path_str);
+        fm_path_unref(path);
 
         if (should_start_slideshow)
             main_win_start_slideshow ( win );
