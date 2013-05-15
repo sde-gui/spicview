@@ -55,12 +55,8 @@ void image_view_init( ImageView* iv )
     iv->scale =  1.0;
     iv->interp_type = GDK_INTERP_BILINEAR;
     iv->idle_handler = 0;
-#if GTK_CHECK_VERSION(2, 18, 0)
     gtk_widget_set_can_focus((GtkWidget*)iv, TRUE );
     gtk_widget_set_app_paintable((GtkWidget*)iv, TRUE );
-#else
-    GTK_WIDGET_SET_FLAGS( (GtkWidget*)iv, GTK_CAN_FOCUS | GTK_APP_PAINTABLE );
-#endif
 }
 
 void image_view_class_init( ImageViewClass* klass )
@@ -126,12 +122,7 @@ void image_view_set_adjustments( ImageView* iv, GtkAdjustment* h, GtkAdjustment*
             g_object_unref( iv->hadj );
         if( G_LIKELY(h) )
         {
-    #if GTK_CHECK_VERSION( 2, 10, 0 )
             iv->hadj = (GtkAdjustment*)g_object_ref_sink( h );
-    #else
-            iv->hadj = (GtkAdjustment*)h;
-            gtk_object_sink( (GtkObject*)h );
-    #endif
         }
         else
             iv->hadj = NULL;
@@ -142,12 +133,7 @@ void image_view_set_adjustments( ImageView* iv, GtkAdjustment* h, GtkAdjustment*
             g_object_unref( iv->vadj );
         if( G_LIKELY(v) )
         {
-#if GTK_CHECK_VERSION( 2, 10, 0 )
             iv->vadj = (GtkAdjustment*)g_object_ref_sink( v );
-#else
-            iv->vadj = (GtkAdjustment*)v;
-            gtk_object_sink( (GtkObject*)v );
-#endif
         }
         else
             iv->vadj = NULL;
@@ -394,11 +380,7 @@ gboolean on_idle( ImageView* iv )
     if( G_LIKELY(iv->hadj) )
     {
         rect.x = (int)gtk_adjustment_get_value(iv->hadj);
-#if GTK_CHECK_VERSION(2, 14, 0)
         rect.width = (int)gtk_adjustment_get_page_size(iv->hadj);
-#else
-        rect.width = (int)iv->hadj->page_size;
-#endif
     }
     else
     {
@@ -409,11 +391,7 @@ gboolean on_idle( ImageView* iv )
     if( G_LIKELY(iv->vadj) )
     {
         rect.y = (int)gtk_adjustment_get_value(iv->vadj);
-#if GTK_CHECK_VERSION(2, 14, 0)
         rect.height = (int)gtk_adjustment_get_page_size(iv->vadj);
-#else
-        rect.height = (int)iv->vadj->page_size;
-#endif
     }
     else
     {

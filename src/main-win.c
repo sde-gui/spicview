@@ -246,18 +246,11 @@ void main_win_init( MainWin*mw )
                                     GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     GtkAdjustment *hadj, *vadj;
     hadj = gtk_scrolled_window_get_hadjustment((GtkScrolledWindow*)mw->scroll);
-#if GTK_CHECK_VERSION(2, 14, 0)
     gtk_adjustment_set_page_increment(hadj, 10);
-#else
-    hadj->page_increment = 10;
-#endif
     gtk_adjustment_changed(hadj);
+
     vadj = gtk_scrolled_window_get_vadjustment((GtkScrolledWindow*)mw->scroll);
-#if GTK_CHECK_VERSION(2, 14, 0)
     gtk_adjustment_set_page_increment(vadj, 10);
-#else
-    vadj->page_increment = 10;
-#endif
     gtk_adjustment_changed(vadj);
 
     image_view_set_adjustments( IMAGE_VIEW(mw->img_view), hadj, vadj );    // dirty hack :-(
@@ -802,15 +795,9 @@ gboolean on_mouse_move( GtkWidget* widget, GdkEventMotion* evt, MainWin* mw )
     GtkRequisition req;
     gtk_widget_size_request( (GtkWidget*)mw->img_view, &req );
 
-#if GTK_CHECK_VERSION(2, 14, 0)
     gdouble hadj_page_size = gtk_adjustment_get_page_size(hadj);
     gdouble hadj_lower = gtk_adjustment_get_lower(hadj);
     gdouble hadj_upper = gtk_adjustment_get_upper(hadj);
-#else
-    gdouble hadj_page_size = hadj->page_size;
-    gdouble hadj_lower = hadj->lower;
-    gdouble hadj_upper = hadj->upper;
-#endif
 
     if( ABS(dx) > 4 )
     {
@@ -829,15 +816,9 @@ gboolean on_mouse_move( GtkWidget* widget, GdkEventMotion* evt, MainWin* mw )
         }
     }
 
-#if GTK_CHECK_VERSION(2, 14, 0)
     gdouble vadj_page_size = gtk_adjustment_get_page_size(vadj);
     gdouble vadj_lower = gtk_adjustment_get_lower(vadj);
     gdouble vadj_upper = gtk_adjustment_get_upper(vadj);
-#else
-    gdouble vadj_page_size = vadj->page_size;
-    gdouble vadj_lower = vadj->lower;
-    gdouble vadj_upper = vadj->upper;
-#endif
 
     if( ABS(dy) > 4 )
     {
@@ -1025,24 +1006,14 @@ void main_win_center_image( MainWin* mw )
     GtkRequisition req;
     gtk_widget_size_request( (GtkWidget*)mw->img_view, &req );
 
-#if GTK_CHECK_VERSION(2, 14, 0)
     gdouble hadj_page_size = gtk_adjustment_get_page_size(hadj);
     gdouble hadj_upper = gtk_adjustment_get_upper(hadj);
-#else
-    gdouble hadj_page_size = hadj->page_size;
-    gdouble hadj_upper = hadj->upper;
-#endif
 
     if( req.width > hadj_page_size )
         gtk_adjustment_set_value(hadj, ( hadj_upper - hadj_page_size ) / 2 );
 
-#if GTK_CHECK_VERSION(2, 14, 0)
     gdouble vadj_page_size = gtk_adjustment_get_page_size(vadj);
     gdouble vadj_upper = gtk_adjustment_get_upper(vadj);
-#else
-    gdouble vadj_page_size = vadj->page_size;
-    gdouble vadj_upper = vadj->upper;
-#endif
 
     if( req.height > vadj_page_size )
         gtk_adjustment_set_value(vadj, ( vadj_upper - vadj_page_size ) / 2 );
@@ -1402,11 +1373,7 @@ void on_drag_data_received( GtkWidget* widget, GdkDragContext *drag_context,
     if( !data)
         return;
 
-#if GTK_CHECK_VERSION(2, 14, 0)
     int data_length = gtk_selection_data_get_length(data);
-#else
-    int data_length = data->length;
-#endif
 
     if( data_length <= 0)
         return;
