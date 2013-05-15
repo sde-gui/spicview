@@ -1,6 +1,7 @@
 /*
- *      pref.h
+ *      pref.c
  *
+ *      Copyright (C) 2013 Vadim Ushakov
  *      Copyright (C) 2007 PCMan <pcman.tw@gmail.com>
  *
  *      This program is free software; you can redistribute it and/or modify
