@@ -62,6 +62,8 @@ typedef struct _MainWin
     GtkWidget* img_view;
     GtkWidget* scroll;
     GtkWidget* evt_box;
+
+    GtkWidget* nav_bar_alignment;
     GtkWidget* nav_bar;
 
     GtkWidget* btn_prev;

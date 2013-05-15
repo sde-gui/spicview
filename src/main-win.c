@@ -144,6 +144,7 @@ static void main_win_update_zoom_buttons_state(MainWin* mw);
 static void main_win_update_sensitivity(MainWin* mw);
 static void update_title(const char *filename, MainWin *mw );
 static void update_toolbar_visibility(MainWin *mw );
+static void update_toolbar_position(MainWin *mw);
 
 static gboolean on_preload_next_timeout(MainWin* mw);
 static gboolean on_preload_prev_timeout(MainWin* mw);
@@ -262,7 +263,8 @@ void main_win_init( MainWin*mw )
 
     // build toolbar
     create_nav_bar( mw, box );
-    gtk_widget_show_all( box );
+    update_toolbar_position(mw);
+    gtk_widget_show_all(box);
     update_toolbar_visibility(mw);
 
     mw->hand_cursor = gdk_cursor_new_for_display( gtk_widget_get_display((GtkWidget*)mw), GDK_FLEUR );
@@ -372,9 +374,9 @@ void create_nav_bar( MainWin* mw, GtkWidget* box )
     #undef ADD_BUTTON_IMG
     #undef ADD_SEPATAROR
 
-    GtkWidget* align = gtk_alignment_new( 0.5, 0, 0, 0 );
-    gtk_container_add( (GtkContainer*)align, mw->nav_bar );
-    gtk_box_pack_start( (GtkBox*)box, align, FALSE, TRUE, 2 );
+    mw->nav_bar_alignment = gtk_alignment_new( 0.5, 0, 0, 0 );
+    gtk_container_add( (GtkContainer*)mw->nav_bar_alignment, mw->nav_bar);
+    gtk_box_pack_start( (GtkBox*)box, mw->nav_bar_alignment, FALSE, TRUE, 2);
 }
 
 gboolean on_delete_event( GtkWidget* widget, GdkEventAny* evt )
@@ -744,6 +746,7 @@ void on_open( GtkWidget* btn, MainWin* mw )
 void on_preference(GtkWidget * btn, MainWin * mw)
 {
     edit_preferences((GtkWindow *) mw);
+    update_toolbar_position(mw);
     update_toolbar_visibility(mw);
 }
 
@@ -2041,8 +2044,11 @@ void main_win_update_bg_color(MainWin* mw)
 
 void update_toolbar_visibility(MainWin *mw)
 {
-    if (pref.show_toolbar)
-        gtk_widget_show(gtk_widget_get_parent(mw->nav_bar));
-    else
-        gtk_widget_hide(gtk_widget_get_parent(mw->nav_bar));
+    gtk_widget_set_visible(mw->nav_bar_alignment, pref.show_toolbar);
+}
+
+void update_toolbar_position(MainWin *mw)
+{
+    int position = pref.toolbar_on_top ? 0 : 1;
+    gtk_box_reorder_child(GTK_BOX(gtk_widget_get_parent(mw->nav_bar_alignment)), mw->nav_bar_alignment, position);
 }

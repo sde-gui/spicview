@@ -53,6 +53,7 @@ typedef struct {
 static OptionDef option_defs[] = {
     DEF_OPTION(View, open_maximized, BOOLEAN)
     DEF_OPTION(View, show_toolbar, BOOLEAN)
+    DEF_OPTION(View, toolbar_on_top, BOOLEAN)
     DEF_OPTION(View, slide_delay, INT)
     DEF_OPTION(View, bg_auto_select, BOOLEAN)
     DEF_OPTION(View, bg, COLOR)

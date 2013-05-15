@@ -42,6 +42,7 @@ typedef struct _Pref
     int png_compression;
 
     gboolean show_toolbar;
+    gboolean toolbar_on_top;
 }Pref;
 
 extern Pref pref; /* global variable holding user prerefences */
