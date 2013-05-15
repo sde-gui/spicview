@@ -76,8 +76,6 @@ static void main_win_init( MainWin*mw );
 static void main_win_finalize( GObject* obj );
 
 static void create_nav_bar( MainWin* mw, GtkWidget* box);
-static GtkWidget* add_nav_btn( MainWin* mw, const char* icon, const char* tip, GCallback cb, gboolean toggle);
-static GtkWidget* add_nav_btn_img( MainWin* mw, const char* icon, const char* tip, GCallback cb, gboolean toggle, GtkWidget** ret_img);
 // GtkWidget* add_menu_item(  GtkMenuShell* menu, const char* label, const char* icon, GCallback cb, gboolean toggle=FALSE );
 static void rotate_image( MainWin* mw, int angle );
 static void show_popup_menu( MainWin* mw, GdkEventButton* evt );
@@ -265,12 +263,7 @@ void main_win_init( MainWin*mw )
     // build toolbar
     create_nav_bar( mw, box );
     gtk_widget_show_all( box );
-
-    if (pref.show_toolbar)
-        gtk_widget_show(gtk_widget_get_parent(mw->nav_bar));
-    else
-        gtk_widget_hide(gtk_widget_get_parent(mw->nav_bar));
-
+    update_toolbar_visibility(mw);
 
     mw->hand_cursor = gdk_cursor_new_for_display( gtk_widget_get_display((GtkWidget*)mw), GDK_FLEUR );
 
@@ -290,67 +283,14 @@ void main_win_init( MainWin*mw )
     mw->rotation_angle = 0;
 }
 
-void create_nav_bar( MainWin* mw, GtkWidget* box )
+static void add_nav_btn_img(MainWin * mw, const char * icon, const char * tip, GCallback cb, gboolean toggle, GtkWidget ** ret_button, GtkWidget ** ret_img)
 {
-    mw->nav_bar = gtk_hbox_new( FALSE, 0 );
+    if (tip && strcmp(tip, "separator") == 0)
+    {
+        gtk_box_pack_start((GtkBox*)mw->nav_bar, gtk_vseparator_new(), FALSE, FALSE, 0);
+        return;
+    }
 
-    mw->btn_prev = add_nav_btn( mw, GTK_STOCK_GO_BACK, _("Previous"), G_CALLBACK(on_prev), FALSE );
-    mw->btn_next = add_nav_btn( mw, GTK_STOCK_GO_FORWARD, _("Next"), G_CALLBACK(on_next), FALSE );
-    mw->btn_play_stop = add_nav_btn_img( mw, GTK_STOCK_MEDIA_PLAY, _("Start Slideshow"), G_CALLBACK(on_slideshow), TRUE, &mw->img_play_stop );
-
-    gtk_box_pack_start( (GtkBox*)mw->nav_bar, gtk_vseparator_new(), FALSE, FALSE, 0 );
-
-    mw->btn_zoom_out = add_nav_btn( mw, GTK_STOCK_ZOOM_OUT, _("Zoom Out"), G_CALLBACK(on_zoom_out), FALSE );
-    mw->btn_zoom_in = add_nav_btn( mw, GTK_STOCK_ZOOM_IN, _("Zoom In"), G_CALLBACK(on_zoom_in), FALSE );
-
-//    percent = gtk_entry_new();    // show scale (in percentage)
-//    g_signal_connect( percent, "activate", G_CALLBACK(on_percentage), mw );
-//    gtk_widget_set_size_request( percent, 45, -1 );
-//    gtk_box_pack_start( (GtkBox*)nav_bar, percent, FALSE, FALSE, 2 );
-
-    mw->btn_zoom_fit = add_nav_btn( mw, GTK_STOCK_ZOOM_FIT, _("Fit Image To Window Size"),
-                           G_CALLBACK(on_zoom_fit), TRUE );
-    mw->btn_zoom_orig = add_nav_btn( mw, GTK_STOCK_ZOOM_100, _("Original Size"),
-                           G_CALLBACK(on_zoom_orig), TRUE );
-    gtk_toggle_button_set_active( (GtkToggleButton*)mw->btn_zoom_fit, TRUE );
-
-#ifndef GTK_STOCK_FULLSCREEN
-#define GTK_STOCK_FULLSCREEN    "gtk-fullscreen"
-#endif
-    add_nav_btn( mw, GTK_STOCK_FULLSCREEN, _("Full Screen"), G_CALLBACK(on_full_screen), FALSE );   // gtk+ 2.8+
-
-    gtk_box_pack_start( (GtkBox*)mw->nav_bar, gtk_vseparator_new(), FALSE, FALSE, 0 );
-
-    mw->btn_rotate_ccw = add_nav_btn( mw, "object-rotate-left", _("Rotate Counterclockwise"), G_CALLBACK(on_rotate_counterclockwise), FALSE );
-    mw->btn_rotate_cw = add_nav_btn( mw, "object-rotate-right", _("Rotate Clockwise"), G_CALLBACK(on_rotate_clockwise), FALSE );
-
-    mw->btn_flip_h = add_nav_btn( mw, "object-flip-horizontal", _("Flip Horizontal"), G_CALLBACK(on_flip_horizontal), FALSE );
-    mw->btn_flip_v = add_nav_btn( mw, "object-flip-vertical", _("Flip Vertical"), G_CALLBACK(on_flip_vertical), FALSE );
-
-    gtk_box_pack_start( (GtkBox*)mw->nav_bar, gtk_vseparator_new(), FALSE, FALSE, 0 );
-
-    add_nav_btn( mw, GTK_STOCK_OPEN, _("Open File"), G_CALLBACK(on_open), FALSE );
-    mw->btn_save_file = add_nav_btn( mw, GTK_STOCK_SAVE, _("Save File"), G_CALLBACK(on_save), FALSE );
-    mw->btn_save_as = add_nav_btn( mw, GTK_STOCK_SAVE_AS, _("Save File As"), G_CALLBACK(on_save_as), FALSE );
-    mw->btn_delete_file = add_nav_btn( mw, GTK_STOCK_DELETE, _("Delete File"), G_CALLBACK(on_delete), FALSE );
-
-    gtk_box_pack_start( (GtkBox*)mw->nav_bar, gtk_vseparator_new(), FALSE, FALSE, 0 );
-    add_nav_btn( mw, GTK_STOCK_PREFERENCES, _("Preferences"), G_CALLBACK(on_preference), FALSE );
-    add_nav_btn( mw, GTK_STOCK_QUIT, _("Quit"), G_CALLBACK(on_quit), FALSE );
-
-    GtkWidget* align = gtk_alignment_new( 0.5, 0, 0, 0 );
-    gtk_container_add( (GtkContainer*)align, mw->nav_bar );
-    gtk_box_pack_start( (GtkBox*)box, align, FALSE, TRUE, 2 );
-}
-
-static GtkWidget* add_nav_btn( MainWin* mw, const char* icon, const char* tip, GCallback cb, gboolean toggle)
-{
-    GtkWidget* unused;
-    return add_nav_btn_img(mw, icon, tip, cb, toggle, &unused);
-}
-
-static GtkWidget* add_nav_btn_img( MainWin* mw, const char* icon, const char* tip, GCallback cb, gboolean toggle, GtkWidget** ret_img )
-{
     GtkWidget* img;
     if( g_str_has_prefix(icon, "gtk-") )
         img = gtk_image_new_from_stock(icon, GTK_ICON_SIZE_SMALL_TOOLBAR);
@@ -372,8 +312,69 @@ static GtkWidget* add_nav_btn_img( MainWin* mw, const char* icon, const char* ti
     gtk_container_add( (GtkContainer*)btn, img );
     gtk_widget_set_tooltip_text( btn, tip );
     gtk_box_pack_start( (GtkBox*)mw->nav_bar, btn, FALSE, FALSE, 0 );
-    *ret_img = img;
-    return btn;
+
+    if (ret_button)
+        *ret_button = btn;
+    if (ret_img)
+        *ret_img = img;
+}
+
+static void add_nav_btn(MainWin * mw, const char * icon, const char * tip, GCallback cb, gboolean toggle, GtkWidget ** ret_button)
+{
+    add_nav_btn_img(mw, icon, tip, cb, toggle, ret_button, NULL);
+}
+
+void create_nav_bar( MainWin* mw, GtkWidget* box )
+{
+    mw->nav_bar = gtk_hbox_new( FALSE, 0 );
+
+    #define ADD_BUTTON(icon, name, handler, toggle, widget) \
+        add_nav_btn(mw, icon, name, G_CALLBACK(handler), toggle, &mw->btn_##widget)
+    #define ADD_BUTTON_IMG(icon, name, handler, toggle, widget) \
+        add_nav_btn_img(mw, icon, name, G_CALLBACK(handler), toggle, &mw->btn_##widget, &mw->img_##widget)
+    #define ADD_SEPATAROR() \
+        add_nav_btn(mw, NULL, "separator", NULL, FALSE, NULL)
+    ADD_BUTTON(GTK_STOCK_GO_BACK, _("Previous"), on_prev, FALSE, prev);
+    ADD_BUTTON(GTK_STOCK_GO_FORWARD, _("Next"), on_next, FALSE, next);
+    ADD_BUTTON_IMG(GTK_STOCK_MEDIA_PLAY, _("Start Slideshow"), on_slideshow, TRUE, play_stop);
+
+    ADD_SEPATAROR();
+
+    ADD_BUTTON(GTK_STOCK_ZOOM_OUT, _("Zoom Out"), on_zoom_out, FALSE, zoom_out);
+    ADD_BUTTON(GTK_STOCK_ZOOM_IN, _("Zoom In"), on_zoom_in, FALSE, zoom_in);
+
+    ADD_BUTTON(GTK_STOCK_ZOOM_FIT, _("Fit Image To Window Size"), on_zoom_fit, TRUE, zoom_fit);
+    ADD_BUTTON(GTK_STOCK_ZOOM_100, _("Original Size"), on_zoom_orig, TRUE, zoom_orig);
+    gtk_toggle_button_set_active( (GtkToggleButton*)mw->btn_zoom_fit, TRUE );
+    ADD_BUTTON(GTK_STOCK_FULLSCREEN, _("Full Screen"), on_full_screen, FALSE, full_screen);
+
+    ADD_SEPATAROR();
+
+    ADD_BUTTON("object-rotate-left", _("Rotate Counterclockwise"), on_rotate_counterclockwise, FALSE, rotate_ccw);
+    ADD_BUTTON("object-rotate-right", _("Rotate Clockwise"), on_rotate_clockwise, FALSE, rotate_cw);
+
+    ADD_BUTTON("object-flip-horizontal", _("Flip Horizontal"), on_flip_horizontal, FALSE, flip_h);
+    ADD_BUTTON("object-flip-vertical", _("Flip Vertical"), on_flip_vertical, FALSE, flip_v);
+
+    ADD_SEPATAROR();
+
+    ADD_BUTTON(GTK_STOCK_OPEN, _("Open File"), G_CALLBACK(on_open), FALSE, open);
+    ADD_BUTTON(GTK_STOCK_SAVE, _("Save File"), G_CALLBACK(on_save), FALSE, save_file);
+    ADD_BUTTON(GTK_STOCK_SAVE_AS, _("Save File As"), G_CALLBACK(on_save_as), FALSE, save_as);
+    ADD_BUTTON(GTK_STOCK_DELETE, _("Delete File"), G_CALLBACK(on_delete), FALSE, delete_file);
+
+    ADD_SEPATAROR();
+
+    ADD_BUTTON(GTK_STOCK_PREFERENCES, _("Preferences"), G_CALLBACK(on_preference), FALSE, preference);
+    ADD_BUTTON(GTK_STOCK_QUIT, _("Quit"), G_CALLBACK(on_quit), FALSE, quit);
+
+    #undef ADD_BUTTON
+    #undef ADD_BUTTON_IMG
+    #undef ADD_SEPATAROR
+
+    GtkWidget* align = gtk_alignment_new( 0.5, 0, 0, 0 );
+    gtk_container_add( (GtkContainer*)align, mw->nav_bar );
+    gtk_box_pack_start( (GtkBox*)box, align, FALSE, TRUE, 2 );
 }
 
 gboolean on_delete_event( GtkWidget* widget, GdkEventAny* evt )

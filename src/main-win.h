@@ -73,14 +73,20 @@ typedef struct _MainWin
     GtkWidget* btn_zoom_fit;
     GtkWidget* btn_zoom_orig;
 
+    GtkWidget* btn_full_screen;
+
     GtkWidget* btn_rotate_cw;
     GtkWidget* btn_rotate_ccw;
     GtkWidget* btn_flip_v;
     GtkWidget* btn_flip_h;
 
+    GtkWidget* btn_open;
     GtkWidget* btn_save_file;
     GtkWidget* btn_save_as;
     GtkWidget* btn_delete_file;
+
+    GtkWidget* btn_preference;
+    GtkWidget* btn_quit;
 
     GtkWidget* img_play_stop;
     GtkWidget* percent;
