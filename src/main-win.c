@@ -145,6 +145,7 @@ static void main_win_set_zoom_mode(MainWin* mw, ZoomMode mode);
 static void main_win_update_zoom_buttons_state(MainWin* mw);
 static void main_win_update_sensitivity(MainWin* mw);
 static void update_title(const char *filename, MainWin *mw );
+static void update_toolbar_visibility(MainWin *mw );
 
 static gboolean on_preload_next_timeout(MainWin* mw);
 static gboolean on_preload_prev_timeout(MainWin* mw);
@@ -739,9 +740,10 @@ void on_open( GtkWidget* btn, MainWin* mw )
     }
 }
 
-void on_preference( GtkWidget* btn, MainWin* mw )
+void on_preference(GtkWidget * btn, MainWin * mw)
 {
-    edit_preferences( (GtkWindow*)mw );
+    edit_preferences((GtkWindow *) mw);
+    update_toolbar_visibility(mw);
 }
 
 void on_quit( GtkWidget* btn, MainWin* mw )
@@ -1201,12 +1203,7 @@ void on_delete( GtkWidget* btn, MainWin* mw )
 void on_toggle_toolbar( GtkMenuItem* item, MainWin* mw )
 {
     pref.show_toolbar = !pref.show_toolbar;
-
-    if (pref.show_toolbar)
-        gtk_widget_show(gtk_widget_get_parent(mw->nav_bar));
-    else
-        gtk_widget_hide(gtk_widget_get_parent(mw->nav_bar));
-
+    update_toolbar_visibility(mw);
     save_preferences();
 }
 
@@ -2039,4 +2036,12 @@ void main_win_update_bg_color(MainWin* mw)
 
     gtk_widget_modify_bg(mw->evt_box, GTK_STATE_NORMAL, color);
     gtk_widget_queue_draw(mw->evt_box);
+}
+
+void update_toolbar_visibility(MainWin *mw)
+{
+    if (pref.show_toolbar)
+        gtk_widget_show(gtk_widget_get_parent(mw->nav_bar));
+    else
+        gtk_widget_hide(gtk_widget_get_parent(mw->nav_bar));
 }
