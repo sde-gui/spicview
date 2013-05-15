@@ -35,10 +35,46 @@
 
 Pref pref = {0};
 
-static gboolean kf_get_bool(GKeyFile* kf, const char* grp, const char* name, gboolean* ret )
+typedef enum {
+    OTYPE_BOOLEAN,
+    OTYPE_INT,
+    OTYPE_COLOR
+} OptionType;
+
+typedef struct {
+    char * name;
+    char * group;
+    void * pref_ptr;
+    OptionType type;
+} OptionDef;
+
+#define DEF_OPTION(group, name, type) {#name, #group, &pref.name, OTYPE_##type},
+static OptionDef option_defs[] = {
+    DEF_OPTION(General, auto_save_rotated, BOOLEAN)
+    DEF_OPTION(General, ask_before_save, BOOLEAN)
+    DEF_OPTION(General, ask_before_delete, BOOLEAN)
+    DEF_OPTION(General, rotate_exif_only, BOOLEAN)
+    DEF_OPTION(General, open_maximized, BOOLEAN)
+    DEF_OPTION(General, slide_delay, INT)
+
+    DEF_OPTION(General, jpg_quality, INT)
+    DEF_OPTION(General, png_compression, INT)
+
+    DEF_OPTION(General, show_toolbar, BOOLEAN)
+
+    DEF_OPTION(General, bg_auto_select, BOOLEAN)
+
+    DEF_OPTION(General, bg, COLOR)
+    DEF_OPTION(General, bg_full, COLOR)
+    {NULL, NULL, NULL, 0}
+};
+#undef DEF_OPTION
+
+
+static gboolean kf_get_bool(GKeyFile* kf, const char* group, const char* name, gboolean* ret )
 {
     GError* err = NULL;
-    gboolean val = g_key_file_get_boolean(kf, grp, name, &err);
+    gboolean val = g_key_file_get_boolean(kf, group, name, &err);
     if( G_UNLIKELY(err) )
     {
         g_error_free(err);
@@ -49,10 +85,10 @@ static gboolean kf_get_bool(GKeyFile* kf, const char* grp, const char* name, gbo
     return TRUE;
 }
 
-static int kf_get_int(GKeyFile* kf, const char* grp, const char* name, int* ret )
+static gboolean kf_get_int(GKeyFile* kf, const char* group, const char* name, int* ret )
 {
     GError* err = NULL;
-    int val = g_key_file_get_integer(kf, grp, name, &err);
+    int val = g_key_file_get_integer(kf, group, name, &err);
     if( G_UNLIKELY(err) )
     {
         g_error_free(err);
@@ -61,22 +97,31 @@ static int kf_get_int(GKeyFile* kf, const char* grp, const char* name, int* ret 
     if(G_LIKELY(ret))
         *ret = val;
     return TRUE;
+}
+
+static gboolean kf_get_color(GKeyFile* kf, const char* group, const char* name, GdkColor* ret )
+{
+    gchar * color = g_key_file_get_string(kf, group, name, NULL);
+    if (color)
+    {
+        gdk_color_parse(color, ret);
+        g_free(color);
+        return TRUE;
+    }
+    return FALSE;
 }
 
 void load_preferences()
 {
-    /* FIXME: GKeyFile is not fast enough.
-     *  Need to replace it with our own config loader in the future. */
-
     GKeyFile* kf;
     char* path;
     char* color;
 
-    /* pref.auto_save_rotated = FALSE; */
+    pref.auto_save_rotated = FALSE;
     pref.ask_before_save = TRUE;
     pref.ask_before_delete = TRUE;
     pref.rotate_exif_only = TRUE;
-    /* pref.open_maximized = FALSE; */
+    pref.open_maximized = FALSE;
     pref.bg.red = pref.bg.green = pref.bg.blue = 65535;
     pref.bg_full.red = pref.bg_full.green = pref.bg_full.blue = 0;
     pref.bg_auto_select = TRUE;
@@ -90,32 +135,23 @@ void load_preferences()
     path = g_build_filename( g_get_user_config_dir(),  CFG_FILE, NULL );
     if( g_key_file_load_from_file( kf, path, 0, NULL ) )
     {
-        kf_get_bool( kf, "General", "auto_save_rotated", &pref.auto_save_rotated );
-        kf_get_bool( kf, "General", "ask_before_save", &pref.ask_before_save );
-        kf_get_bool( kf, "General", "ask_before_delete", &pref.ask_before_delete );
-        kf_get_bool( kf, "General", "rotate_exif_only", &pref.rotate_exif_only );
-        kf_get_bool( kf, "General", "open_maximized", &pref.open_maximized );
-        kf_get_int( kf, "General", "slide_delay", &pref.slide_delay );
-
-        kf_get_int( kf, "General", "jpg_quality", &pref.jpg_quality);
-        kf_get_int( kf, "General", "png_compression", &pref.png_compression );
-
-        kf_get_bool( kf, "General", "show_toolbar", &pref.show_toolbar );
-
-        kf_get_bool( kf, "General", "bg_auto_select", &pref.bg_auto_select );
-
-        color = g_key_file_get_string(kf, "General", "bg", NULL);
-        if( color )
+        OptionDef * option;
+        for (option = option_defs; option->name; option++)
         {
-            gdk_color_parse(color, &pref.bg);
-            g_free(color);
-        }
-
-        color = g_key_file_get_string(kf, "General", "bg_full", NULL);
-        if( color )
-        {
-            gdk_color_parse(color, &pref.bg_full);
-            g_free(color);
+            switch (option->type)
+            {
+                case OTYPE_BOOLEAN:
+                    kf_get_bool(kf, option->group, option->name, (gboolean *) option->pref_ptr);
+                    break;
+                case OTYPE_INT:
+                    kf_get_int(kf, option->group, option->name, (int *) option->pref_ptr);
+                    break;
+                case OTYPE_COLOR:
+                    kf_get_color(kf, option->group, option->name, (GdkColor *) option->pref_ptr);
+                    break;
+                default:
+                    g_error("Unknown option type %d", (int)option->type);
+            }
         }
     }
     g_free( path );
@@ -139,22 +175,33 @@ void save_preferences()
 
     if(  (f = fopen( path, "w" )) )
     {
-        fputs( "[General]\n", f );
-        fprintf( f, "auto_save_rotated=%d\n", pref.auto_save_rotated );
-        fprintf( f, "ask_before_save=%d\n", pref.ask_before_save );
-        fprintf( f, "ask_before_delete=%d\n", pref.ask_before_delete );
-        fprintf( f, "rotate_exif_only=%d\n", pref.rotate_exif_only );
-        fprintf( f, "open_maximized=%d\n", pref.open_maximized );
-        fprintf( f, "bg=#%02x%02x%02x\n", pref.bg.red/256, pref.bg.green/256, pref.bg.blue/256 );
-        fprintf( f, "bg_full=#%02x%02x%02x\n", pref.bg_full.red/256, pref.bg_full.green/256, pref.bg_full.blue/256 );
-        fprintf( f, "bg_auto_select=%d\n", pref.bg_auto_select );
-        fprintf( f, "slide_delay=%d\n", pref.slide_delay );
+        fprintf(f, "# Generated by %s %s\n", PACKAGE_NAME_STR, VERSION);
 
-        fprintf( f, "jpg_quality=%d\n", pref.jpg_quality );
-        fprintf( f, "png_compression=%d\n", pref.png_compression );
+        const char * prev_group = "";
+        OptionDef * option;
+        for (option = option_defs; option->name; option++)
+        {
+            if (strcmp(prev_group, option->group) != 0)
+                fprintf(f, "\n[%s]\n", option->group);
+            prev_group = option->group;
 
-        fprintf( f, "show_toolbar=%d\n", pref.show_toolbar );
-
+            switch (option->type)
+            {
+                case OTYPE_BOOLEAN:
+                case OTYPE_INT:
+                    fprintf(f, "%s=%d\n", option->name, *(int *) option->pref_ptr);
+                    break;
+                case OTYPE_COLOR:
+                {
+                    GdkColor * color = (GdkColor *) option->pref_ptr;
+                    fprintf(f, "%s=#%02x%02x%02x\n", option->name,
+                        color->red / 256, color->green / 256, color->blue / 256);
+                    break;
+                }
+                default:
+                    g_warning("Unknown option type %d", (int)option->type);
+            }
+        }
         fclose( f );
     }
     g_free( path );
@@ -176,24 +223,21 @@ static void on_set_default( GtkButton* btn, gpointer user_data )
     gtk_widget_destroy( dlg );
 }
 
-static void on_set_bg( GtkColorButton* btn, gpointer user_data )
+static void on_set_color(GtkColorButton * widget, gpointer user_data )
 {
-    MainWin* parent=(MainWin*)user_data;
-    gtk_color_button_get_color(GTK_COLOR_BUTTON(btn), &pref.bg);
+    MainWin * parent=(MainWin * ) user_data;
+    GdkColor * color = (GdkColor * ) g_object_get_data(G_OBJECT(widget), "pref_ptr");
+    if (color)
+        gtk_color_button_get_color(GTK_COLOR_BUTTON(widget), color);
     main_win_update_bg_color(parent);
 }
 
-static void on_set_bg_full( GtkColorButton* btn, gpointer user_data )
+static void on_bg_auto_select(GtkCheckButton * widget, gpointer user_data )
 {
-    MainWin* parent=(MainWin*)user_data;
-    gtk_color_button_get_color(GTK_COLOR_BUTTON(btn), &pref.bg_full);
-    main_win_update_bg_color(parent);
-}
-
-static void on_bg_auto_select( GtkCheckButton* btn, gpointer user_data )
-{
-    MainWin* parent=(MainWin*)user_data;
-    pref.bg_auto_select = gtk_toggle_button_get_active( (GtkToggleButton*)btn );
+    MainWin * parent = (MainWin *) user_data;
+    gboolean * value = (gboolean *) g_object_get_data(G_OBJECT(widget), "pref_ptr");
+    if (value)
+        *value = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget));
     main_win_update_bg_color(parent);
 }
 
@@ -209,46 +253,73 @@ void edit_preferences( GtkWindow* parent )
     dlg = (GtkDialog*)gtk_builder_get_object(builder, "dlg");
     gtk_window_set_transient_for((GtkWindow*)dlg, parent);
 
-    ask_before_save_btn = (GtkWidget*)gtk_builder_get_object(builder, "ask_before_save");
-    gtk_toggle_button_set_active( (GtkToggleButton*)ask_before_save_btn, pref.ask_before_save );
-
-    ask_before_del_btn = (GtkWidget*)gtk_builder_get_object(builder, "ask_before_delete");
-    gtk_toggle_button_set_active( (GtkToggleButton*)ask_before_del_btn, pref.ask_before_delete );
-
-    auto_save_btn = (GtkWidget*)gtk_builder_get_object(builder, "auto_save_rotated");
-    gtk_toggle_button_set_active( (GtkToggleButton*)auto_save_btn, pref.auto_save_rotated );
-
-    rotate_exif_only_btn = (GtkWidget*)gtk_builder_get_object(builder, "rotate_exif_only");
-    gtk_toggle_button_set_active( (GtkToggleButton*)rotate_exif_only_btn, pref.rotate_exif_only );
-
-    slide_delay_spinner = (GtkWidget*)gtk_builder_get_object(builder, "slide_delay");
-    gtk_spin_button_set_value( (GtkSpinButton*)slide_delay_spinner, pref.slide_delay) ;
+    OptionDef * option;
+    for (option = option_defs; option->name; option++)
+    {
+        GtkWidget * widget = (GtkWidget *) gtk_builder_get_object(builder, option->name);
+        if (!widget)
+            continue;
+        g_object_set_data(G_OBJECT(widget), "pref_ptr", option->pref_ptr);
+        switch (option->type)
+        {
+            case OTYPE_BOOLEAN:
+            {
+                gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), * (gboolean *) option->pref_ptr);
+                if (strcmp(option->name, "bg_auto_select") == 0)
+                    g_signal_connect(widget, "clicked", G_CALLBACK(on_bg_auto_select), parent);
+                break;
+            }
+            case OTYPE_INT:
+            {
+                gtk_spin_button_set_value(GTK_SPIN_BUTTON(widget), * (int *) option->pref_ptr);
+                break;
+            }
+            case OTYPE_COLOR:
+            {
+                gtk_color_button_set_color(GTK_COLOR_BUTTON(widget), (GdkColor *) option->pref_ptr);
+                g_signal_connect(widget, "color-set", G_CALLBACK(on_set_color), parent);
+                break;
+            }
+            default:
+                g_warning("Unknown option type %d", (int)option->type);
+        }
+    }
 
     set_default_btn = (GtkWidget*)gtk_builder_get_object(builder, "make_default");
     g_signal_connect( set_default_btn, "clicked", G_CALLBACK(on_set_default), parent );
 
-    bg_btn = (GtkWidget*)gtk_builder_get_object(builder, "bg");
-    gtk_color_button_set_color(GTK_COLOR_BUTTON(bg_btn), &pref.bg);
-    g_signal_connect( bg_btn, "color-set", G_CALLBACK(on_set_bg), parent );
-
-    bg_full_btn = (GtkWidget*)gtk_builder_get_object(builder, "bg_full");
-    gtk_color_button_set_color(GTK_COLOR_BUTTON(bg_full_btn), &pref.bg_full);
-    g_signal_connect( bg_full_btn, "color-set", G_CALLBACK(on_set_bg_full), parent );
-
-    bg_auto_select_btn = (GtkWidget*)gtk_builder_get_object(builder, "bg_auto_select");
-    gtk_toggle_button_set_active( (GtkToggleButton*)bg_auto_select_btn, pref.bg_auto_select );
-    g_signal_connect( bg_auto_select_btn, "clicked", G_CALLBACK(on_bg_auto_select), parent );
-
-    g_object_unref( builder );
-
     gtk_dialog_run( dlg );
 
-    pref.ask_before_save = gtk_toggle_button_get_active( (GtkToggleButton*)ask_before_save_btn );
-    pref.ask_before_delete = gtk_toggle_button_get_active( (GtkToggleButton*)ask_before_del_btn );
-    pref.auto_save_rotated = gtk_toggle_button_get_active( (GtkToggleButton*)auto_save_btn );
-    pref.rotate_exif_only = gtk_toggle_button_get_active( (GtkToggleButton*)rotate_exif_only_btn );
-    pref.slide_delay = gtk_spin_button_get_value_as_int( (GtkSpinButton*)slide_delay_spinner );
-    pref.bg_auto_select = gtk_toggle_button_get_active( (GtkToggleButton*)bg_auto_select_btn );
+    for (option = option_defs; option->name; option++)
+    {
+        GtkWidget * widget = (GtkWidget *) gtk_builder_get_object(builder, option->name);
+        if (!widget)
+            continue;
+        switch (option->type)
+        {
+            case OTYPE_BOOLEAN:
+            {
+                * (gboolean *) option->pref_ptr = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget));
+                break;
+            }
+            case OTYPE_INT:
+            {
+                * (int *) option->pref_ptr = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(widget));
+                gtk_spin_button_set_value(GTK_SPIN_BUTTON(widget), * (int *) option->pref_ptr);
+                break;
+            }
+            case OTYPE_COLOR:
+            {
+                /* Nothing to do, */
+                break;
+            }
+            default:
+                g_warning("Unknown option type %d", (int)option->type);
+        }
+    }
 
-    gtk_widget_destroy( (GtkWidget*)dlg );
+    g_object_unref(builder);
+
+    gtk_widget_destroy((GtkWidget*)dlg);
 }
+
