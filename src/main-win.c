@@ -978,11 +978,11 @@ gboolean on_key_press_event(GtkWidget* widget, GdkEventKey * key)
         case GDK_p:
         case GDK_P:
             on_preference( NULL, mw );
-	    break;
+            break;
         case GDK_t:
         case GDK_T:
             on_toggle_toolbar( NULL, mw );
-	    break;
+            break;
         case GDK_Escape:
             if( mw->full_screen )
                 on_full_screen( NULL, mw );
@@ -990,11 +990,15 @@ gboolean on_key_press_event(GtkWidget* widget, GdkEventKey * key)
                 on_quit( NULL, mw );
             break;
         case GDK_q:
-	case GDK_Q:
+        case GDK_Q:
             on_quit( NULL, mw );
             break;
         case GDK_F11:
             on_full_screen( NULL, mw );
+            break;
+        case GDK_F10:
+        case GDK_Menu:
+            show_popup_menu(mw, NULL);
             break;
 
         default:
@@ -1212,7 +1216,13 @@ void on_toggle_toolbar( GtkMenuItem* item, MainWin* mw )
 }
 
 
-void show_popup_menu( MainWin* mw, GdkEventButton* evt )
+static void popup_menu_position_handler(GtkMenu * menu, gint * x, gint * y, gboolean * push_in, MainWin * mw)
+{
+    gdk_window_get_origin(gtk_widget_get_window(mw->evt_box), x, y);
+    *push_in = FALSE;
+}
+
+void show_popup_menu(MainWin * mw, GdkEventButton * evt)
 {
     GtkMenu * file_submenu = get_fm_file_menu_for_path(image_list_get_current_file_path(mw->img_list));
 
@@ -1325,8 +1335,10 @@ void show_popup_menu( MainWin* mw, GdkEventButton* evt )
         gtk_widget_hide(file_menu_item);
     }
 
-    g_signal_connect( popup, "selection-done", G_CALLBACK(gtk_widget_destroy), NULL );
-    gtk_menu_popup( (GtkMenu*)popup, NULL, NULL, NULL, NULL, evt->button, evt->time );
+    g_signal_connect(popup, "selection-done", G_CALLBACK(gtk_widget_destroy), NULL);
+    gtk_menu_popup( (GtkMenu*)popup, NULL, NULL,
+        (GtkMenuPositionFunc) (evt ? NULL : popup_menu_position_handler), mw,
+        evt ? evt->button : 0, evt ? evt->time : 0);
 }
 
 void on_about( GtkWidget* menu, MainWin* mw )
