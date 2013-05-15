@@ -59,31 +59,14 @@ LIBJPEG='-ljpeg'
 AC_SUBST(X11_CFLAGS)
 AC_SUBST(X11_LIBS)
 
-AC_ARG_WITH(libfm, [  --without-libfm             Compile without libfm support])
 if test "x$enable_gtk3" != "xyes" ; then
-  if test "x$with_libfm" != "xno"; then
-    pkg_modules="libfm-gtk libfm"
-    PKG_CHECK_MODULES(LIBFM, [$pkg_modules], enable_libfm=yes, enable_libfm=no)
-    if test x"$enable_libfm" = "xno"; then
-      AC_WARN([No libfm found.  All libfm related routines are not built.])
-      AC_DEFINE(DISABLE_LIBFM, [1], [Disable libfm related routines])
-    fi
-    AC_SUBST(LIBFM_CFLAGS)
-    AC_SUBST(LIBFM_CACHE_LIBS)
-
-    pkg_modules="gmodule-2.0"
-    PKG_CHECK_MODULES(GMODULE, [$pkg_modules])
-    AC_SUBST(GMODULE_CFLAGS)
-    AC_SUBST(GMODULE_LIBS)
-
-  else
-	enable_libfm=no
-    AC_WARN([libfm disabled.  All libfm related routines are not built.])
-    AC_DEFINE(DISABLE_LIBFM, [1], [Disable libfm related routines])
-  fi
-  AM_CONDITIONAL(ENABLE_LIBFM, test x"$enable_libfm" = x"yes")
+    pkg_modules="libsmfm-gtk libsmfm"
+else
+    pkg_modules="libsmfm-gtk3 libsmfm"
 fi
-
+PKG_CHECK_MODULES(LIBFM, [$pkg_modules])
+AC_SUBST(LIBFM_CFLAGS)
+AC_SUBST(LIBFM_LIBS)
 
 GETTEXT_PACKAGE=gpicview
 AC_SUBST(GETTEXT_PACKAGE)

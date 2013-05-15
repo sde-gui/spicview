@@ -27,11 +27,11 @@ gpicview_SOURCES = \
 	exif.c \
 	jpgfile.c \
 	image-cache.c \
-	libfm.c
+	libsmfm_utils.c
 
 # the library search path.
 # use -nodefaultlibs to prevent linking libstdc++
-gpicview_LDADD = $(X11_LIBS) $(GTK_LIBS) $(GMODULE_LIBS) -lm
+gpicview_LDADD = $(X11_LIBS) $(GTK_LIBS) $(LIBFM_LIBS) -lm
 
 noinst_HEADERS = \
 	glib-mem.h \
@@ -46,7 +46,7 @@ noinst_HEADERS = \
 	pref.h \
 	jhead.h \
 	image-cache.h \
-	libfm.h
+	libsmfm_utils.h
 
 noinst_PROGRAMS=xml-purge
 xml_purge_SOURCES=xml-purge.c

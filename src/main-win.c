@@ -44,7 +44,7 @@
 #include "ptk-menu.h"
 #include "file-dlgs.h"
 #include "jpeg-tran.h"
-#include "libfm.h"
+#include "libsmfm_utils.h"
 
 /*
    REFACTORING IN PROGRESS!

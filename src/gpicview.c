@@ -25,6 +25,7 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 #include <string.h>
+#include <libsmfm/fm-config.h>
 
 #include "pref.h"
 #include "main-win.h"
@@ -71,6 +72,8 @@ int main(int argc, char *argv[])
         printf( "gpicview %s\n", VERSION );
         return 0;
     }
+
+    fm_gtk_init(NULL);
 
     gtk_icon_theme_append_search_path(gtk_icon_theme_get_default(), PIXMAP_DIR);
 
