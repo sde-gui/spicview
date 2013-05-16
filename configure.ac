@@ -60,9 +60,9 @@ AC_SUBST(X11_CFLAGS)
 AC_SUBST(X11_LIBS)
 
 if test "x$enable_gtk3" != "xyes" ; then
-    pkg_modules="libsmfm-gtk libsmfm"
+    pkg_modules="libsmfm-gtk2 libsmfm-core"
 else
-    pkg_modules="libsmfm-gtk3 libsmfm"
+    pkg_modules="libsmfm-gtk3 libsmfm-core"
 fi
 PKG_CHECK_MODULES(LIBFM, [$pkg_modules])
 AC_SUBST(LIBFM_CFLAGS)

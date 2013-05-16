@@ -25,7 +25,7 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 #include <string.h>
-#include <libsmfm/fm.h>
+#include <libsmfm-core/fm.h>
 
 #include "pref.h"
 #include "main-win.h"
