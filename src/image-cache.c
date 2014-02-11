@@ -34,10 +34,10 @@ static unsigned get_cache_limit(void)
         return value;
 
     /* some heuristics to estimate cache size limit */
-    unsigned long long totalmem = sysconf(_SC_PHYS_PAGES) * sysconf(_SC_PAGE_SIZE);
+    unsigned long long totalmem = sysconf(_SC_PHYS_PAGES) * (unsigned long long) sysconf(_SC_PAGE_SIZE);
     totalmem /= 1024 * 1024; // to MiB
     totalmem /= 6; // 1/6 of total memory
-    unsigned limit = 2 + totalmem / 20; // guess each cache item is about 20MiB
+    unsigned limit = 2 + totalmem / 30; // guess each cache item is about 30MiB
 
     if (limit > CACHE_SIZE)
         limit = CACHE_SIZE;
