@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
+#include <string.h>
 
 #define CACHE_SIZE 20
 
