@@ -1585,7 +1585,7 @@ static void eval_bg_color_for_image(MainWin* mw)
     mw->bg_color_from_image_valid = TRUE;
 }
 
-static load_image(MainWin* mw, const char* file_path, GdkPixbuf** _pix, GdkPixbufAnimation** _animation, GError** _err)
+static gboolean load_image(MainWin* mw, const char* file_path, GdkPixbuf** _pix, GdkPixbufAnimation** _animation, GError** _err)
 {
     GdkPixbuf* pix = NULL;
     GdkPixbufAnimation* animation = NULL;
@@ -1666,6 +1666,8 @@ static load_image(MainWin* mw, const char* file_path, GdkPixbuf** _pix, GdkPixbu
         *_animation = animation;
     else if (animation)
         g_object_unref(animation);
+
+    return TRUE;
 }
 
 gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
@@ -1681,7 +1683,7 @@ gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
             g_free(path);
         }
         main_win_update_sensitivity(mw);
-        return;
+        return TRUE;
     }
 
     main_win_close( mw );
