@@ -50,8 +50,3 @@ noinst_HEADERS = \
 	image-cache.h \
 	libsmfm_utils.h
 
-noinst_PROGRAMS=xml-purge
-xml_purge_SOURCES=xml-purge.c
-xml_purge_CFLAGS=@X11_CFLAGS@
-xml_purge_LDADD=@X11_LIBS@
-
