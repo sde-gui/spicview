@@ -1552,7 +1552,7 @@ static void eval_bg_color_for_image(MainWin* mw)
         guchar* p = &P(0, i);
         HANDLE_PIXEL
 
-        p = &P(height - 1, i);
+        p = &P(width - 1, i);
         HANDLE_PIXEL
     }
 
