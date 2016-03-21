@@ -30,20 +30,7 @@ AC_SUBST(ADDITIONAL_FLAGS)
 AM_GLIB_GNU_GETTEXT
 IT_PROG_INTLTOOL([0.40.0])
 
-AC_ARG_ENABLE(gtk3,
-AC_HELP_STRING([--enable-gtk3],[enable to use gtk-3.0 instead of gtk-2.0]),
-[case "${enableval}" in
-  yes)  enable_gtk3=yes ;;
-  no)   enable_gtk3=no ;;
-  *) AC_MSG_ERROR([bad value "${enableval}" for --enable-gtk3, use "yes" (default) or "no".]) ;;
-esac],[])
-
-if test "x$enable_gtk3" = "xyes" ; then
-  CFLAGS="$CFLAGS -DENABLE_GTK3"
-  gtk_modules="gtk+-3.0 >= 3.0.0"
-else
-  gtk_modules="gtk+-2.0 >= 2.18.0"
-fi
+gtk_modules="gtk+-2.0 >= 2.18.0"
 PKG_CHECK_MODULES(GTK, [$gtk_modules])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
@@ -59,11 +46,7 @@ LIBJPEG='-ljpeg'
 AC_SUBST(X11_CFLAGS)
 AC_SUBST(X11_LIBS)
 
-if test "x$enable_gtk3" != "xyes" ; then
-    pkg_modules="libsmfm-gtk2 libsmfm-core"
-else
-    pkg_modules="libsmfm-gtk3 libsmfm-core"
-fi
+pkg_modules="libsmfm-gtk2 libsmfm-core"
 PKG_CHECK_MODULES(LIBFM, [$pkg_modules])
 AC_SUBST(LIBFM_CFLAGS)
 AC_SUBST(LIBFM_LIBS)

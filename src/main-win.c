@@ -178,11 +178,7 @@ void main_win_finalize( GObject* obj )
 
     if( G_LIKELY(mw->img_list) )
         image_list_free( mw->img_list );
-#if GTK_CHECK_VERSION(3, 0, 0)
-    g_object_unref( mw->hand_cursor );
-#else
     gdk_cursor_unref( mw->hand_cursor );
-#endif
 
     if (mw->preload_next_timeout)
         g_source_remove(mw->preload_next_timeout);
@@ -205,11 +201,7 @@ void main_win_init( MainWin*mw )
 
     g_signal_connect(G_OBJECT(mw), "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
-#if GTK_CHECK_VERSION(3, 0, 0)
-    GtkWidget* box = gtk_box_new( GTK_ORIENTATION_VERTICAL, 0 );
-#else
-    GtkWidget* box = gtk_vbox_new( FALSE, 0 );
-#endif
+    GtkWidget* box = gtk_vbox_new(FALSE, 0);
     gtk_container_add( (GtkContainer*)mw, box);
 
     // image area
@@ -229,15 +221,13 @@ void main_win_init( MainWin*mw )
     mw->img_view = image_view_new();
     gtk_container_add( (GtkContainer*)mw->evt_box, (GtkWidget*)mw->img_view);
 
-#if GTK_CHECK_VERSION(3, 0, 0)
-#else
     const char scroll_style[]=
             "style \"gpicview-scroll\" {"
             "GtkScrolledWindow::scrollbar-spacing=0"
             "}"
             "class \"GtkScrolledWindow\" style \"gpicview-scroll\"";
     gtk_rc_parse_string( scroll_style );
-#endif
+
     mw->scroll = gtk_scrolled_window_new( NULL, NULL );
     g_signal_connect(G_OBJECT(mw->scroll), "size-allocate", G_CALLBACK(on_scroll_size_allocate), (gpointer) mw);
     gtk_scrolled_window_set_shadow_type( (GtkScrolledWindow*)mw->scroll, GTK_SHADOW_NONE );
