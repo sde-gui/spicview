@@ -156,7 +156,7 @@ void on_size_allocate( GtkWidget* widget, GtkAllocation   *allocation )
 gboolean on_expose_event( GtkWidget* widget, GdkEventExpose* evt )
 {
     ImageView* iv = (ImageView*)widget;
-    if( GTK_WIDGET_MAPPED (widget) )
+    if (gtk_widget_get_mapped(widget))
         image_view_paint( iv, evt );
     return FALSE;
 }
