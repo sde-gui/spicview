@@ -1151,15 +1151,14 @@ void on_delete( GtkWidget* btn, MainWin* mw )
         int resp = GTK_RESPONSE_YES;
 	if ( pref.ask_before_delete )
 	{
-            gchar* message = g_strdup_printf(_("Are you sure you want to delete file \"%s\"?\n\nWarning: Once deleted, the file cannot be recovered."), image_list_get_current( mw->img_list ));
-            GtkWidget* dlg = gtk_message_dialog_new( (GtkWindow*)mw,
+            GtkWidget * dialog = gtk_message_dialog_new( (GtkWindow*)mw,
                     GTK_DIALOG_MODAL,
                     GTK_MESSAGE_QUESTION,
                     GTK_BUTTONS_YES_NO,
-                    message );
-            resp = gtk_dialog_run( (GtkDialog*)dlg );
-            gtk_widget_destroy( dlg );
-            g_free(message);
+                    _("Are you sure you want to delete file \"%s\"?\n\nWarning: Once deleted, the file cannot be recovered."),
+                    image_list_get_current(mw->img_list));
+            resp = gtk_dialog_run((GtkDialog *) dialog);
+            gtk_widget_destroy(dialog);
         }
 
 	if( resp == GTK_RESPONSE_YES )
