@@ -2033,7 +2033,7 @@ void main_win_update_background_color(MainWin* mw)
     if (!mw->evt_box)
         return;
 
-    if (pref.background_color_auto_select && mw->background_color_from_image_valid)
+    if (pref.background_color_auto_adjust && mw->background_color_from_image_valid)
         color = &mw->background_color_from_image;
     else if (mw->full_screen)
         color = &pref.background_color_fullscreen;

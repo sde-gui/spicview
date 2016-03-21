@@ -55,7 +55,7 @@ static OptionDef option_defs[] = {
     DEF_OPTION(View, show_toolbar, BOOLEAN)
     DEF_OPTION(View, toolbar_on_top, BOOLEAN)
     DEF_OPTION(View, slide_delay, INT)
-    DEF_OPTION(View, background_color_auto_select, BOOLEAN)
+    DEF_OPTION(View, background_color_auto_adjust, BOOLEAN)
     DEF_OPTION(View, background_color, COLOR)
     DEF_OPTION(View, background_color_fullscreen, COLOR)
 
@@ -128,7 +128,7 @@ void load_preferences()
     pref.background_color_fullscreen.red = 0;
     pref.background_color_fullscreen.green = 0;
     pref.background_color_fullscreen.blue = 0;
-    pref.background_color_auto_select = TRUE;
+    pref.background_color_auto_adjust = TRUE;
 
     pref.jpg_quality = 90;
     pref.png_compression = 9;
@@ -236,7 +236,7 @@ static void on_set_color(GtkColorButton * widget, gpointer user_data )
     main_win_update_background_color(parent);
 }
 
-static void on_background_color_auto_select(GtkCheckButton * widget, gpointer user_data )
+static void on_background_color_auto_adjust(GtkCheckButton * widget, gpointer user_data )
 {
     MainWin * parent = (MainWin *) user_data;
     gboolean * value = (gboolean *) g_object_get_data(G_OBJECT(widget), "pref_ptr");
@@ -249,7 +249,7 @@ void edit_preferences( GtkWindow* parent )
 {
     GtkWidget *auto_save_btn, *ask_before_save_btn, *set_default_btn,
               *rotate_exif_only_btn, *slide_delay_spinner, *ask_before_del_btn,
-              *background_color_btn, *background_color_fullscreen_btn, *background_color_auto_select_btn;
+              *background_color_btn, *background_color_fullscreen_btn, *background_color_auto_adjust_btn;
     GtkBuilder* builder = gtk_builder_new();
     GtkDialog* dlg;
     gtk_builder_add_from_file(builder, PACKAGE_DATA_DIR "/" PACKAGE_NAME_STR "/ui/pref-dlg.ui", NULL);
@@ -269,8 +269,8 @@ void edit_preferences( GtkWindow* parent )
             case OTYPE_BOOLEAN:
             {
                 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), * (gboolean *) option->pref_ptr);
-                if (strcmp(option->name, "background_color_auto_select") == 0)
-                    g_signal_connect(widget, "clicked", G_CALLBACK(on_background_color_auto_select), parent);
+                if (strcmp(option->name, "background_color_auto_adjust") == 0)
+                    g_signal_connect(widget, "clicked", G_CALLBACK(on_background_color_auto_adjust), parent);
                 break;
             }
             case OTYPE_INT:
