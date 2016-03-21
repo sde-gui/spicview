@@ -1785,7 +1785,7 @@ gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
     if (image_cache_get_limit() > 5)
     {
         if (mw->preload_next_timeout == 0)
-            mw->preload_next_timeout = g_timeout_add(500, (GSourceFunc) on_preload_next_timeout, mw);
+            mw->preload_next_timeout = g_timeout_add(300, (GSourceFunc) on_preload_next_timeout, mw);
         if (mw->preload_prev_timeout == 0)
             mw->preload_prev_timeout = g_timeout_add(500, (GSourceFunc) on_preload_prev_timeout, mw);
     }
