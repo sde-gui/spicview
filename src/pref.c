@@ -55,9 +55,9 @@ static OptionDef option_defs[] = {
     DEF_OPTION(View, show_toolbar, BOOLEAN)
     DEF_OPTION(View, toolbar_on_top, BOOLEAN)
     DEF_OPTION(View, slide_delay, INT)
-    DEF_OPTION(View, bg_auto_select, BOOLEAN)
-    DEF_OPTION(View, bg, COLOR)
-    DEF_OPTION(View, bg_full, COLOR)
+    DEF_OPTION(View, background_color_auto_select, BOOLEAN)
+    DEF_OPTION(View, background_color, COLOR)
+    DEF_OPTION(View, background_color_fullscreen, COLOR)
 
     DEF_OPTION(Edit, auto_save_rotated, BOOLEAN)
     DEF_OPTION(Edit, ask_before_save, BOOLEAN)
@@ -122,9 +122,13 @@ void load_preferences()
     pref.ask_before_delete = TRUE;
     pref.rotate_exif_only = TRUE;
     pref.open_maximized = FALSE;
-    pref.bg.red = pref.bg.green = pref.bg.blue = 65535;
-    pref.bg_full.red = pref.bg_full.green = pref.bg_full.blue = 0;
-    pref.bg_auto_select = TRUE;
+    pref.background_color.red = 65535;
+    pref.background_color.green = 65535;
+    pref.background_color.blue = 65535;
+    pref.background_color_fullscreen.red = 0;
+    pref.background_color_fullscreen.green = 0;
+    pref.background_color_fullscreen.blue = 0;
+    pref.background_color_auto_select = TRUE;
 
     pref.jpg_quality = 90;
     pref.png_compression = 9;
@@ -229,23 +233,23 @@ static void on_set_color(GtkColorButton * widget, gpointer user_data )
     GdkColor * color = (GdkColor * ) g_object_get_data(G_OBJECT(widget), "pref_ptr");
     if (color)
         gtk_color_button_get_color(GTK_COLOR_BUTTON(widget), color);
-    main_win_update_bg_color(parent);
+    main_win_update_background_color(parent);
 }
 
-static void on_bg_auto_select(GtkCheckButton * widget, gpointer user_data )
+static void on_background_color_auto_select(GtkCheckButton * widget, gpointer user_data )
 {
     MainWin * parent = (MainWin *) user_data;
     gboolean * value = (gboolean *) g_object_get_data(G_OBJECT(widget), "pref_ptr");
     if (value)
         *value = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget));
-    main_win_update_bg_color(parent);
+    main_win_update_background_color(parent);
 }
 
 void edit_preferences( GtkWindow* parent )
 {
     GtkWidget *auto_save_btn, *ask_before_save_btn, *set_default_btn,
               *rotate_exif_only_btn, *slide_delay_spinner, *ask_before_del_btn,
-              *bg_btn, *bg_full_btn, *bg_auto_select_btn;
+              *background_color_btn, *background_color_fullscreen_btn, *background_color_auto_select_btn;
     GtkBuilder* builder = gtk_builder_new();
     GtkDialog* dlg;
     gtk_builder_add_from_file(builder, PACKAGE_DATA_DIR "/" PACKAGE_NAME_STR "/ui/pref-dlg.ui", NULL);
@@ -265,8 +269,8 @@ void edit_preferences( GtkWindow* parent )
             case OTYPE_BOOLEAN:
             {
                 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), * (gboolean *) option->pref_ptr);
-                if (strcmp(option->name, "bg_auto_select") == 0)
-                    g_signal_connect(widget, "clicked", G_CALLBACK(on_bg_auto_select), parent);
+                if (strcmp(option->name, "background_color_auto_select") == 0)
+                    g_signal_connect(widget, "clicked", G_CALLBACK(on_background_color_auto_select), parent);
                 break;
             }
             case OTYPE_INT:

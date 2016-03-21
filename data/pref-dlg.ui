@@ -218,7 +218,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkColorButton" id="bg">
+                          <object class="GtkColorButton" id="background_color">
                             <property name="use_action_appearance">False</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
@@ -244,7 +244,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkColorButton" id="bg_full">
+                          <object class="GtkColorButton" id="background_color_fullscreen">
                             <property name="use_action_appearance">False</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
@@ -264,7 +264,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkCheckButton" id="bg_auto_select">
+                      <object class="GtkCheckButton" id="background_color_auto_select">
                         <property name="label" translatable="yes">Auto-select background color based on image ed_ge</property>
                         <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>

@@ -214,9 +214,8 @@ void main_win_init( MainWin*mw )
     g_signal_connect( mw->evt_box, "button-release-event", G_CALLBACK(on_button_release), mw );
     g_signal_connect( mw->evt_box, "motion-notify-event", G_CALLBACK(on_mouse_move), mw );
     g_signal_connect( mw->evt_box, "scroll-event", G_CALLBACK(on_scroll_event), mw );
-    // Set bg color to white
 
-    main_win_update_bg_color(mw);
+    main_win_update_background_color(mw);
 
     mw->img_view = image_view_new();
     gtk_container_add( (GtkContainer*)mw->evt_box, (GtkWidget*)mw->img_view);
@@ -436,7 +435,7 @@ gboolean on_win_state_event( GtkWidget* widget, GdkEventWindowState* state )
         mw->full_screen = FALSE;
     }
 
-    main_win_update_bg_color(mw);
+    main_win_update_background_color(mw);
 
     int previous = pref.open_maximized;
     pref.open_maximized = (state->new_window_state == GDK_WINDOW_STATE_MAXIMIZED);
@@ -1486,9 +1485,9 @@ static void main_win_action_zoom_fit(MainWin* mw)
 
 /* image loading */
 
-static void eval_bg_color_for_image(MainWin* mw)
+static void eval_background_color_for_image(MainWin* mw)
 {
-    mw->bg_color_from_image_valid = FALSE;
+    mw->background_color_from_image_valid = FALSE;
 
     if (mw->animation)
         return;
@@ -1568,11 +1567,11 @@ static void eval_bg_color_for_image(MainWin* mw)
     if (ub > 65535)
         ub = 65535;
 
-    mw->bg_color_from_image.red   = ur;
-    mw->bg_color_from_image.green = ug;
-    mw->bg_color_from_image.blue  = ub;
+    mw->background_color_from_image.red   = ur;
+    mw->background_color_from_image.green = ug;
+    mw->background_color_from_image.blue  = ub;
 
-    mw->bg_color_from_image_valid = TRUE;
+    mw->background_color_from_image_valid = TRUE;
 }
 
 static gboolean load_image(MainWin* mw, const char* file_path, GdkPixbuf** _pix, GdkPixbufAnimation** _animation, GError** _err)
@@ -1692,7 +1691,7 @@ gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
             g_error_free(err);
         }
         main_win_update_sensitivity(mw);
-        main_win_update_bg_color(mw);
+        main_win_update_background_color(mw);
         return FALSE;
     }
 
@@ -1758,7 +1757,7 @@ gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
         main_win_center_image( mw );
     }
 
-    eval_bg_color_for_image(mw);
+    eval_background_color_for_image(mw);
 
     image_view_set_pixbuf( (ImageView*)mw->img_view, mw->pix );
 
@@ -1782,7 +1781,7 @@ gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
 
     main_win_update_sensitivity(mw);
     main_win_update_zoom_buttons_state(mw);
-    main_win_update_bg_color(mw);
+    main_win_update_background_color(mw);
 
     if (image_cache_get_limit() > 5)
     {
@@ -1858,7 +1857,7 @@ void main_win_close( MainWin* mw )
     }
     mw->pix = NULL;
 
-    mw->bg_color_from_image_valid = FALSE;
+    mw->background_color_from_image_valid = FALSE;
 }
 
 /****************************************************************************/
@@ -2027,19 +2026,19 @@ static void update_title(const char *filename, MainWin *mw )
     return;
 }
 
-void main_win_update_bg_color(MainWin* mw)
+void main_win_update_background_color(MainWin* mw)
 {
     GdkColor * color = NULL;
 
     if (!mw->evt_box)
         return;
 
-    if (pref.bg_auto_select && mw->bg_color_from_image_valid)
-        color = &mw->bg_color_from_image;
+    if (pref.background_color_auto_select && mw->background_color_from_image_valid)
+        color = &mw->background_color_from_image;
     else if (mw->full_screen)
-        color = &pref.bg_full;
+        color = &pref.background_color_fullscreen;
     else
-        color = &pref.bg;
+        color = &pref.background_color;
 
     gtk_widget_modify_bg(mw->evt_box, GTK_STATE_NORMAL, color);
     gtk_widget_queue_draw(mw->evt_box);
