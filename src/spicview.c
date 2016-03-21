@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
             g_object_unref(gf);
         }
 
-        main_win_open(win, local_path_str, ZOOM_NONE);
+        main_win_open(win, local_path_str, ZOOM_FIT);
 
         g_free(local_path_str);
         fm_path_unref(path);
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        main_win_open( win, ".", ZOOM_NONE );
+        main_win_open(win, ".", ZOOM_FIT);
     }
 
     gtk_main();

@@ -37,16 +37,10 @@ PKG_CHECK_MODULES(GTK, [$gtk_modules])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 
-pkg_modules="x11"
-
-PKG_CHECK_MODULES(X11, [$pkg_modules])
 AC_CHECK_LIB(jpeg, jpeg_start_decompress, [],
 	     [AC_MSG_ERROR([libjpeg not found])], -lm)
 AC_CHECK_HEADER(jpeglib.h, , [AC_MSG_ERROR([libjpeg not found])])
 LIBJPEG='-ljpeg'
-
-AC_SUBST(X11_CFLAGS)
-AC_SUBST(X11_LIBS)
 
 pkg_modules="libsmfm-gtk2 libsmfm-core"
 PKG_CHECK_MODULES(LIBSMFM, [$pkg_modules])
@@ -68,10 +62,6 @@ echo
 echo "$PACKAGE_NAME $VERSION"
 echo
 echo "Prefix: $prefix"
-echo
-echo "X11_CFLAGS:   $X11_CFLAGS"
-echo
-echo "X11_LIBS:     $X11_LIBS"
 echo
 echo "GTK_CFLAGS:   $GTK_CFLAGS"
 echo

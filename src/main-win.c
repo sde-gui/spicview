@@ -42,7 +42,6 @@
 #include "image-cache.h"
 #include "image-view.h"
 #include "image-list.h"
-#include "working-area.h"
 #include "ptk-menu.h"
 #include "file-dlgs.h"
 #include "jpeg-tran.h"
@@ -257,7 +256,6 @@ void main_win_init( MainWin*mw )
 
     mw->hand_cursor = gdk_cursor_new_for_display( gtk_widget_get_display((GtkWidget*)mw), GDK_FLEUR );
 
-//    zoom_mode = ZOOM_NONE;
     mw->zoom_mode = ZOOM_FIT;
 
     // Set up drag & drop
@@ -726,7 +724,7 @@ void on_open( GtkWidget* btn, MainWin* mw )
     char* file = get_open_filename( (GtkWindow*)mw, image_list_get_dir( mw->img_list ) );
     if( file )
     {
-        main_win_open( mw, file, ZOOM_NONE );
+        main_win_open(mw, file, mw->zoom_mode);
         g_free( file );
     }
 }
@@ -1714,43 +1712,15 @@ gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
 
     mw->zoom_mode = zoom;
 
-    // select most suitable viewing mode
-    if( zoom == ZOOM_NONE )
-    {
-        int w = gdk_pixbuf_get_width( mw->pix );
-        int h = gdk_pixbuf_get_height( mw->pix );
-
-        GdkRectangle area;
-        get_working_area( gtk_widget_get_screen((GtkWidget*)mw), &area );
-        // g_debug("determine best zoom mode: orig size:  w=%d, h=%d", w, h);
-        // FIXME: actually this is a little buggy :-(
-        if( w < area.width && h < area.height && (w >= 640 || h >= 480) )
-        {
-            gtk_scrolled_window_set_policy( (GtkScrolledWindow*)mw->scroll, GTK_POLICY_NEVER, GTK_POLICY_NEVER );
-            gtk_widget_set_size_request( (GtkWidget*)mw->img_view, w, h );
-            GtkRequisition req;
-            gtk_widget_size_request ( (GtkWidget*)mw, &req );
-            if( req.width < 640 )   req.width = 640;
-            if( req.height < 480 )   req.height = 480;
-            gtk_window_resize( (GtkWindow*)mw, req.width, req.height );
-            gtk_widget_set_size_request( (GtkWidget*)mw->img_view, -1, -1 );
-            gtk_scrolled_window_set_policy( (GtkScrolledWindow*)mw->scroll, GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
-            mw->zoom_mode = ZOOM_ORIG;
-            mw->scale = 1.0;
-        }
-        else
-            mw->zoom_mode = ZOOM_FIT;
-    }
-
-    if( mw->zoom_mode == ZOOM_FIT )
+    if (mw->zoom_mode == ZOOM_FIT)
     {
         main_win_fit_window_size( mw, FALSE, GDK_INTERP_BILINEAR );
     }
-    else  if( mw->zoom_mode == ZOOM_SCALE )  // scale
+    else if (mw->zoom_mode == ZOOM_SCALE)
     {
         main_win_scale_image( mw, mw->scale, GDK_INTERP_BILINEAR );
     }
-    else  if( mw->zoom_mode == ZOOM_ORIG )  // original size
+    else if (mw->zoom_mode == ZOOM_ORIG)
     {
         image_view_set_scale( (ImageView*)mw->img_view, mw->scale, GDK_INTERP_BILINEAR );
         main_win_center_image( mw );

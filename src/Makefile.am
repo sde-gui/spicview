@@ -2,7 +2,6 @@
 
 # set the include path found by configure
 INCLUDES = $(all_includes) \
-	$(X11_CFLAGS) \
         $(GTK_CFLAGS) \
         $(ADDITIONAL_FLAGS) \
         $(LIBSMFM_CFLAGS) \
@@ -18,7 +17,6 @@ spicview_SOURCES = \
 	image-list.c \
 	main-win.c \
 	image-view.c \
-	working-area.c \
 	ptk-menu.c \
 	file-dlgs.c \
 	jpeg-tran.c \
@@ -32,7 +30,7 @@ spicview_SOURCES = \
 
 # the library search path.
 # use -nodefaultlibs to prevent linking libstdc++
-spicview_LDADD = $(X11_LIBS) $(GTK_LIBS) $(LIBSMFM_LIBS) -lm
+spicview_LDADD = $(GTK_LIBS) $(LIBSMFM_LIBS) -lm
 
 noinst_HEADERS = \
 	glib-mem.h \
@@ -40,7 +38,6 @@ noinst_HEADERS = \
 	image-list.h \
 	main-win.h \
 	image-view.h \
-	working-area.h \
 	ptk-menu.h \
 	file-dlgs.h \
 	jpeg-tran.h \

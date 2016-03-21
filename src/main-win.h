@@ -39,7 +39,6 @@
 
 typedef enum
 {
-     ZOOM_NONE = 0,
      ZOOM_FIT,
      ZOOM_ORIG,
      ZOOM_SCALE
