@@ -31,10 +31,10 @@
 void get_working_area(GdkScreen* screen, GdkRectangle *rect);
 
 static gboolean gf_display_get_workarea(GdkScreen* g_screen, GdkRectangle *rect) {
-	Atom xa_desktops, xa_current, xa_workarea, xa_type;
+	Atom xa_current, xa_workarea, xa_type;
 	Display *x_display;
 	Window x_root;
-	guint32 desktops = 0, current = 0;
+	guint32 current = 0;
 	gulong *workareas, len, fill;
 	guchar *data;
 	gint format;
@@ -59,25 +59,6 @@ static gboolean gf_display_get_workarea(GdkScreen* g_screen, GdkRectangle *rect)
 
 	/* get the root window from the screen */
 	x_root = XRootWindowOfScreen(x_screen);
-
-	/* find the _NET_NUMBER_OF_DESKTOPS atom */
-	xa_desktops = XInternAtom(x_display, "_NET_NUMBER_OF_DESKTOPS", True);
-	if(xa_desktops == None)
-		return FALSE;
-
-	/* get the number of desktops */
-	if(XGetWindowProperty(x_display, x_root, xa_desktops, 0, 1, False,
-						  XA_CARDINAL, &xa_type, &format, &len, &fill,
-						  &data) != Success)
-	{
-		return FALSE;
-	}
-
-	if(!data)
-		return FALSE;
-
-	desktops = *(guint32 *)data;
-	XFree(data);
 
 	/* find the _NET_CURRENT_DESKTOP atom */
 	xa_current = XInternAtom(x_display, "_NET_CURRENT_DESKTOP", True);
