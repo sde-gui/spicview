@@ -176,7 +176,7 @@ char* get_save_filename( GtkWindow* parent, const char* cwd, char** type )
         desc = gdk_pixbuf_format_get_description( format );
         exts = gdk_pixbuf_format_get_extensions( format );
         mimes = gdk_pixbuf_format_get_mime_types( format );
-        tmp = g_strdup_printf( "%s (*.%s)", desc, exts[0], NULL );
+        tmp = g_strdup_printf("%s (*.%s)", desc, exts[0]);
 
         g_object_set_data_full(G_OBJECT(filter), "type", name, (GDestroyNotify)g_free);
         g_strfreev(exts);
