@@ -115,7 +115,6 @@ void load_preferences()
 {
     GKeyFile* kf;
     char* path;
-    char* color;
 
     pref.auto_save_rotated = FALSE;
     pref.ask_before_save = TRUE;
@@ -247,9 +246,6 @@ static void on_background_color_auto_adjust(GtkCheckButton * widget, gpointer us
 
 void edit_preferences( GtkWindow* parent )
 {
-    GtkWidget *auto_save_btn, *ask_before_save_btn, *set_default_btn,
-              *rotate_exif_only_btn, *slide_delay_spinner, *ask_before_del_btn,
-              *background_color_btn, *background_color_fullscreen_btn, *background_color_auto_adjust_btn;
     GtkBuilder* builder = gtk_builder_new();
     GtkDialog* dlg;
     gtk_builder_add_from_file(builder, PACKAGE_DATA_DIR "/" PACKAGE_NAME_STR "/ui/pref-dlg.ui", NULL);
@@ -289,8 +285,10 @@ void edit_preferences( GtkWindow* parent )
         }
     }
 
-    set_default_btn = (GtkWidget*)gtk_builder_get_object(builder, "make_default");
-    g_signal_connect( set_default_btn, "clicked", G_CALLBACK(on_set_default), parent );
+    {
+        GtkWidget * set_default_btn = (GtkWidget*)gtk_builder_get_object(builder, "make_default");
+        g_signal_connect(set_default_btn, "clicked", G_CALLBACK(on_set_default), parent);
+    }
 
     gtk_dialog_run( dlg );
 
