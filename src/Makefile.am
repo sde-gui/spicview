@@ -5,7 +5,7 @@ INCLUDES = $(all_includes) \
 	$(X11_CFLAGS) \
         $(GTK_CFLAGS) \
         $(ADDITIONAL_FLAGS) \
-        $(LIBFM_CFLAGS) \
+        $(LIBSMFM_CFLAGS) \
         $(GMODULE_CFLAGS) \
 	-I$(top_srcdir) \
 	-DPACKAGE_DATA_DIR=\""$(datadir)"\" \
@@ -32,7 +32,7 @@ spicview_SOURCES = \
 
 # the library search path.
 # use -nodefaultlibs to prevent linking libstdc++
-spicview_LDADD = $(X11_LIBS) $(GTK_LIBS) $(LIBFM_LIBS) -lm
+spicview_LDADD = $(X11_LIBS) $(GTK_LIBS) $(LIBSMFM_LIBS) -lm
 
 noinst_HEADERS = \
 	glib-mem.h \
