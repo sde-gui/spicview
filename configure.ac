@@ -30,7 +30,7 @@ AC_SUBST(ADDITIONAL_FLAGS)
 AM_GLIB_GNU_GETTEXT
 IT_PROG_INTLTOOL([0.40.0])
 
-gtk_modules="gtk+-2.0 >= 2.18.0"
+gtk_modules="gtk+-2.0 >= 2.24.0"
 PKG_CHECK_MODULES(GTK, [$gtk_modules])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
