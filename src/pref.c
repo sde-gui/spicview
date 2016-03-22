@@ -58,6 +58,7 @@ static OptionDef option_defs[] = {
     DEF_OPTION(View, show_toolbar, BOOLEAN)
     DEF_OPTION(View, show_toolbar_fullscreen, BOOLEAN)
     DEF_OPTION(View, toolbar_on_top, BOOLEAN)
+    DEF_OPTION(View, preload_images, BOOLEAN)
     DEF_OPTION(View, slide_delay, INT)
     DEF_OPTION(View, background_color_auto_adjust, BOOLEAN)
     DEF_OPTION(View, background_color, COLOR)
@@ -139,6 +140,7 @@ void load_preferences()
     pref.quit_on_escape = TRUE;
     pref.show_toolbar = TRUE;
     pref.show_toolbar_fullscreen = FALSE;
+    pref.preload_images = TRUE;
 
     kf = g_key_file_new();
     path = g_build_filename( g_get_user_config_dir(),  CFG_FILE, NULL );

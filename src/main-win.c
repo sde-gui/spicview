@@ -1762,7 +1762,7 @@ gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
     main_win_update_zoom_buttons_state(mw);
     main_win_update_background_color(mw);
 
-    if (image_cache_get_limit() > 5)
+    if (image_cache_get_limit() > 5 && pref.preload_images)
     {
         if (mw->preload_next_timeout == 0)
             mw->preload_next_timeout = g_timeout_add(300, (GSourceFunc) on_preload_next_timeout, mw);

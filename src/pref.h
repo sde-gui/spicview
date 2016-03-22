@@ -45,6 +45,7 @@ typedef struct _Pref
     gboolean show_toolbar;
     gboolean show_toolbar_fullscreen;
     gboolean toolbar_on_top;
+    gboolean preload_images;
 }Pref;
 
 extern Pref pref; /* global variable holding user prerefences */
