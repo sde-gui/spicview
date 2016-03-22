@@ -424,7 +424,7 @@ void on_size_allocate( GtkWidget* widget, GtkAllocation    *allocation )
 gboolean on_win_state_event( GtkWidget* widget, GdkEventWindowState* state )
 {
     MainWin* mw = (MainWin*)widget;
-    if( state->new_window_state == GDK_WINDOW_STATE_FULLSCREEN )
+    if ((state->new_window_state &= GDK_WINDOW_STATE_FULLSCREEN) != 0)
     {
         gtk_widget_hide( gtk_widget_get_parent(mw->nav_bar) );
         mw->full_screen = TRUE;
@@ -439,7 +439,7 @@ gboolean on_win_state_event( GtkWidget* widget, GdkEventWindowState* state )
     main_win_update_background_color(mw);
 
     int previous = pref.open_maximized;
-    pref.open_maximized = (state->new_window_state == GDK_WINDOW_STATE_MAXIMIZED);
+    pref.open_maximized = ((state->new_window_state & GDK_WINDOW_STATE_MAXIMIZED) != 0);
     if (previous != pref.open_maximized)
         save_preferences();
     return TRUE;
