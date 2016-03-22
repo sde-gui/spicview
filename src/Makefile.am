@@ -33,7 +33,6 @@ spicview_SOURCES = \
 spicview_LDADD = $(GTK_LIBS) $(LIBSMFM_LIBS) -lm
 
 noinst_HEADERS = \
-	glib-mem.h \
 	gtkcompat.h \
 	image-list.h \
 	main-win.h \
