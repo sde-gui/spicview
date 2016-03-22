@@ -1353,7 +1353,7 @@ void on_about( GtkWidget* menu, MainWin* mw )
     gtk_container_set_border_width ( ( GtkContainer*)about_dlg , 2 );
     gtk_about_dialog_set_version ( (GtkAboutDialog*)about_dlg, VERSION );
     gtk_about_dialog_set_program_name ( (GtkAboutDialog*)about_dlg, _( "SPicView" ) );
-    gtk_about_dialog_set_logo( (GtkAboutDialog*)about_dlg, gdk_pixbuf_new_from_file(  PACKAGE_DATA_DIR"/pixmaps/spicview.png", NULL ) );
+    gtk_about_dialog_set_logo_icon_name ( (GtkAboutDialog*)about_dlg, "spicview" );
     gtk_about_dialog_set_copyright ( (GtkAboutDialog*)about_dlg, _( "Copyright (C) 2007 - 2016" ) );
     gtk_about_dialog_set_comments ( (GtkAboutDialog*)about_dlg, _( "Lightweight image viewer from Stuurman project" ) );
     gtk_about_dialog_set_license ( (GtkAboutDialog*)about_dlg, "SPicView\n\n"
