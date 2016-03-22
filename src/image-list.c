@@ -28,6 +28,15 @@
 #include <string.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
+typedef struct _ImageList
+{
+    gchar* dir_path;
+    GList* list;
+    GList* current;
+    time_t mtime;
+} ImageList;
+
+
 static GSList* supported_formats = NULL;
 
 static gboolean image_list_is_file_supported( const char* name );

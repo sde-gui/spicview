@@ -29,16 +29,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-/**
-    @author PCMan (Hong Jen Yee) <pcman.tw@gmail.com>
-*/
-typedef struct _ImageList
-{
-    gchar* dir_path;
-    GList* list;
-    GList* current;
-    time_t mtime;
-} ImageList;
+typedef struct _ImageList ImageList;
 
 ImageList* image_list_new();
 
