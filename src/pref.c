@@ -51,6 +51,7 @@ typedef struct {
 
 #define DEF_OPTION(group, name, type) {#name, #group, &pref.name, OTYPE_##type},
 static OptionDef option_defs[] = {
+    DEF_OPTION(View, quit_on_escape, BOOLEAN)
     DEF_OPTION(View, open_maximized, BOOLEAN)
     DEF_OPTION(View, show_toolbar, BOOLEAN)
     DEF_OPTION(View, show_toolbar_fullscreen, BOOLEAN)
@@ -133,6 +134,7 @@ void load_preferences()
     pref.jpg_quality = 90;
     pref.png_compression = 9;
 
+    pref.quit_on_escape = TRUE;
     pref.show_toolbar = TRUE;
     pref.show_toolbar_fullscreen = FALSE;
 

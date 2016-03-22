@@ -951,10 +951,10 @@ gboolean on_key_press_event(GtkWidget* widget, GdkEventKey * key)
             on_toggle_toolbar( NULL, mw );
             break;
         case GDK_Escape:
-            if( mw->full_screen )
-                on_full_screen( NULL, mw );
-            else
-                on_quit( NULL, mw );
+            if (mw->full_screen)
+                on_full_screen(NULL, mw);
+            else if (pref.quit_on_escape)
+                on_quit(NULL, mw);
             break;
         case GDK_q:
         case GDK_Q:

@@ -41,6 +41,7 @@ typedef struct _Pref
     int jpg_quality;
     int png_compression;
 
+    gboolean quit_on_escape;
     gboolean show_toolbar;
     gboolean show_toolbar_fullscreen;
     gboolean toolbar_on_top;
