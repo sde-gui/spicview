@@ -42,6 +42,7 @@ typedef struct _Pref
     int png_compression;
 
     gboolean show_toolbar;
+    gboolean show_toolbar_fullscreen;
     gboolean toolbar_on_top;
 }Pref;
 

@@ -53,6 +53,7 @@ typedef struct {
 static OptionDef option_defs[] = {
     DEF_OPTION(View, open_maximized, BOOLEAN)
     DEF_OPTION(View, show_toolbar, BOOLEAN)
+    DEF_OPTION(View, show_toolbar_fullscreen, BOOLEAN)
     DEF_OPTION(View, toolbar_on_top, BOOLEAN)
     DEF_OPTION(View, slide_delay, INT)
     DEF_OPTION(View, background_color_auto_adjust, BOOLEAN)
@@ -133,6 +134,7 @@ void load_preferences()
     pref.png_compression = 9;
 
     pref.show_toolbar = TRUE;
+    pref.show_toolbar_fullscreen = FALSE;
 
     kf = g_key_file_new();
     path = g_build_filename( g_get_user_config_dir(),  CFG_FILE, NULL );

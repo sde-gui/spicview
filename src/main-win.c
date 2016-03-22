@@ -142,7 +142,7 @@ static void main_win_set_zoom_mode(MainWin* mw, ZoomMode mode);
 static void main_win_update_zoom_buttons_state(MainWin* mw);
 static void main_win_update_sensitivity(MainWin* mw);
 static void update_title(const char *filename, MainWin *mw );
-static void update_toolbar_visibility(MainWin *mw );
+static void main_win_update_toolbar_visibility(MainWin *mw );
 static void update_toolbar_position(MainWin *mw);
 
 static gboolean on_preload_next_timeout(MainWin* mw);
@@ -254,7 +254,7 @@ void main_win_init( MainWin*mw )
     create_nav_bar( mw, box );
     update_toolbar_position(mw);
     gtk_widget_show_all(box);
-    update_toolbar_visibility(mw);
+    main_win_update_toolbar_visibility(mw);
 
     mw->hand_cursor = gdk_cursor_new_for_display(gtk_widget_get_display((GtkWidget*)mw), GDK_FLEUR);
     mw->busy_cursor = gdk_cursor_new_for_display(gtk_widget_get_display((GtkWidget*)mw), GDK_WATCH);
@@ -424,18 +424,13 @@ void on_size_allocate( GtkWidget* widget, GtkAllocation    *allocation )
 gboolean on_win_state_event( GtkWidget* widget, GdkEventWindowState* state )
 {
     MainWin* mw = (MainWin*)widget;
-    if ((state->new_window_state &= GDK_WINDOW_STATE_FULLSCREEN) != 0)
-    {
-        gtk_widget_hide( gtk_widget_get_parent(mw->nav_bar) );
-        mw->full_screen = TRUE;
-    }
-    else
-    {
-        if (pref.show_toolbar)
-            gtk_widget_show( gtk_widget_get_parent(mw->nav_bar) );
-        mw->full_screen = FALSE;
-    }
 
+    if ((state->new_window_state &= GDK_WINDOW_STATE_FULLSCREEN) != 0)
+        mw->full_screen = TRUE;
+    else
+        mw->full_screen = FALSE;
+
+    main_win_update_toolbar_visibility(mw);
     main_win_update_background_color(mw);
 
     int previous = pref.open_maximized;
@@ -719,7 +714,7 @@ void on_preference(GtkWidget * btn, MainWin * mw)
 {
     edit_preferences((GtkWindow *) mw);
     update_toolbar_position(mw);
-    update_toolbar_visibility(mw);
+    main_win_update_toolbar_visibility(mw);
 }
 
 void on_quit( GtkWidget* btn, MainWin* mw )
@@ -1201,8 +1196,12 @@ void on_delete( GtkWidget* btn, MainWin* mw )
 
 void on_toggle_toolbar( GtkMenuItem* item, MainWin* mw )
 {
-    pref.show_toolbar = !pref.show_toolbar;
-    update_toolbar_visibility(mw);
+    if (mw->full_screen)
+        pref.show_toolbar_fullscreen = !pref.show_toolbar_fullscreen;
+    else
+        pref.show_toolbar = !pref.show_toolbar;
+
+    main_win_update_toolbar_visibility(mw);
     save_preferences();
 }
 
@@ -2026,9 +2025,16 @@ void main_win_update_background_color(MainWin* mw)
     gtk_widget_queue_draw(mw->evt_box);
 }
 
-void update_toolbar_visibility(MainWin *mw)
+static void main_win_update_toolbar_visibility(MainWin *mw)
 {
-    gtk_widget_set_visible(mw->nav_bar_alignment, pref.show_toolbar);
+    gboolean visible = FALSE;
+
+    if (mw->full_screen)
+        visible = pref.show_toolbar_fullscreen;
+    else
+        visible = pref.show_toolbar;
+
+    gtk_widget_set_visible(mw->nav_bar_alignment, visible);
 }
 
 void update_toolbar_position(MainWin *mw)
