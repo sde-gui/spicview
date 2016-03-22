@@ -67,11 +67,6 @@ void image_list_free( ImageList* il )
     g_slice_free( ImageList, il );
 }
 
-const char* image_list_get_dir( ImageList* il )
-{
-    return il->dir_path;
-}
-
 const char* image_list_get_current( ImageList* il )
 {
     return il->current ? (char*)il->current->data : NULL;
@@ -220,6 +215,13 @@ gchar* image_list_get_current_file_path( ImageList* il )
     const char* name;
     if( il->dir_path && (name = image_list_get_current( il )) )
         return g_build_filename( il->dir_path, name, NULL );
+    return NULL;
+}
+
+gchar * image_list_get_current_file_dir_path(ImageList * il)
+{
+    if (il->dir_path && image_list_get_current(il) != NULL)
+        return g_strdup(il->dir_path);
     return NULL;
 }
 

@@ -637,19 +637,22 @@ void on_save_copy( GtkWidget* btn, MainWin* mw )
     if (!mw->save_copy_action_enabled)
         return;
 
-    char *file, *type;
+    gchar *file, *type, *current_dir;
 
     cancel_slideshow(mw);
-    if( ! mw->pix )
+    if (!mw->pix)
         return;
 
-    file = get_save_filename( GTK_WINDOW(mw), image_list_get_dir( mw->image_list ), &type );
-    if( file )
+    current_dir = image_list_get_current_file_dir_path(mw->image_list);
+    file = get_save_filename(GTK_WINDOW(mw), current_dir, &type);
+    if (file)
     {
-        main_win_save( mw, file, type, TRUE );
-        g_free( file );
-        g_free( type );
+        main_win_save(mw, file, type, TRUE);
+        g_free(file);
+        g_free(type);
     }
+
+    g_free(current_dir);
 }
 
 void on_save( GtkWidget* btn, MainWin* mw )
@@ -661,8 +664,8 @@ void on_save( GtkWidget* btn, MainWin* mw )
     if( ! mw->pix )
         return;
 
-    char* file_name = g_build_filename( image_list_get_dir( mw->image_list ),
-                                        image_list_get_current( mw->image_list ), NULL );
+    char* file_name = image_list_get_current_file_path(mw->image_list);
+
     GdkPixbufFormat* info;
     info = gdk_pixbuf_get_file_info( file_name, NULL, NULL );
     char* type = gdk_pixbuf_format_get_name( info );
@@ -684,7 +687,7 @@ void on_save( GtkWidget* btn, MainWin* mw )
             // the result would not effected by EXIF Orientation...
 #ifdef HAVE_LIBJPEG
             int status = rotate_and_save_jpeg_lossless(file_name,mw->rotation_angle);
-	    if(status != 0)
+            if(status != 0)
             {
                 main_win_show_error( mw, g_strerror(status) );
             }
@@ -702,12 +705,15 @@ void on_save( GtkWidget* btn, MainWin* mw )
 void on_open( GtkWidget* btn, MainWin* mw )
 {
     cancel_slideshow(mw);
-    char* file = get_open_filename( (GtkWindow*)mw, image_list_get_dir( mw->image_list ) );
-    if( file )
+    gchar * current_dir = image_list_get_current_file_dir_path(mw->image_list);
+    gchar * file = get_open_filename((GtkWindow*)mw, current_dir);
+    if (file)
     {
         main_win_open(mw, file, mw->zoom_mode);
-        g_free( file );
+        g_free(file);
     }
+
+    g_free(current_dir);
 }
 
 void on_preference(GtkWidget * btn, MainWin * mw)

@@ -33,8 +33,6 @@ typedef struct _ImageList ImageList;
 
 ImageList* image_list_new();
 
-const char* image_list_get_dir( ImageList* il );
-
 gboolean image_list_open_dir( ImageList* il, const char* path, GError** error);
 
 gboolean image_list_set_current( ImageList* il, const char* name );
@@ -60,6 +58,7 @@ gboolean image_list_is_empty( ImageList* il );
 gboolean image_list_has_multiple_files( ImageList* il );
 
 gchar* image_list_get_current_file_path( ImageList* il );
+gchar* image_list_get_current_file_dir_path( ImageList* il );
 
 gchar* image_list_get_file_path_for_item( ImageList* il, const char * name );
 
