@@ -92,7 +92,9 @@ typedef struct _MainWin
     GtkWidget* img_play_stop;
     GtkWidget* percent;
     GdkCursor* hand_cursor;
+    GdkCursor* busy_cursor;
 
+    int ui_disabled;
     gboolean file_action_enabled;
     gboolean prev_action_enabled;
     gboolean next_action_enabled;
@@ -122,6 +124,8 @@ typedef struct _MainWin
     int drag_old_y;
     int rotation_angle;
     ImageList* image_list;
+
+    gboolean saving_is_in_progress;
 
     guint preload_next_timeout;
     guint preload_prev_timeout;

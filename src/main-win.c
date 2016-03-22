@@ -177,7 +177,9 @@ void main_win_finalize( GObject* obj )
 
     if( G_LIKELY(mw->image_list) )
         image_list_free( mw->image_list );
-    gdk_cursor_unref( mw->hand_cursor );
+
+    gdk_cursor_unref(mw->hand_cursor);
+    gdk_cursor_unref(mw->busy_cursor);
 
     if (mw->preload_next_timeout)
         g_source_remove(mw->preload_next_timeout);
@@ -254,7 +256,8 @@ void main_win_init( MainWin*mw )
     gtk_widget_show_all(box);
     update_toolbar_visibility(mw);
 
-    mw->hand_cursor = gdk_cursor_new_for_display( gtk_widget_get_display((GtkWidget*)mw), GDK_FLEUR );
+    mw->hand_cursor = gdk_cursor_new_for_display(gtk_widget_get_display((GtkWidget*)mw), GDK_FLEUR);
+    mw->busy_cursor = gdk_cursor_new_for_display(gtk_widget_get_display((GtkWidget*)mw), GDK_WATCH);
 
     mw->zoom_mode = ZOOM_FIT;
 
@@ -1098,6 +1101,17 @@ gboolean main_win_save( MainWin* mw, const char* file_path, const char* type, gb
         main_win_show_error( mw, _("Writing this image format is not supported.") );
         return FALSE;
     }
+
+    { /* update UI before the long-running action */
+        mw->saving_is_in_progress = TRUE;
+        mw->ui_disabled++;
+        main_win_update_sensitivity(mw);
+        update_title(NULL, mw);
+        gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(mw)), mw->busy_cursor);
+        while(gtk_events_pending ())
+            gtk_main_iteration();
+    }
+
     if( strcmp( type, "jpeg" ) == 0 )
     {
         char tmp[32];
@@ -1112,6 +1126,15 @@ gboolean main_win_save( MainWin* mw, const char* file_path, const char* type, gb
     }
     else
         result1 = gdk_pixbuf_save( mw->pix, file_path, type, &err, NULL );
+
+    { /* update UI after the long-running action */
+        mw->saving_is_in_progress = FALSE;
+        mw->ui_disabled--;
+        main_win_update_sensitivity(mw);
+        update_title(NULL, mw);
+        gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(mw)), NULL);
+    }
+
     if( ! result1 )
     {
         main_win_show_error( mw, err->message );
@@ -1916,25 +1939,26 @@ static void main_win_update_sensitivity(MainWin* mw)
     gboolean multiple_images = image_list_has_multiple_files(mw->image_list);
     gboolean animation = mw->animation != NULL;
     gboolean slideshow = mw->slideshow_running;
+    int ui_enabled = (mw->ui_disabled == 0);
 
-    mw->file_action_enabled        = image && !slideshow;
+    mw->file_action_enabled        = ui_enabled && image && !slideshow;
 
-    mw->prev_action_enabled        = image && multiple_images;
-    mw->next_action_enabled        = image && multiple_images;
-    mw->play_stop_action_enabled   = image && multiple_images;
+    mw->prev_action_enabled        = ui_enabled && image && multiple_images;
+    mw->next_action_enabled        = ui_enabled && image && multiple_images;
+    mw->play_stop_action_enabled   = ui_enabled && image && multiple_images;
 
-    mw->zoom_out_action_enabled    = image && mw->scale > 0.02;
-    mw->zoom_in_action_enabled     = image && mw->scale < 20.0;
-    mw->zoom_fit_action_enabled    = image;
-    mw->zoom_orig_action_enabled   = image;
+    mw->zoom_out_action_enabled    = ui_enabled && image && mw->scale > 0.02;
+    mw->zoom_in_action_enabled     = ui_enabled && image && mw->scale < 20.0;
+    mw->zoom_fit_action_enabled    = ui_enabled && image;
+    mw->zoom_orig_action_enabled   = ui_enabled && image;
 
-    mw->rotate_cw_action_enabled   = image && !animation && !slideshow;
-    mw->rotate_ccw_action_enabled  = image && !animation && !slideshow;
-    mw->flip_v_action_enabled      = image && !animation && !slideshow;
-    mw->flip_h_action_enabled      = image && !animation && !slideshow;
-    mw->save_file_action_enabled   = image && !slideshow;
-    mw->save_copy_action_enabled   = image && !slideshow;
-    mw->delete_file_action_enabled = image && !slideshow;
+    mw->rotate_cw_action_enabled   = ui_enabled && image && !animation && !slideshow;
+    mw->rotate_ccw_action_enabled  = ui_enabled && image && !animation && !slideshow;
+    mw->flip_v_action_enabled      = ui_enabled && image && !animation && !slideshow;
+    mw->flip_h_action_enabled      = ui_enabled && image && !animation && !slideshow;
+    mw->save_file_action_enabled   = ui_enabled && image && !slideshow;
+    mw->save_copy_action_enabled   = ui_enabled && image && !slideshow;
+    mw->delete_file_action_enabled = ui_enabled && image && !slideshow;
 
 
     gtk_widget_set_sensitive(mw->btn_prev, mw->prev_action_enabled);
@@ -1953,6 +1977,8 @@ static void main_win_update_sensitivity(MainWin* mw)
     gtk_widget_set_sensitive(mw->btn_save_file, mw->save_file_action_enabled);
     gtk_widget_set_sensitive(mw->btn_save_copy, mw->save_copy_action_enabled);
     gtk_widget_set_sensitive(mw->btn_delete_file, mw->delete_file_action_enabled);
+
+    gtk_widget_set_sensitive(mw->nav_bar, ui_enabled);
 }
 
 static void update_title(const char *filename, MainWin *mw )
@@ -1971,7 +1997,12 @@ static void update_title(const char *filename, MainWin *mw )
       hei = gdk_pixbuf_get_height( mw->pix );
     }
 
-    snprintf(buf, 100, "%s (%dx%d) %d%%", fname, wid, hei, (int)(mw->scale * 100));
+    snprintf(buf, 100, "%s (%dx%d) %d%%%s",
+        fname,
+        wid, hei,
+        (int)(mw->scale * 100),
+        mw->saving_is_in_progress ? _(" [saving the file...]") : "");
+
     gtk_window_set_title( (GtkWindow*)mw, buf );
 
     return;
