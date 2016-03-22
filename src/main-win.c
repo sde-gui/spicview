@@ -1356,7 +1356,7 @@ void on_about( GtkWidget* menu, MainWin* mw )
     "Copyright (C) 2013 Vadim Ushakov\n"
     "Copyright (C) 2007 Hong Jen Yee (PCMan)\n\n"
     "This program is free software; you can redistribute it and/or\nmodify it under the terms of the GNU General Public License\nas published by the Free Software Foundation; either version 2\nof the License, or (at your option) any later version.\n\nThis program is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\nGNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License\nalong with this program; if not, write to the Free Software\nFoundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA." );
-    //gtk_about_dialog_set_website ( (GtkAboutDialog*)about_dlg, "http://wiki.lxde.org/en/GPicView" );
+    gtk_about_dialog_set_website ( (GtkAboutDialog*)about_dlg, "http://git.make-linux.org/" );
     gtk_about_dialog_set_authors ( (GtkAboutDialog*)about_dlg, authors );
     gtk_about_dialog_set_translator_credits ( (GtkAboutDialog*)about_dlg, translators );
     gtk_window_set_transient_for( (GtkWindow*) about_dlg, GTK_WINDOW( mw ) );
