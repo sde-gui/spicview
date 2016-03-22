@@ -83,7 +83,7 @@ typedef struct _MainWin
 
     GtkWidget* btn_open;
     GtkWidget* btn_save_file;
-    GtkWidget* btn_save_as;
+    GtkWidget* btn_save_copy;
     GtkWidget* btn_delete_file;
 
     GtkWidget* btn_preference;
@@ -106,7 +106,7 @@ typedef struct _MainWin
     gboolean flip_v_action_enabled;
     gboolean flip_h_action_enabled;
     gboolean save_file_action_enabled;
-    gboolean save_as_action_enabled;
+    gboolean save_copy_action_enabled;
     gboolean delete_file_action_enabled;
 
     GtkAllocation scroll_allocation;

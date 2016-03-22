@@ -100,7 +100,7 @@ static void on_zoom_orig_menu( GtkWidget* widget, MainWin* mw );
 static void on_rotate_auto_save( GtkWidget* btn, MainWin* mw );
 static void on_rotate_clockwise( GtkWidget* btn, MainWin* mw );
 static void on_rotate_counterclockwise( GtkWidget* btn, MainWin* mw );
-static void on_save_as( GtkWidget* btn, MainWin* mw );
+static void on_save_copy( GtkWidget* btn, MainWin* mw );
 static void on_save( GtkWidget* btn, MainWin* mw );
 static void cancel_slideshow(MainWin* mw);
 static gboolean next_slide(MainWin* mw);
@@ -348,7 +348,7 @@ void create_nav_bar( MainWin* mw, GtkWidget* box )
 
     ADD_BUTTON(GTK_STOCK_OPEN, _("Open File"), G_CALLBACK(on_open), FALSE, open);
     ADD_BUTTON(GTK_STOCK_SAVE, _("Save File"), G_CALLBACK(on_save), FALSE, save_file);
-    ADD_BUTTON(GTK_STOCK_SAVE_AS, _("Save File As"), G_CALLBACK(on_save_as), FALSE, save_as);
+    ADD_BUTTON(GTK_STOCK_SAVE_AS, _("Save a Copy"), G_CALLBACK(on_save_copy), FALSE, save_copy);
     ADD_BUTTON(GTK_STOCK_DELETE, _("Delete File"), G_CALLBACK(on_delete), FALSE, delete_file);
 
     ADD_SEPATAROR();
@@ -634,9 +634,9 @@ void on_flip_horizontal( GtkWidget* btn, MainWin* mw )
 
 /* end of rotate & flip */
 
-void on_save_as( GtkWidget* btn, MainWin* mw )
+void on_save_copy( GtkWidget* btn, MainWin* mw )
 {
-    if (!mw->save_as_action_enabled)
+    if (!mw->save_copy_action_enabled)
         return;
 
     char *file, *type;
@@ -648,24 +648,7 @@ void on_save_as( GtkWidget* btn, MainWin* mw )
     file = get_save_filename( GTK_WINDOW(mw), image_list_get_dir( mw->image_list ), &type );
     if( file )
     {
-        char* dir;
         main_win_save( mw, file, type, TRUE );
-        dir = g_path_get_dirname(file);
-        const char* name = file + strlen(dir) + 1;
-
-        if( strcmp( image_list_get_dir(mw->image_list), dir ) == 0 )
-        {
-            /* if the saved file is located in the same dir */
-            /* simply add it to image list */
-            image_list_add_sorted( mw->image_list, name, TRUE );
-        }
-        else /* otherwise reload the whole image list. */
-        {
-            /* switch to the dir containing the saved file. */
-            image_list_open_dir( mw->image_list, dir, NULL );
-        }
-        update_title( name, mw );
-        g_free( dir );
         g_free( file );
         g_free( type );
     }
@@ -926,7 +909,7 @@ gboolean on_key_press_event(GtkWidget* widget, GdkEventKey * key)
             break;
         case GDK_a:
         case GDK_A:
-            on_save_as( NULL, mw );
+            on_save_copy( NULL, mw );
             break;
         case GDK_l:
         case GDK_L:
@@ -1232,8 +1215,7 @@ void show_popup_menu(MainWin * mw, GdkEventButton * evt)
         /* 16 */ PTK_SEPARATOR_MENU_ITEM,
         /* 17 */ PTK_IMG_MENU_ITEM( N_("Open File"), GTK_STOCK_OPEN, G_CALLBACK(on_open), GDK_O, 0 ),
         /* 18 */ PTK_IMG_MENU_ITEM( N_("Save File"), GTK_STOCK_SAVE, G_CALLBACK(on_save), GDK_S, 0 ),
-        /* 19 */ PTK_IMG_MENU_ITEM( N_("Save As"), GTK_STOCK_SAVE_AS, G_CALLBACK(on_save_as), GDK_A, 0 ),
-//        PTK_IMG_MENU_ITEM( N_("Save As Other Size"), GTK_STOCK_SAVE_AS, G_CALLBACK(on_save_as), GDK_A, 0 ),
+        /* 19 */ PTK_IMG_MENU_ITEM( N_("Save a Copy..."), GTK_STOCK_SAVE_AS, G_CALLBACK(on_save_copy), GDK_A, 0 ),
         /* 20 */ PTK_IMG_MENU_ITEM( N_("Delete File"), GTK_STOCK_DELETE, G_CALLBACK(on_delete), GDK_Delete, 0 ),
         /* 21 */ PTK_SEPARATOR_MENU_ITEM,
         /* 22 */ PTK_IMG_MENU_ITEM( N_("Preferences"), GTK_STOCK_PREFERENCES, G_CALLBACK(on_preference), GDK_P, 0 ),
@@ -1261,7 +1243,7 @@ void show_popup_menu(MainWin * mw, GdkEventButton * evt)
     GtkWidget* flip_h_menu_item = NULL;
 
     GtkWidget* save_file_menu_item = NULL;
-    GtkWidget* save_as_menu_item = NULL;
+    GtkWidget* save_copy_menu_item = NULL;
     GtkWidget* delete_file_menu_item = NULL;
 
     menu_def[0].ret = &file_menu_item;
@@ -1281,7 +1263,7 @@ void show_popup_menu(MainWin * mw, GdkEventButton * evt)
     menu_def[15].ret = &flip_v_menu_item;
 
     menu_def[18].ret = &save_file_menu_item;
-    menu_def[19].ret = &save_as_menu_item;
+    menu_def[19].ret = &save_copy_menu_item;
     menu_def[20].ret = &delete_file_menu_item;
 
     // mw accel group is useless. It's only used to display accels in popup menu
@@ -1305,7 +1287,7 @@ void show_popup_menu(MainWin * mw, GdkEventButton * evt)
     gtk_widget_set_sensitive( flip_v_menu_item, mw->flip_v_action_enabled );
 
     gtk_widget_set_sensitive( save_file_menu_item, mw->save_file_action_enabled );
-    gtk_widget_set_sensitive( save_as_menu_item, mw->save_as_action_enabled );
+    gtk_widget_set_sensitive( save_copy_menu_item, mw->save_copy_action_enabled );
     gtk_widget_set_sensitive( delete_file_menu_item, mw->delete_file_action_enabled );
 
 
@@ -1951,7 +1933,7 @@ static void main_win_update_sensitivity(MainWin* mw)
     mw->flip_v_action_enabled      = image && !animation && !slideshow;
     mw->flip_h_action_enabled      = image && !animation && !slideshow;
     mw->save_file_action_enabled   = image && !slideshow;
-    mw->save_as_action_enabled     = image && !slideshow;
+    mw->save_copy_action_enabled   = image && !slideshow;
     mw->delete_file_action_enabled = image && !slideshow;
 
 
@@ -1969,7 +1951,7 @@ static void main_win_update_sensitivity(MainWin* mw)
     gtk_widget_set_sensitive(mw->btn_flip_v, mw->flip_v_action_enabled);
     gtk_widget_set_sensitive(mw->btn_flip_h, mw->flip_h_action_enabled);
     gtk_widget_set_sensitive(mw->btn_save_file, mw->save_file_action_enabled);
-    gtk_widget_set_sensitive(mw->btn_save_as, mw->save_as_action_enabled);
+    gtk_widget_set_sensitive(mw->btn_save_copy, mw->save_copy_action_enabled);
     gtk_widget_set_sensitive(mw->btn_delete_file, mw->delete_file_action_enabled);
 }
 
