@@ -175,8 +175,8 @@ void main_win_finalize( GObject* obj )
 
     main_win_close(mw);
 
-    if( G_LIKELY(mw->img_list) )
-        image_list_free( mw->img_list );
+    if( G_LIKELY(mw->image_list) )
+        image_list_free( mw->image_list );
     gdk_cursor_unref( mw->hand_cursor );
 
     if (mw->preload_next_timeout)
@@ -265,7 +265,7 @@ void main_win_init( MainWin*mw )
                                                     GDK_ACTION_COPY | GDK_ACTION_ASK );
     g_signal_connect( mw, "drag-data-received", G_CALLBACK(on_drag_data_received), mw );
 
-    mw->img_list = image_list_new();
+    mw->image_list = image_list_new();
 
     // rotation angle is zero on startup
     mw->rotation_angle = 0;
@@ -645,7 +645,7 @@ void on_save_as( GtkWidget* btn, MainWin* mw )
     if( ! mw->pix )
         return;
 
-    file = get_save_filename( GTK_WINDOW(mw), image_list_get_dir( mw->img_list ), &type );
+    file = get_save_filename( GTK_WINDOW(mw), image_list_get_dir( mw->image_list ), &type );
     if( file )
     {
         char* dir;
@@ -653,16 +653,16 @@ void on_save_as( GtkWidget* btn, MainWin* mw )
         dir = g_path_get_dirname(file);
         const char* name = file + strlen(dir) + 1;
 
-        if( strcmp( image_list_get_dir(mw->img_list), dir ) == 0 )
+        if( strcmp( image_list_get_dir(mw->image_list), dir ) == 0 )
         {
             /* if the saved file is located in the same dir */
             /* simply add it to image list */
-            image_list_add_sorted( mw->img_list, name, TRUE );
+            image_list_add_sorted( mw->image_list, name, TRUE );
         }
         else /* otherwise reload the whole image list. */
         {
             /* switch to the dir containing the saved file. */
-            image_list_open_dir( mw->img_list, dir, NULL );
+            image_list_open_dir( mw->image_list, dir, NULL );
         }
         update_title( name, mw );
         g_free( dir );
@@ -680,8 +680,8 @@ void on_save( GtkWidget* btn, MainWin* mw )
     if( ! mw->pix )
         return;
 
-    char* file_name = g_build_filename( image_list_get_dir( mw->img_list ),
-                                        image_list_get_current( mw->img_list ), NULL );
+    char* file_name = g_build_filename( image_list_get_dir( mw->image_list ),
+                                        image_list_get_current( mw->image_list ), NULL );
     GdkPixbufFormat* info;
     info = gdk_pixbuf_get_file_info( file_name, NULL, NULL );
     char* type = gdk_pixbuf_format_get_name( info );
@@ -721,7 +721,7 @@ void on_save( GtkWidget* btn, MainWin* mw )
 void on_open( GtkWidget* btn, MainWin* mw )
 {
     cancel_slideshow(mw);
-    char* file = get_open_filename( (GtkWindow*)mw, image_list_get_dir( mw->img_list ) );
+    char* file = get_open_filename( (GtkWindow*)mw, image_list_get_dir( mw->image_list ) );
     if( file )
     {
         main_win_open(mw, file, mw->zoom_mode);
@@ -1143,7 +1143,7 @@ void on_delete( GtkWidget* btn, MainWin* mw )
         return;
 
     cancel_slideshow(mw);
-    gchar* file_path = image_list_get_current_file_path( mw->img_list );
+    gchar* file_path = image_list_get_current_file_path( mw->image_list );
     if( file_path )
     {
         int resp = GTK_RESPONSE_YES;
@@ -1154,36 +1154,36 @@ void on_delete( GtkWidget* btn, MainWin* mw )
                     GTK_MESSAGE_QUESTION,
                     GTK_BUTTONS_YES_NO,
                     _("Are you sure you want to delete file \"%s\"?\n\nWarning: Once deleted, the file cannot be recovered."),
-                    image_list_get_current(mw->img_list));
+                    image_list_get_current(mw->image_list));
             resp = gtk_dialog_run((GtkDialog *) dialog);
             gtk_widget_destroy(dialog);
         }
 
 	if( resp == GTK_RESPONSE_YES )
         {
-            const char* name = image_list_get_current( mw->img_list );
+            const char* name = image_list_get_current( mw->image_list );
 
 	    if( g_unlink( file_path ) != 0 )
 		main_win_show_error( mw, g_strerror(errno) );
 	    else
 	    {
-		const char* next_name = image_list_to_next( mw->img_list );
+		const char* next_name = image_list_to_next( mw->image_list );
 		if( ! next_name )
-		    next_name = image_list_to_prev( mw->img_list );
+		    next_name = image_list_to_prev( mw->image_list );
 
 		if( next_name )
 		{
-		    char* next_file_path = image_list_get_current_file_path( mw->img_list );
+		    char* next_file_path = image_list_get_current_file_path( mw->image_list );
 		    main_win_open( mw, next_file_path, ZOOM_FIT );
 		    g_free( next_file_path );
 		}
 
-		image_list_remove ( mw->img_list, name );
+		image_list_remove ( mw->image_list, name );
 
 		if ( ! next_name )
 		{
 		    main_win_close( mw );
-		    image_list_close( mw->img_list );
+		    image_list_close( mw->image_list );
 		    image_view_set_pixbuf( (ImageView*)mw->img_view, NULL );
 		    gtk_window_set_title( (GtkWindow*) mw, _("Image Viewer"));
 		}
@@ -1209,7 +1209,7 @@ static void popup_menu_position_handler(GtkMenu * menu, gint * x, gint * y, gboo
 
 void show_popup_menu(MainWin * mw, GdkEventButton * evt)
 {
-    GtkMenu * file_submenu = get_fm_file_menu_for_path((GtkWindow *) mw, image_list_get_current_file_path(mw->img_list));
+    GtkMenu * file_submenu = get_fm_file_menu_for_path((GtkWindow *) mw, image_list_get_current_file_path(mw->image_list));
 
     static PtkMenuItemEntry menu_def[] =
     {
@@ -1404,20 +1404,20 @@ void on_drag_data_received( GtkWidget* widget, GdkDragContext *drag_context,
 static void main_win_action_prev(MainWin* mw)
 {
     const char* name;
-    if( image_list_is_empty( mw->img_list ) )
+    if( image_list_is_empty( mw->image_list ) )
         return;
 
-    name = image_list_to_prev( mw->img_list );
+    name = image_list_to_prev( mw->image_list );
 
-    if( ! name && image_list_has_multiple_files( mw->img_list ) )
+    if( ! name && image_list_has_multiple_files( mw->image_list ) )
     {
         // FIXME: need to ask user first?
-        name = image_list_to_last( mw->img_list );
+        name = image_list_to_last( mw->image_list );
     }
 
     if( name )
     {
-        gchar* file_path = image_list_get_current_file_path( mw->img_list );
+        gchar* file_path = image_list_get_current_file_path( mw->image_list );
         main_win_open( mw, file_path, mw->zoom_mode );
         g_free( file_path );
     }
@@ -1425,20 +1425,20 @@ static void main_win_action_prev(MainWin* mw)
 
 static void main_win_action_next(MainWin* mw)
 {
-    if( image_list_is_empty( mw->img_list ) )
+    if( image_list_is_empty( mw->image_list ) )
         return;
 
-    const char* name = image_list_to_next( mw->img_list );
+    const char* name = image_list_to_next( mw->image_list );
 
-    if( ! name && image_list_has_multiple_files( mw->img_list ) )
+    if( ! name && image_list_has_multiple_files( mw->image_list ) )
     {
         // FIXME: need to ask user first?
-        name = image_list_to_first( mw->img_list );
+        name = image_list_to_first( mw->image_list );
     }
 
     if( name )
     {
-        gchar* file_path = image_list_get_current_file_path( mw->img_list );
+        gchar* file_path = image_list_get_current_file_path( mw->image_list );
         main_win_open( mw, file_path, mw->zoom_mode );
         g_free( file_path );
     }
@@ -1660,11 +1660,11 @@ gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
 {
     if (g_file_test(file_path, G_FILE_TEST_IS_DIR))
     {
-        image_list_open_dir( mw->img_list, file_path, NULL );
-        image_list_sort_by_name( mw->img_list, GTK_SORT_DESCENDING );
-        if (image_list_to_first(mw->img_list))
+        image_list_open_dir( mw->image_list, file_path, NULL );
+        image_list_sort_by_name( mw->image_list, GTK_SORT_DESCENDING );
+        if (image_list_to_first(mw->image_list))
         {
-            gchar* path = image_list_get_current_file_path(mw->img_list);
+            gchar* path = image_list_get_current_file_path(mw->image_list);
             main_win_open(mw, path, zoom);
             g_free(path);
         }
@@ -1735,12 +1735,12 @@ gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
 
     // build file list
     char* dir_path = g_path_get_dirname( file_path );
-    image_list_open_dir( mw->img_list, dir_path, NULL );
-    image_list_sort_by_name( mw->img_list, GTK_SORT_DESCENDING );
+    image_list_open_dir( mw->image_list, dir_path, NULL );
+    image_list_sort_by_name( mw->image_list, GTK_SORT_DESCENDING );
     g_free( dir_path );
 
     char* base_name = g_path_get_basename( file_path );
-    image_list_set_current( mw->img_list, base_name );
+    image_list_set_current( mw->image_list, base_name );
 
     char* disp_name = g_filename_display_name( base_name );
     g_free( base_name );
@@ -1767,10 +1767,10 @@ gboolean on_preload_next_timeout(MainWin* mw)
 {
     gchar* path = NULL;
 
-    if (!image_list_is_empty(mw->img_list))
+    if (!image_list_is_empty(mw->image_list))
     {
-        const char* name = image_list_get_next(mw->img_list);
-        path = image_list_get_file_path_for_item(mw->img_list, name);
+        const char* name = image_list_get_next(mw->image_list);
+        path = image_list_get_file_path_for_item(mw->image_list, name);
     }
 
     if (path)
@@ -1787,10 +1787,10 @@ gboolean on_preload_prev_timeout(MainWin* mw)
 {
     gchar* path = NULL;
 
-    if (!image_list_is_empty(mw->img_list))
+    if (!image_list_is_empty(mw->image_list))
     {
-        const char* name = image_list_get_prev(mw->img_list);
-        path = image_list_get_file_path_for_item(mw->img_list, name);
+        const char* name = image_list_get_prev(mw->image_list);
+        path = image_list_get_file_path_for_item(mw->image_list, name);
     }
 
     if (path)
@@ -1931,7 +1931,7 @@ static void main_win_update_zoom_buttons_state(MainWin* mw)
 static void main_win_update_sensitivity(MainWin* mw)
 {
     gboolean image = mw->animation || mw->pix;
-    gboolean multiple_images = image_list_has_multiple_files(mw->img_list);
+    gboolean multiple_images = image_list_has_multiple_files(mw->image_list);
     gboolean animation = mw->animation != NULL;
     gboolean slideshow = mw->slideshow_running;
 

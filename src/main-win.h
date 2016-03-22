@@ -121,7 +121,7 @@ typedef struct _MainWin
     int drag_old_x;
     int drag_old_y;
     int rotation_angle;
-    ImageList* img_list;
+    ImageList* image_list;
 
     guint preload_next_timeout;
     guint preload_prev_timeout;
