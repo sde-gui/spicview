@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2007 by PCMan (Hong Jen Yee)   *
- *   pcman.tw@gmail.com   *
+ *   Copyright (c) 2012-2016 Vadim Ushakov <igeekless@gmail.com>           *
+ *   Copyright (C) 2007 by PCMan (Hong Jen Yee) <pcman.tw@gmail.com>       *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
