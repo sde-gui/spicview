@@ -50,3 +50,5 @@ intltool-update.in
 spicview.desktop
 po/.intltool-merge-cache
 src/spicview
+src/spicview-gresource.c
+src/spicview-gresource.h

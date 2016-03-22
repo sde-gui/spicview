@@ -5,5 +5,5 @@ src/main-win.c
 src/pref.c
 src/file-dlgs.c
 spicview.desktop.in
-[type: gettext/glade]data/pref-dlg.ui
+[type: gettext/glade]gresource/ui/pref-dlg.ui
 

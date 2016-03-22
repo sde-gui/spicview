@@ -28,6 +28,8 @@
 #include <libsmfm-core/fm.h>
 #include <libsmfm-gtk/fm-gtk.h>
 
+#include "spicview.h"
+#include "spicview-gresource.h"
 #include "pref.h"
 #include "main-win.h"
 
@@ -44,8 +46,6 @@ static GOptionEntry opt_entries[] =
                  N_("Start slideshow"), NULL },
     { NULL }
 };
-
-#define PIXMAP_DIR        PACKAGE_DATA_DIR "/" PACKAGE_NAME_STR "/pixmaps/"
 
 int main(int argc, char *argv[])
 {
@@ -76,7 +76,21 @@ int main(int argc, char *argv[])
 
     fm_gtk_init(NULL);
 
-    gtk_icon_theme_append_search_path(gtk_icon_theme_get_default(), PIXMAP_DIR);
+    spicview_register_resource();
+
+    #define BUILTIN_ICON(icon) do {\
+        GdkPixbuf * pixbuf = gdk_pixbuf_new_from_resource(SPICVIEW_RESOURCE_PATH "icons/" icon ".png", NULL);\
+        if (pixbuf)\
+            gtk_icon_theme_add_builtin_icon(icon, gdk_pixbuf_get_width(pixbuf), pixbuf);\
+    } while (0)
+
+    BUILTIN_ICON("spicview");
+    BUILTIN_ICON("object-rotate-right");
+    BUILTIN_ICON("object-rotate-left");
+    BUILTIN_ICON("object-flip-horizontal");
+    BUILTIN_ICON("object-flip-vertical");
+
+    #undef BUILTIN_ICON
 
     load_preferences();
 

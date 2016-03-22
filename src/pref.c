@@ -26,10 +26,12 @@
 
 #include <glib/gi18n.h>
 #include <glib/gstdio.h>
+#include <gio/gio.h>
 
 #include <stdio.h>
 #include "pref.h"
 #include "main-win.h"
+#include "spicview.h"
 
 #define CFG_DIR    PACKAGE_NAME_STR
 #define CFG_FILE    CFG_DIR"/" PACKAGE_NAME_STR ".conf"
@@ -250,9 +252,26 @@ static void on_background_color_auto_adjust(GtkCheckButton * widget, gpointer us
 
 void edit_preferences( GtkWindow* parent )
 {
-    GtkBuilder* builder = gtk_builder_new();
-    GtkDialog* dlg;
-    gtk_builder_add_from_file(builder, PACKAGE_DATA_DIR "/" PACKAGE_NAME_STR "/ui/pref-dlg.ui", NULL);
+    GtkBuilder * builder = gtk_builder_new();
+    GtkDialog * dlg = NULL;
+    guint result;
+
+    GBytes * ui_bytes = g_resources_lookup_data(
+        SPICVIEW_RESOURCE_PATH "ui/pref-dlg.ui",
+        G_RESOURCE_LOOKUP_FLAGS_NONE,
+        NULL);
+
+    if (ui_bytes == NULL)
+        goto end;
+
+    result = gtk_builder_add_from_string(
+        builder, 
+        g_bytes_get_data(ui_bytes, NULL),
+        g_bytes_get_size(ui_bytes),
+        NULL);
+
+    if (result == 0)
+        goto end;
 
     dlg = (GtkDialog*)gtk_builder_get_object(builder, "dlg");
     gtk_window_set_transient_for((GtkWindow*)dlg, parent);
@@ -324,8 +343,9 @@ void edit_preferences( GtkWindow* parent )
         }
     }
 
+end:
+    g_bytes_unref(ui_bytes);
     g_object_unref(builder);
-
     gtk_widget_destroy((GtkWidget*)dlg);
 }
 

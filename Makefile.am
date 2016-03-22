@@ -1,19 +1,18 @@
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = src po data
+SUBDIRS = src po
 
 EXTRA_DIST = \
 	autogen.sh \
-	spicview.desktop.in \
-	spicview.png
+	spicview.desktop.in
 
 desktopdir = $(datadir)/applications
 desktop_in_files = spicview.desktop.in
 desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
 @INTLTOOL_DESKTOP_RULE@
 
-icondir = $(datadir)/pixmaps
-icon_DATA = spicview.png
+icondir = $(datadir)/icons/hicolor/48x48/apps
+icon_DATA = gresource/icons/spicview.png
 
 install-data-local:
 	@$(NORMAL_INSTALL)

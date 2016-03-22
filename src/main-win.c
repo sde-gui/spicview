@@ -197,7 +197,7 @@ GtkWidget* main_win_new()
 void main_win_init( MainWin*mw )
 {
     gtk_window_set_title( (GtkWindow*)mw, _("Image Viewer"));
-    gtk_window_set_icon_from_file( (GtkWindow*)mw, PACKAGE_DATA_DIR"/pixmaps/spicview.png", NULL );
+    gtk_window_set_icon_name((GtkWindow*)mw, "spicview");
     gtk_window_set_default_size( (GtkWindow*)mw, 640, 480 );
 
     g_signal_connect(G_OBJECT(mw), "destroy", G_CALLBACK(gtk_main_quit), NULL);

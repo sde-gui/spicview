@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/org/make-linux/spicview">
+    <file>icons/spicview.png</file>
+    <file>icons/object-rotate-right.png</file>
+    <file>icons/object-rotate-left.png</file>
+    <file>icons/object-flip-horizontal.png</file>
+    <file>icons/object-flip-vertical.png</file>
+    <file compressed="true">ui/pref-dlg.ui</file>
+  </gresource>
+</gresources>

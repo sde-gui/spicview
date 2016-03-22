@@ -26,7 +26,8 @@ spicview_SOURCES = \
 	exif.c \
 	jpgfile.c \
 	image-cache.c \
-	libsmfm_utils.c
+	libsmfm_utils.c \
+	spicview-gresource.c
 
 # the library search path.
 # use -nodefaultlibs to prevent linking libstdc++
@@ -34,6 +35,7 @@ spicview_LDADD = $(GTK_LIBS) $(LIBSMFM_LIBS) -lm
 
 noinst_HEADERS = \
 	gtkcompat.h \
+	spicview.h \
 	image-list.h \
 	main-win.h \
 	image-view.h \
@@ -44,5 +46,19 @@ noinst_HEADERS = \
 	pref.h \
 	jhead.h \
 	image-cache.h \
-	libsmfm_utils.h
+	libsmfm_utils.h \
+	spicview-gresource.h
+
+spicview-gresource.c: spicview.gresource.xml $(shell $(GLIB_COMPILE_RESOURCES) --sourcedir=$(srcdir)/../gresource --generate-dependencies spicview.gresource.xml)
+	$(AM_V_GEN)$(GLIB_COMPILE_RESOURCES) --sourcedir=$(srcdir)/../gresource --manual-register --generate-source --target=$@ $<
+
+spicview-gresource.h: spicview.gresource.xml $(shell $(GLIB_COMPILE_RESOURCES) --sourcedir=$(srcdir)/../gresource --generate-dependencies spicview.gresource.xml)
+	$(AM_V_GEN)$(GLIB_COMPILE_RESOURCES) --sourcedir=$(srcdir)/../gresource --manual-register --generate-header --target=$@ $<
+
+BUILT_SOURCES = spicview-gresource.c spicview-gresource.h
+
+CLEANFILES = $(BUILT_SOURCES) 
+
+EXTRA_DIST = \
+	spicview.gresource.xml
 
