@@ -34,7 +34,7 @@ IT_PROG_INTLTOOL([0.40.0])
 
 AC_PATH_PROG(GLIB_COMPILE_RESOURCES, glib-compile-resources)
 
-gtk_modules="gtk+-2.0 >= 2.24.0"
+gtk_modules="gtk+-2.0 >= 2.24.0 gdk-pixbuf-2.0 >= 2.26 gio-2.0 >= 2.32"
 PKG_CHECK_MODULES(GTK, [$gtk_modules])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
