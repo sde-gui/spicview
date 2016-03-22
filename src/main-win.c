@@ -555,13 +555,13 @@ void on_full_screen( GtkWidget* widget, MainWin* mw )
 
 static int trans_angle_to_id(int i)
 {
-    if(i == 0) 		return 1;
-    else if(i == 90)	return 6;
-    else if(i == 180)	return 3;
-    else if(i == 270)	return 8;
-    else if(i == -45)	return 7;
-    else if(i == -90)	return 2;
-    else if(i == -135)	return 5;
+    if(i == 0)          return 1;
+    else if(i == 90)    return 6;
+    else if(i == 180)   return 3;
+    else if(i == 270)   return 8;
+    else if(i == -45)   return 7;
+    else if(i == -90)   return 2;
+    else if(i == -135)  return 5;
     else     /* -180 */ return 4;
 }
 
@@ -1154,8 +1154,8 @@ void on_delete( GtkWidget* btn, MainWin* mw )
     if( file_path )
     {
         int resp = GTK_RESPONSE_YES;
-	if ( pref.ask_before_delete )
-	{
+        if ( pref.ask_before_delete )
+        {
             GtkWidget * dialog = gtk_message_dialog_new( (GtkWindow*)mw,
                     GTK_DIALOG_MODAL,
                     GTK_MESSAGE_QUESTION,
@@ -1166,37 +1166,37 @@ void on_delete( GtkWidget* btn, MainWin* mw )
             gtk_widget_destroy(dialog);
         }
 
-	if( resp == GTK_RESPONSE_YES )
+        if( resp == GTK_RESPONSE_YES )
         {
             const char* name = image_list_get_current( mw->image_list );
 
-	    if( g_unlink( file_path ) != 0 )
-		main_win_show_error( mw, g_strerror(errno) );
-	    else
-	    {
-		const char* next_name = image_list_to_next( mw->image_list );
-		if( ! next_name )
-		    next_name = image_list_to_prev( mw->image_list );
+            if( g_unlink( file_path ) != 0 )
+                main_win_show_error( mw, g_strerror(errno) );
+            else
+            {
+                const char* next_name = image_list_to_next( mw->image_list );
+                if( ! next_name )
+                    next_name = image_list_to_prev( mw->image_list );
 
-		if( next_name )
-		{
-		    char* next_file_path = image_list_get_current_file_path( mw->image_list );
-		    main_win_open( mw, next_file_path, ZOOM_FIT );
-		    g_free( next_file_path );
-		}
+                if( next_name )
+                {
+                    char* next_file_path = image_list_get_current_file_path( mw->image_list );
+                    main_win_open( mw, next_file_path, ZOOM_FIT );
+                    g_free( next_file_path );
+                }
 
-		image_list_remove ( mw->image_list, name );
+                image_list_remove ( mw->image_list, name );
 
-		if ( ! next_name )
-		{
-		    main_win_close( mw );
-		    image_list_close( mw->image_list );
-		    image_view_set_pixbuf( (ImageView*)mw->img_view, NULL );
-		    gtk_window_set_title( (GtkWindow*) mw, _("Image Viewer"));
-		}
-	    }
+                if ( ! next_name )
+                {
+                    main_win_close( mw );
+                    image_list_close( mw->image_list );
+                    image_view_set_pixbuf( (ImageView*)mw->img_view, NULL );
+                    gtk_window_set_title( (GtkWindow*) mw, _("Image Viewer"));
+                }
+            }
         }
-	g_free( file_path );
+        g_free( file_path );
     }
 }
 
