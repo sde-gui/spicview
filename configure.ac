@@ -1,6 +1,36 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_INIT(spicview, 0.2.4-alpha)
+
+dnl ===================
+
+# Argument quoting is from gcc's configure
+
+# Get original configure arguments. Quote arguments with shell meta charatcers.
+CONFIGURE_ARGUMENTS=
+for ac_arg in "$0" "$@"
+do
+  case "$ac_arg" in
+  *" "*|*"	"*|*[[\[\]\~\#\$\^\&\*\(\)\{\}\\\|\;\<\>\?\']]*)
+    ac_arg=`echo "$ac_arg" | sed "s/'/'\\\\\\\\''/g"`
+    # if the argument is of the form -foo=baz, quote the baz part only
+    ac_arg=`echo "'$ac_arg'" | sed "s/^'\([[-a-zA-Z0-9]]*=\)/\\1'/"` ;;
+  *) ;;
+  esac
+  # Add the quoted argument to the list.
+  CONFIGURE_ARGUMENTS="$CONFIGURE_ARGUMENTS $ac_arg"
+done
+
+# Remove the initial space we just introduced and, as these will be
+# expanded by make, quote '$'.
+CONFIGURE_ARGUMENTS=`echo "x$CONFIGURE_ARGUMENTS" | sed -e 's/^x *//' -e 's,\\$,$$,g'`
+
+AC_SUBST(CONFIGURE_ARGUMENTS)
+AH_TEMPLATE(CONFIGURE_ARGUMENTS, [])
+AC_DEFINE_UNQUOTED(CONFIGURE_ARGUMENTS,"$CONFIGURE_ARGUMENTS", [])
+
+dnl ===================
+
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE([enable])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
