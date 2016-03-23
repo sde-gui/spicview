@@ -56,7 +56,6 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Gettext package.])
 AC_OUTPUT([
 Makefile
 src/Makefile
-data/Makefile
 po/Makefile.in
 ])
 
