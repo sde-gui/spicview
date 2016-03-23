@@ -16,8 +16,8 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _GPICVIEW_LIBSMFM_H
-#define _GPICVIEW_LIBSMFM_H
+#ifndef _SPICVIEW_LIBSMFM_H
+#define _SPICVIEW_LIBSMFM_H
 
 #include <gtk/gtk.h>
 
