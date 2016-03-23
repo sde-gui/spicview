@@ -27,6 +27,7 @@ spicview_SOURCES = \
 	jpgfile.c \
 	image-cache.c \
 	libsmfm_utils.c \
+	info-window.c \
 	spicview-gresource.c
 
 # the library search path.
@@ -47,6 +48,7 @@ noinst_HEADERS = \
 	jhead.h \
 	image-cache.h \
 	libsmfm_utils.h \
+	info-window.h \
 	spicview-gresource.h
 
 spicview-gresource.c: spicview.gresource.xml $(shell $(GLIB_COMPILE_RESOURCES) --sourcedir=$(srcdir)/../gresource --generate-dependencies spicview.gresource.xml)
