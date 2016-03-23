@@ -222,10 +222,10 @@ void main_win_init( MainWin*mw )
     gtk_container_add( (GtkContainer*)mw->evt_box, (GtkWidget*)mw->img_view);
 
     const char scroll_style[]=
-            "style \"gpicview-scroll\" {"
+            "style \"spicview-scroll\" {"
             "GtkScrolledWindow::scrollbar-spacing=0"
             "}"
-            "class \"GtkScrolledWindow\" style \"gpicview-scroll\"";
+            "class \"GtkScrolledWindow\" style \"spicview-scroll\"";
     gtk_rc_parse_string( scroll_style );
 
     mw->scroll = gtk_scrolled_window_new( NULL, NULL );
