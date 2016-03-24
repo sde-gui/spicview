@@ -36,8 +36,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "spicview.h"
 #include "pref.h"
-
 #include "gtkcompat.h"
 #include "image-cache.h"
 #include "image-view.h"
@@ -1339,128 +1339,10 @@ void show_popup_menu(MainWin * mw, GdkEventButton * evt)
 
 void on_about( GtkWidget* menu, MainWin* mw )
 {
-    const char * divider =
-        "\n------------------------------------------------------\n\n";
-
-    GString * text = g_string_new ("");
-
-    g_string_append (text, _(
-        "SPicView - Lightweight image viewer for SDE project\n"
-    ));
-
-    g_string_append_printf (text, _("Version: %s\n"), VERSION);
-
-    g_string_append (text, divider);
-
-    g_string_append_printf (text, _("Homepage: %s\n"), "http://make-linux.org/");
-    g_string_append_printf (text, _("You can the latest sources at %s\n"), "http://git.make-linux.org/");
-    g_string_append_printf (text, _("Please report bugs and feature requests to %s. We have no bug tracker at the moment, sorry.\n"), "<igeekless@gmail.com>");
-
-    g_string_append (text, divider);
-
-    g_string_append (text, _(
-        "Copyright (C) 2013-2016 Vadim Ushakov <igeekless@gmail.com>\n"
-        "Copyright (C) 2007 洪任諭 Hong Jen Yee <pcman.tw@gmail.com>\n"
-        "Copyright (C) Martin Siggel <martinsiggel@googlemail.com>\n"
-        "Copyright (C) Hialan Liu <hialan.liu@gmail.com>\n"
-        "Copyright (C) Marty Jack <martyj19@comcast.net>\n"
-        "Copyright (C) Louis Casillas <oxaric@gmail.com>\n"
-        "Copyright (C) Will Davies\n"
-    ));
-
-    g_string_append (text, divider);
-
-    g_string_append (text, _(
-        "This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.\n\n"
-        "This program is distributed in the hope that it will be useful,but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.\n\n"
-        "You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.\n"
-    ));
-
-    /* TRANSLATORS: Replace this string with your names, one name per line. */
-    const char * translator_credits = _( "translator-credits" );
-    if (g_strcmp0(_( "translator-credits" ), "translator-credits") != 0)
-    {
-        g_string_append (text, divider);
-
-        g_string_append (text, _(
-            "Translators:\n\n"
-        ));
-
-        g_string_append (text, translator_credits);
-
-        if (translator_credits[strlen(translator_credits)] != '\n')
-            g_string_append ( text, "\n");
-    }
-
-    g_string_append (text, divider);
-
-    g_string_append (text, _(
-        "Supported Image Formats:\n\n"
-    ));
-
-
-    GSList* formats = gdk_pixbuf_get_formats ();
-    GSList* format_entry;
-    for (format_entry = formats; format_entry != NULL; format_entry = format_entry->next )
-    {
-        GdkPixbufFormat * format = (GdkPixbufFormat *) format_entry->data;
-
-        if (gdk_pixbuf_format_is_disabled (format))
-            continue;
-
-        gchar * format_name = gdk_pixbuf_format_get_name (format);
-        gchar * format_description = gdk_pixbuf_format_get_description (format);
-        gchar * format_license = gdk_pixbuf_format_get_license (format);
-        gboolean format_writable = gdk_pixbuf_format_is_writable (format);
-        gboolean format_scalable = gdk_pixbuf_format_is_scalable (format);
-        gchar ** format_mime_types_v = gdk_pixbuf_format_get_mime_types (format);
-        gchar ** format_extensions_v = gdk_pixbuf_format_get_extensions (format);
-        gchar * format_mime_types = g_strjoinv (", ", format_mime_types_v);
-        gchar * format_extensions = g_strjoinv (", ", format_extensions_v);
-
-
-        g_string_append_printf (text, _(
-            "Image loader: GdkPixBuf::%s (%s)\n"
-            "    License:    %s\n"
-            "    Writable:   %s\n"
-            "    Scalable:   %s\n"
-            "    MIME types: %s\n"
-            "    Extensions: %s\n"
-            "\n"),
-            format_name, format_description,
-            format_license,
-            format_writable ? _("Yes") : _("No"),
-            format_scalable ? _("Yes") : _("No"),
-            format_mime_types,
-            format_extensions);
-
-        g_free (format_name);
-        g_free (format_description);
-        g_free (format_license);
-        g_strfreev (format_mime_types_v);
-        g_strfreev (format_extensions_v);
-        g_free (format_mime_types);
-        g_free (format_extensions);
-    }
-
-    g_string_append (text, divider);
-
-    g_string_append (text, _(
-        "Compile-time environment:\n"
-    ));
-
-    g_string_append_printf (text, "glib %d.%d.%d\n", GLIB_MAJOR_VERSION, GLIB_MINOR_VERSION, GLIB_MICRO_VERSION);
-    g_string_append_printf (text, "gtk %d.%d.%d\n", GTK_MAJOR_VERSION, GTK_MINOR_VERSION, GTK_MICRO_VERSION);
-#ifdef ENABLE_LIBSMFM
-    g_string_append_printf (text, "libsmfm-core %d.%d.%d\n", FM_VERSION_MAJOR, FM_VERSION_MINOR, FM_VERSION_MICRO);
-#endif
-    g_string_append_printf (text, "Configured with: %s\n", CONFIGURE_ARGUMENTS);
-
-    GtkWidget * about_dialog = create_info_window (GTK_WINDOW (mw), _("About SPicView"), text->str);
+    gchar * message = get_about_message ();
+    GtkWidget * about_dialog = create_info_window (GTK_WINDOW (mw), _("About SPicView"), message);
     gtk_widget_show (about_dialog);
-
-    g_string_free (text, TRUE);
-
+    g_free(message);
 }
 
 void on_drag_data_received( GtkWidget* widget, GdkDragContext *drag_context,

@@ -21,4 +21,6 @@
 
 #define SPICVIEW_RESOURCE_PATH "/org/make-linux/spicview/"
 
+gchar * get_about_message(void);
+
 #endif /*_SPICVIEW_H_*/
