@@ -48,7 +48,7 @@ gchar * get_about_message(void)
     g_string_append (text, divider);
 
     g_string_append_printf (text, _("Homepage: %s\n"), "http://make-linux.org/");
-    g_string_append_printf (text, _("You can the latest sources at %s\n"), "http://git.make-linux.org/");
+    g_string_append_printf (text, _("You can take the latest sources at %s\n"), "http://git.make-linux.org/");
     g_string_append_printf (text, _("Please report bugs and feature requests to %s. We have no bug tracker at the moment, sorry.\n"), "<igeekless@gmail.com>");
 
     g_string_append (text, divider);
