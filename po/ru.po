@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ru\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-21 22:25+0700\n"
-"PO-Revision-Date: 2016-03-21 22:36+0700\n"
+"POT-Creation-Date: 2016-03-24 16:27+0700\n"
+"PO-Revision-Date: 2016-03-24 16:40+0700\n"
 "Last-Translator: Vadim Ushakov <igeekless@gmail.com>\n"
 "Language-Team: RUSSIAN <ru@li.org>\n"
 "Language: ru\n"
@@ -19,123 +19,239 @@ msgstr ""
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Poedit 1.8.5\n"
 
-#: ../src/spicview.c:40
+#: ../src/spicview.c:43
+msgid "SPicView - Lightweight image viewer for SDE project\n"
+msgstr "SPicView - легковесный просмотрщик изображений для проекта SDE\n"
+
+#: ../src/spicview.c:46
+#, c-format
+msgid "Version: %s\n"
+msgstr "Версия: %s\n"
+
+#: ../src/spicview.c:50
+#, c-format
+msgid "Homepage: %s\n"
+msgstr "Домашняя страница: %s\n"
+
+#: ../src/spicview.c:51
+#, c-format
+msgid "You can take the latest sources at %s\n"
+msgstr "Свежие исходные коды вы можете скачать по адресу: %s\n"
+
+#: ../src/spicview.c:52
+#, c-format
+msgid ""
+"Please report bugs and feature requests to %s. We have no bug tracker at the "
+"moment, sorry.\n"
+msgstr ""
+"Пожалуйста отправляйте сообщения об ошибках и пожелания на адрес %s. Увы, у "
+"нас в настоящее время отсутствует баг-трекер.\n"
+
+#: ../src/spicview.c:57
+msgid ""
+"Copyright (C) 2013-2016 Vadim Ushakov <igeekless@gmail.com>\n"
+"Copyright (C) 2007 洪任諭 Hong Jen Yee <pcman.tw@gmail.com>\n"
+"Copyright (C) Martin Siggel <martinsiggel@googlemail.com>\n"
+"Copyright (C) Hialan Liu <hialan.liu@gmail.com>\n"
+"Copyright (C) Marty Jack <martyj19@comcast.net>\n"
+"Copyright (C) Louis Casillas <oxaric@gmail.com>\n"
+"Copyright (C) Will Davies\n"
+msgstr ""
+
+#: ../src/spicview.c:69
+msgid ""
+"This program is free software; you can redistribute it and/or modify it "
+"under the terms of the GNU General Public License as published by the Free "
+"Software Foundation; either version 2 of the License, or (at your option) "
+"any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,but WITHOUT "
+"ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or "
+"FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for "
+"more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License along with "
+"this program; if not, write to the Free Software Foundation, Inc., 51 "
+"Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.\n"
+msgstr ""
+
+#. TRANSLATORS: Replace this string with your names, one name per line.
+#: ../src/spicview.c:75 ../src/spicview.c:76
+msgid "translator-credits"
+msgstr ""
+"Vadim Ushakov <igeekless@gmail.com>\n"
+"Kazm @ forum.puppyrus.ml\n"
+"Vitaly Pashkov <admin@fluda.net>"
+
+#: ../src/spicview.c:81
+msgid ""
+"Translators:\n"
+"\n"
+msgstr ""
+"Переводчики\n"
+"\n"
+
+#: ../src/spicview.c:93
+msgid ""
+"Supported Image Formats:\n"
+"\n"
+msgstr ""
+"Поддерживаемые форматы изображений:\n"
+"\n"
+
+#: ../src/spicview.c:118
+#, c-format
+msgid ""
+"Image loader: GdkPixBuf::%s (%s)\n"
+"    License:    %s\n"
+"    Writable:   %s\n"
+"    Scalable:   %s\n"
+"    MIME types: %s\n"
+"    Extensions: %s\n"
+"\n"
+msgstr ""
+"Загрузчик изображений: GdkPixBuf::%s (%s)\n"
+"    Лицензия:               %s\n"
+"    Поддерживается запись:  %s\n"
+"    Масштабируемый:         %s\n"
+"    Типы MIME:              %s\n"
+"    Расширения:             %s\n"
+"\n"
+
+#: ../src/spicview.c:127 ../src/spicview.c:128
+msgid "Yes"
+msgstr "Да"
+
+#: ../src/spicview.c:127 ../src/spicview.c:128
+msgid "No"
+msgstr "Нет"
+
+#: ../src/spicview.c:144
+msgid "Compile-time environment:\n"
+msgstr "Окружение времени компиляции:\n"
+
+#: ../src/spicview.c:164
 msgid "[FILE]"
 msgstr "[ФАЙЛ]"
 
-#: ../src/spicview.c:42
+#: ../src/spicview.c:166
 msgid "Print version information and exit"
 msgstr "Вывести информацию о версии и выйти"
 
-#: ../src/spicview.c:44
+#: ../src/spicview.c:168
+msgid "Print copyright notice, license and other information about the program"
+msgstr ""
+"Вывести уведомление об авторских правах, лицензию и другую информацию о "
+"программе"
+
+#: ../src/spicview.c:170
 msgid "Start slideshow"
 msgstr "Запуск слайдшоу"
 
-#: ../src/main-win.c:197 ../src/main-win.c:1188 ../spicview.desktop.in.h:2
+#: ../src/main-win.c:200 ../src/main-win.c:1196 ../spicview.desktop.in.h:2
 msgid "Image Viewer"
 msgstr "Просмотр изображений"
 
 #. 1
-#: ../src/main-win.c:325 ../src/main-win.c:1217
+#: ../src/main-win.c:329 ../src/main-win.c:1229
 msgid "Previous"
 msgstr "Предыдущий"
 
 #. 2
-#: ../src/main-win.c:326 ../src/main-win.c:1218
+#: ../src/main-win.c:330 ../src/main-win.c:1230
 msgid "Next"
 msgstr "Следующий"
 
-#: ../src/main-win.c:327 ../src/main-win.c:486
+#: ../src/main-win.c:331 ../src/main-win.c:485
 msgid "Start Slideshow"
 msgstr "Запуск слайдшоу"
 
 #. 4
 #. 5
-#: ../src/main-win.c:331 ../src/main-win.c:1221
+#: ../src/main-win.c:335 ../src/main-win.c:1233
 msgid "Zoom Out"
 msgstr "Уменьшить"
 
 #. 6
-#: ../src/main-win.c:332 ../src/main-win.c:1222
+#: ../src/main-win.c:336 ../src/main-win.c:1234
 msgid "Zoom In"
 msgstr "Увеличить"
 
 #. 7
-#: ../src/main-win.c:334 ../src/main-win.c:1223
+#: ../src/main-win.c:338 ../src/main-win.c:1235
 msgid "Fit Image To Window Size"
 msgstr "Масштабировать к размеру окна"
 
 #. 8
-#: ../src/main-win.c:335 ../src/main-win.c:1224
+#: ../src/main-win.c:339 ../src/main-win.c:1236
 msgid "Original Size"
 msgstr "Масштаб 1:1"
 
 #. 9
 #. 10
-#: ../src/main-win.c:337 ../src/main-win.c:1226
+#: ../src/main-win.c:341 ../src/main-win.c:1238
 msgid "Full Screen"
 msgstr "На полный экран"
 
 #. 11
 #. 12
-#: ../src/main-win.c:341 ../src/main-win.c:1228
+#: ../src/main-win.c:345 ../src/main-win.c:1240
 msgid "Rotate Counterclockwise"
 msgstr "Повернуть против часовой стрелки"
 
 #. 13
-#: ../src/main-win.c:342 ../src/main-win.c:1229
+#: ../src/main-win.c:346 ../src/main-win.c:1241
 msgid "Rotate Clockwise"
 msgstr "Повернуть по часовой стрелке"
 
 #. 14
-#: ../src/main-win.c:344 ../src/main-win.c:1230
+#: ../src/main-win.c:348 ../src/main-win.c:1242
 msgid "Flip Horizontal"
 msgstr "Перевернуть по горизонтали"
 
 #. 15
-#: ../src/main-win.c:345 ../src/main-win.c:1231
+#: ../src/main-win.c:349 ../src/main-win.c:1243
 msgid "Flip Vertical"
 msgstr "Перевернуть по вертикали"
 
 #. 16
 #. 17
-#: ../src/main-win.c:349 ../src/main-win.c:1233
+#: ../src/main-win.c:353 ../src/main-win.c:1245
 msgid "Open File"
 msgstr "Открыть файл"
 
 #. 18
-#: ../src/main-win.c:350 ../src/main-win.c:1234
+#: ../src/main-win.c:354 ../src/main-win.c:1246
 msgid "Save File"
 msgstr "Сохранить файл"
 
-#: ../src/main-win.c:351
-msgid "Save File As"
-msgstr "Сохранить файл как"
+#: ../src/main-win.c:355
+msgid "Save a Copy"
+msgstr "Сохранить копию"
 
-#. PTK_IMG_MENU_ITEM( N_("Save As Other Size"), GTK_STOCK_SAVE_AS, G_CALLBACK(on_save_as), GDK_A, 0 ),
 #. 20
-#: ../src/main-win.c:352 ../src/main-win.c:1237
+#: ../src/main-win.c:356 ../src/main-win.c:1248
 msgid "Delete File"
 msgstr "Удалить файл"
 
 #. 21
 #. 22
-#: ../src/main-win.c:356 ../src/main-win.c:1239 ../data/pref-dlg.ui.h:1
+#: ../src/main-win.c:360 ../src/main-win.c:1250 ../gresource/ui/pref-dlg.ui.h:1
 msgid "Preferences"
 msgstr "Настройки"
 
 #. 24
 #. 25
 #. 26
-#: ../src/main-win.c:357 ../src/main-win.c:1243
+#: ../src/main-win.c:361 ../src/main-win.c:1254
 msgid "Quit"
 msgstr "Выход"
 
-#: ../src/main-win.c:494
+#: ../src/main-win.c:493
 msgid "Stop Slideshow"
 msgstr "Останов слайдшоу"
 
-#: ../src/main-win.c:1074
+#: ../src/main-win.c:1062
 msgid ""
 "The file name you selected already exists.\n"
 "Do you want to overwrite existing file?\n"
@@ -145,11 +261,11 @@ msgstr ""
 "Вы хотите переписать существующий файл?\n"
 "(Внимание: Качество оригинала может быть потеряно)"
 
-#: ../src/main-win.c:1115
+#: ../src/main-win.c:1103
 msgid "Writing this image format is not supported."
 msgstr "Запись этого формата изображений не поддерживается."
 
-#: ../src/main-win.c:1156
+#: ../src/main-win.c:1164
 #, c-format
 msgid ""
 "Are you sure you want to delete file \"%s\"?\n"
@@ -161,50 +277,34 @@ msgstr ""
 "Внимание: Удаленный файл не может быть восстановлен."
 
 #. 0
-#: ../src/main-win.c:1216
+#: ../src/main-win.c:1228
 msgid "File"
 msgstr "Файл"
 
 #. 3
-#: ../src/main-win.c:1219
+#: ../src/main-win.c:1231
 msgid "Start/Stop Slideshow"
 msgstr "Запуск/останов слайдшоу"
 
 #. 19
-#: ../src/main-win.c:1235
-msgid "Save As"
-msgstr "Сохранить как"
+#: ../src/main-win.c:1247
+msgid "Save a Copy..."
+msgstr "Сохранить копию..."
 
 #. 23
-#: ../src/main-win.c:1240
+#: ../src/main-win.c:1251
 msgid "Show/Hide toolbar"
 msgstr "Показать/скрыть панель"
 
-#: ../src/main-win.c:1341
-msgid " * Refer to source code of EOG image viewer and GThumb"
-msgstr " * Смотри исходный код просмотрщика EOG  и GThumb"
+#: ../src/main-win.c:1343
+msgid "About SPicView"
+msgstr "О программе SPicView"
 
-#. TRANSLATORS: Replace this string with your names, one name per line.
-#: ../src/main-win.c:1345
-msgid "translator-credits"
-msgstr ""
-"Vadim Ushakov <igeekless@gmail.com>\n"
-"перевод Kazm для PuppyRus Linux http://puppyrus.ru\n"
-"Vitaly Pashkov <admin@fluda.net>"
+#: ../src/main-win.c:1979
+msgid " [saving the file...]"
+msgstr "[сохранение файла...]"
 
-#: ../src/main-win.c:1351
-msgid "SPicView"
-msgstr "SPicView"
-
-#: ../src/main-win.c:1353
-msgid "Copyright (C) 2007 - 2013"
-msgstr "Copyright (C) 2007 - 2013"
-
-#: ../src/main-win.c:1354
-msgid "Lightweight image viewer from Stuurman project"
-msgstr "Легкий просмотрщик изображений для проекта Stuurman"
-
-#: ../src/pref.c:218
+#: ../src/pref.c:226
 msgid ""
 "SPicView will become the default viewer for all supported image files on "
 "your system.\n"
@@ -258,27 +358,39 @@ msgstr "SPicView — просмотр изображений"
 msgid "View your images easily"
 msgstr "Смотрите ваши изображения без проблем"
 
-#: ../data/pref-dlg.ui.h:2
+#: ../gresource/ui/pref-dlg.ui.h:2
+msgid "_Quit on Escape key press"
+msgstr "В_ыход по нажатию на Escape"
+
+#: ../gresource/ui/pref-dlg.ui.h:3
 msgid "Show _Toolbar"
 msgstr "Отображать панель инструментов"
 
-#: ../data/pref-dlg.ui.h:3
+#: ../gresource/ui/pref-dlg.ui.h:4
+msgid "Show Toolbar in f_ullscreen mode"
+msgstr "Ото_бражать панель инструментов в полноэкранном режиме"
+
+#: ../gresource/ui/pref-dlg.ui.h:5
 msgid "Toolbar on to_p"
 msgstr "Панель инструментов сверху"
 
-#: ../data/pref-dlg.ui.h:4
+#: ../gresource/ui/pref-dlg.ui.h:6
+msgid "_Preload images"
+msgstr "Предварительная загрузка изобра_жений"
+
+#: ../gresource/ui/pref-dlg.ui.h:7
 msgid "Ask before _deleting images"
 msgstr "Спрашивать перед удалением изображений"
 
-#: ../data/pref-dlg.ui.h:5
+#: ../gresource/ui/pref-dlg.ui.h:8
 msgid "As_k before saving images"
 msgstr "Спрашивать перед сохранением изображений"
 
-#: ../data/pref-dlg.ui.h:6
+#: ../gresource/ui/pref-dlg.ui.h:9
 msgid "_Automatically save rotated images"
 msgstr "Автоматически сохранять изображения после поворота"
 
-#: ../data/pref-dlg.ui.h:7
+#: ../gresource/ui/pref-dlg.ui.h:10
 msgid ""
 "Rotate JPEG file by changing EXIF orientation value\n"
 "(only if _EXIF orientation tag exists)"
@@ -286,31 +398,43 @@ msgstr ""
 "Поворачивать файлы JPEG,  изменяя значение ориентации EXIF\n"
 "(только если параметр ориентации EXIF присутствует в файле)"
 
-#: ../data/pref-dlg.ui.h:9
+#: ../gresource/ui/pref-dlg.ui.h:12
 msgid "Slideshow _interval"
 msgstr "Интервал слайдшоу"
 
-#: ../data/pref-dlg.ui.h:10
+#: ../gresource/ui/pref-dlg.ui.h:13
 msgid "sec"
 msgstr "сек"
 
-#: ../data/pref-dlg.ui.h:11
+#: ../gresource/ui/pref-dlg.ui.h:14
 msgid "Make SPicView the default _viewer for images"
 msgstr "Сделать SPicView программой просмотра изображений по-умолчанию"
 
 # Нужно проверить интерфейс, т.к. в англ. прил/сущ/гл есть одно слово.
-#: ../data/pref-dlg.ui.h:12
+#: ../gresource/ui/pref-dlg.ui.h:15
 msgid "_Normal:"
 msgstr "Обычный:"
 
-#: ../data/pref-dlg.ui.h:13
+#: ../gresource/ui/pref-dlg.ui.h:16
 msgid "_Fullscreen:"
 msgstr "На полный экран:"
 
-#: ../data/pref-dlg.ui.h:14
+#: ../gresource/ui/pref-dlg.ui.h:17
 msgid "Auto-adjust background color based on the color of the image ed_ge"
 msgstr "Автоподстройка цвета фона в зависимости от цвета изображения"
 
-#: ../data/pref-dlg.ui.h:15
+#: ../gresource/ui/pref-dlg.ui.h:18
 msgid "<b>Background colors</b>"
 msgstr "<b>Цвета фона</b>"
+
+#~ msgid "Save File As"
+#~ msgstr "Сохранить файл как"
+
+#~ msgid "Save As"
+#~ msgstr "Сохранить как"
+
+#~ msgid " * Refer to source code of EOG image viewer and GThumb"
+#~ msgstr " * Смотри исходный код просмотрщика EOG  и GThumb"
+
+#~ msgid "Copyright (C) 2007 - 2013"
+#~ msgstr "Copyright (C) 2007 - 2013"
