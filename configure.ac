@@ -74,8 +74,14 @@ AC_CHECK_LIB(jpeg, jpeg_start_decompress, [],
 AC_CHECK_HEADER(jpeglib.h, , [AC_MSG_ERROR([libjpeg not found])])
 LIBJPEG='-ljpeg'
 
-pkg_modules="libsmfm-gtk2 libsmfm-core"
-PKG_CHECK_MODULES(LIBSMFM, [$pkg_modules])
+
+AC_ARG_WITH(libsmfm, [  --without-libsmfm       Compile without libsmfm support])
+if test "x$with_libsmfm" != "xno"; then
+    pkg_modules="libsmfm-gtk2 libsmfm-core"
+    PKG_CHECK_MODULES(LIBSMFM, [$pkg_modules])
+    AH_TEMPLATE(ENABLE_LIBSMFM, [])
+    AC_DEFINE(ENABLE_LIBSMFM)
+fi
 AC_SUBST(LIBSMFM_CFLAGS)
 AC_SUBST(LIBSMFM_LIBS)
 

@@ -22,13 +22,9 @@
 
 #include "libsmfm_utils.h"
 
-#include <gtk/gtk.h>
-
-#include <libsmfm-gtk/fm-gtk.h>
-
-
 GtkMenu * get_fm_file_menu_for_path(GtkWindow* parent, const char * path)
 {
+#ifdef ENABLE_LIBSMFM
     GFile * gfile = NULL;
     GFileInfo * gfile_info = NULL;
     FmPath * fm_path = NULL;
@@ -72,5 +68,33 @@ out:
         g_object_unref(G_OBJECT(gfile));
 
     return popup;
+#else
+    return NULL;
+#endif /* ENABLE_LIBSMFM */
 }
 
+
+gchar * translate_uri_to_local_path(const char * uri)
+{
+#ifdef ENABLE_LIBSMFM
+    gchar * local_path_str = NULL;
+    FmPath * path = fm_path_new_for_str(uri);
+    if (fm_path_is_native(path))
+    {
+        local_path_str = fm_path_to_str(path);
+    }
+    else
+    {
+        GFile * gf = fm_path_to_gfile(path);
+        local_path_str = g_file_get_path(gf);
+        g_object_unref(gf);
+    }
+
+    fm_path_unref(path);
+
+    return local_path_str;
+
+#else
+    return g_strdup(uri);
+#endif /* ENABLE_LIBSMFM */
+}

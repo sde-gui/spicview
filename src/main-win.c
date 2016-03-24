@@ -35,7 +35,6 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <libsmfm-core/fm.h>
 
 #include "pref.h"
 
@@ -1452,8 +1451,9 @@ void on_about( GtkWidget* menu, MainWin* mw )
 
     g_string_append_printf (text, "glib %d.%d.%d\n", GLIB_MAJOR_VERSION, GLIB_MINOR_VERSION, GLIB_MICRO_VERSION);
     g_string_append_printf (text, "gtk %d.%d.%d\n", GTK_MAJOR_VERSION, GTK_MINOR_VERSION, GTK_MICRO_VERSION);
+#ifdef ENABLE_LIBSMFM
     g_string_append_printf (text, "libsmfm-core %d.%d.%d\n", FM_VERSION_MAJOR, FM_VERSION_MINOR, FM_VERSION_MICRO);
-
+#endif
     g_string_append_printf (text, "Configured with: %s\n", CONFIGURE_ARGUMENTS);
 
     GtkWidget * about_dialog = create_info_window (GTK_WINDOW (mw), _("About SPicView"), text->str);

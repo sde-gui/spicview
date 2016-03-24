@@ -25,9 +25,8 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 #include <string.h>
-#include <libsmfm-core/fm.h>
-#include <libsmfm-gtk/fm-gtk.h>
 
+#include "libsmfm_utils.h"
 #include "spicview.h"
 #include "spicview-gresource.h"
 #include "pref.h"
@@ -74,7 +73,9 @@ int main(int argc, char *argv[])
         return 0;
     }
 
+#ifdef ENABLE_LIBSMFM
     fm_gtk_init(NULL);
+#endif
 
     spicview_register_resource();
 
@@ -105,21 +106,9 @@ int main(int argc, char *argv[])
     // FIXME: need to process multiple files...
     if( files )
     {
-        gchar * local_path_str = NULL;
-        FmPath * path = fm_path_new_for_str(files[0]);
-        if(fm_path_is_native(path))
-            local_path_str = fm_path_to_str(path);
-        else
-        {
-            GFile * gf = fm_path_to_gfile(path);
-            local_path_str = g_file_get_path(gf);
-            g_object_unref(gf);
-        }
-
-        main_win_open(win, local_path_str, ZOOM_FIT);
-
-        g_free(local_path_str);
-        fm_path_unref(path);
+        gchar * local_path = translate_uri_to_local_path (files[0]);
+        main_win_open(win, local_path, ZOOM_FIT);
+        g_free(local_path);
 
         if (should_start_slideshow)
             main_win_start_slideshow ( win );

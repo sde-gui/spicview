@@ -19,8 +19,19 @@
 #ifndef _SPICVIEW_LIBSMFM_H
 #define _SPICVIEW_LIBSMFM_H
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifdef ENABLE_LIBSMFM
+#include <libsmfm-core/fm.h>
+#include <libsmfm-gtk/fm-gtk.h>
+#endif
+
 #include <gtk/gtk.h>
 
 GtkMenu * get_fm_file_menu_for_path(GtkWindow* parent, const char * path);
+
+gchar * translate_uri_to_local_path(const char * uri);
 
 #endif
