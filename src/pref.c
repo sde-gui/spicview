@@ -41,7 +41,8 @@ Pref pref = {0};
 typedef enum {
     OTYPE_BOOLEAN,
     OTYPE_INT,
-    OTYPE_COLOR
+    OTYPE_COLOR,
+    OTYPE_INTERP
 } OptionType;
 
 typedef struct {
@@ -63,6 +64,8 @@ static OptionDef option_defs[] = {
     DEF_OPTION(View, background_color_auto_adjust, BOOLEAN)
     DEF_OPTION(View, background_color, COLOR)
     DEF_OPTION(View, background_color_fullscreen, COLOR)
+    DEF_OPTION(View, downscale_interpolation_mode, INTERP)
+    DEF_OPTION(View, upscale_interpolation_mode, INTERP)
 
     DEF_OPTION(Edit, auto_save_rotated, BOOLEAN)
     DEF_OPTION(Edit, ask_before_save, BOOLEAN)
@@ -75,6 +78,32 @@ static OptionDef option_defs[] = {
 };
 #undef DEF_OPTION
 
+static const char * interp_to_a(GdkInterpType interp)
+{
+    const char * interp_name = "Bilinear";
+    switch (interp) {
+        case GDK_INTERP_NEAREST:  interp_name = "Nearest"; break;
+        case GDK_INTERP_BILINEAR: interp_name = "Bilinear"; break;
+        case GDK_INTERP_HYPER:    interp_name = "Hyper"; break;
+        default: /* nothing */ break;
+    }
+    return interp_name;
+}
+
+static GdkInterpType a_to_interp(const char * interp_name)
+{
+    GdkInterpType interp;
+    if (g_strcmp0(interp_name, "Nearest") == 0) {
+        interp = GDK_INTERP_NEAREST;
+    } else if (g_strcmp0(interp_name, "Bilinear") == 0) {
+        interp = GDK_INTERP_BILINEAR;
+    } else if (g_strcmp0(interp_name, "Hyper") == 0) {
+        interp = GDK_INTERP_HYPER;
+    } else {
+        interp = GDK_INTERP_BILINEAR;
+    }
+    return interp;
+}
 
 static gboolean kf_get_bool(GKeyFile* kf, const char* group, const char* name, gboolean* ret )
 {
@@ -116,6 +145,19 @@ static gboolean kf_get_color(GKeyFile* kf, const char* group, const char* name, 
     return FALSE;
 }
 
+static gboolean kf_get_interp(GKeyFile* kf, const char* group, const char* name, GdkInterpType* ret )
+{
+    gchar * interp_name = g_key_file_get_string(kf, group, name, NULL);
+    if (interp_name)
+    {
+        *ret = a_to_interp(interp_name);
+        g_free(interp_name);
+        return TRUE;
+    }
+    return FALSE;
+}
+
+
 void load_preferences()
 {
     GKeyFile* kf;
@@ -133,6 +175,9 @@ void load_preferences()
     pref.background_color_fullscreen.green = 0;
     pref.background_color_fullscreen.blue = 0;
     pref.background_color_auto_adjust = TRUE;
+
+    pref.downscale_interpolation_mode = GDK_INTERP_BILINEAR;
+    pref.upscale_interpolation_mode = GDK_INTERP_BILINEAR;
 
     pref.jpg_quality = 90;
     pref.png_compression = 9;
@@ -159,6 +204,9 @@ void load_preferences()
                     break;
                 case OTYPE_COLOR:
                     kf_get_color(kf, option->group, option->name, (GdkColor *) option->pref_ptr);
+                    break;
+                case OTYPE_INTERP:
+                    kf_get_interp(kf, option->group, option->name, (GdkInterpType *) option->pref_ptr);
                     break;
                 default:
                     g_error("Unknown option type %d", (int)option->type);
@@ -209,6 +257,12 @@ void save_preferences()
                         color->red / 256, color->green / 256, color->blue / 256);
                     break;
                 }
+                case OTYPE_INTERP:
+                {
+                    GdkInterpType * interp = (GdkInterpType *) option->pref_ptr;
+                    fprintf(f, "%s=%s\n", option->name, interp_to_a(*interp));
+                    break;
+                }
                 default:
                     g_warning("Unknown option type %d", (int)option->type);
             }
@@ -250,6 +304,24 @@ static void on_background_color_auto_adjust(GtkCheckButton * widget, gpointer us
     if (value)
         *value = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget));
     main_win_update_background_color(parent);
+}
+
+static void on_interp_changed(GtkComboBox * widget, gpointer user_data )
+{
+    MainWin * parent=(MainWin * ) user_data;
+    GdkInterpType * p_interp = (GdkInterpType * ) g_object_get_data(G_OBJECT(widget), "pref_ptr");
+    if (p_interp)
+    {
+        GtkTreeIter iter;
+        if (gtk_combo_box_get_active_iter (widget, &iter))
+        {
+            *p_interp = a_to_interp("_invalid_name_");
+            gtk_tree_model_get (GTK_TREE_MODEL(gtk_combo_box_get_model(widget)), &iter,
+                1, p_interp,
+                -1);
+            main_win_on_scale_preferences_changed(parent);
+        }
+    }
 }
 
 void edit_preferences( GtkWindow* parent )
@@ -303,6 +375,53 @@ void edit_preferences( GtkWindow* parent )
             {
                 gtk_color_button_set_color(GTK_COLOR_BUTTON(widget), (GdkColor *) option->pref_ptr);
                 g_signal_connect(widget, "color-set", G_CALLBACK(on_set_color), parent);
+                break;
+            }
+            case OTYPE_INTERP:
+            {
+                GtkListStore * list_store = gtk_list_store_new(2, G_TYPE_STRING, GDK_TYPE_INTERP_TYPE);
+                gtk_list_store_insert_with_values(list_store, NULL, -1,
+                    0, "Nearest",
+                    1, GDK_INTERP_NEAREST,
+                    -1);
+                gtk_list_store_insert_with_values(list_store, NULL, -1,
+                    0, "Bilinear",
+                    1, GDK_INTERP_BILINEAR,
+                    -1);
+                gtk_list_store_insert_with_values(list_store, NULL, -1,
+                    0, "Hyper",
+                    1, GDK_INTERP_HYPER,
+                    -1);
+
+                gtk_combo_box_set_model(GTK_COMBO_BOX(widget), GTK_TREE_MODEL(list_store));
+
+                g_object_unref(list_store);
+
+                GtkCellRenderer * column = gtk_cell_renderer_text_new();
+                gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(widget), column, TRUE);
+
+                gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(widget), column,
+                    "text", 0,
+                    NULL);
+
+                GtkTreeIter iter;
+                gboolean valid = gtk_tree_model_get_iter_first (GTK_TREE_MODEL(list_store), &iter);
+                while (valid)
+                {
+                    GdkInterpType interp;
+                    gtk_tree_model_get (GTK_TREE_MODEL(list_store), &iter,
+                        1, &interp,
+                        -1);
+                    if (interp == * (GdkInterpType *) option->pref_ptr)
+                    {
+                        gtk_combo_box_set_active_iter(GTK_COMBO_BOX(widget), &iter);
+                        break;
+                    }
+                    valid = gtk_tree_model_iter_next (GTK_TREE_MODEL(list_store), &iter);
+                }
+
+                g_signal_connect(widget, "changed", G_CALLBACK(on_interp_changed), parent);
+
                 break;
             }
             default:

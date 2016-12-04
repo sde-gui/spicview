@@ -417,7 +417,7 @@ void on_size_allocate( GtkWidget* widget, GtkAllocation    *allocation )
             while(gtk_events_pending ())
                 gtk_main_iteration(); // makes it more fluid
 
-            main_win_fit_window_size( mw, FALSE, GDK_INTERP_BILINEAR );
+            main_win_fit_window_size(mw, FALSE);
         }
     }
 }
@@ -1032,23 +1032,28 @@ void rotate_image( MainWin* mw, int angle )
     image_view_set_pixbuf( (ImageView*)mw->img_view, mw->pix );
 
     if( mw->zoom_mode == ZOOM_FIT )
-        main_win_fit_window_size( mw, FALSE, GDK_INTERP_BILINEAR );
+        main_win_fit_window_size(mw, FALSE);
 }
 
-gboolean main_win_scale_image( MainWin* mw, double new_scale, GdkInterpType type )
+void main_win_set_scale(MainWin * mw, double new_scale)
 {
-    if( G_UNLIKELY( new_scale == 1.0 ) )
+    if (new_scale == 1.0)
     {
-        gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(mw->btn_zoom_orig), TRUE );
-        mw->scale = 1.0;
-        return TRUE;
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(mw->btn_zoom_orig), TRUE);
     }
+
+    GdkInterpType interp =
+        (new_scale < 1.0) ? pref.downscale_interpolation_mode : pref.upscale_interpolation_mode;
     mw->scale = new_scale;
-    image_view_set_scale( (ImageView*)mw->img_view, new_scale, type );
 
-    update_title( NULL, mw );
+    if (mw->img_view)
+        image_view_set_scale((ImageView *) mw->img_view, new_scale, interp);
+    update_title(NULL, mw);
+}
 
-    return TRUE;
+void main_win_on_scale_preferences_changed(MainWin * mw)
+{
+    main_win_set_scale(mw, mw->scale);
 }
 
 gboolean save_confirm( MainWin* mw, const char* file_path )
@@ -1694,16 +1699,16 @@ gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
 
     if (mw->zoom_mode == ZOOM_FIT)
     {
-        main_win_fit_window_size( mw, FALSE, GDK_INTERP_BILINEAR );
+        main_win_fit_window_size(mw, FALSE);
     }
     else if (mw->zoom_mode == ZOOM_SCALE)
     {
-        main_win_scale_image( mw, mw->scale, GDK_INTERP_BILINEAR );
+        main_win_set_scale(mw, mw->scale);
     }
     else if (mw->zoom_mode == ZOOM_ORIG)
     {
-        image_view_set_scale( (ImageView*)mw->img_view, mw->scale, GDK_INTERP_BILINEAR );
-        main_win_center_image( mw );
+        main_win_set_scale(mw, mw->scale);
+        main_win_center_image(mw);
     }
 
     eval_background_color_for_image(mw);
@@ -1813,7 +1818,7 @@ void main_win_close( MainWin* mw )
 
 /* zoom */
 
-void main_win_fit_size( MainWin* mw, int width, int height, gboolean can_strech, GdkInterpType type )
+void main_win_fit_size( MainWin* mw, int width, int height, gboolean can_strech)
 {
     if( ! mw->pix )
         return;
@@ -1827,24 +1832,21 @@ void main_win_fit_size( MainWin* mw, int width, int height, gboolean can_strech,
         gdouble yscale = ((gdouble)height)/ orig_h;
         gdouble final_scale = xscale < yscale ? xscale : yscale;
 
-        main_win_scale_image( mw, final_scale, type );
+        main_win_set_scale(mw, final_scale);
     }
     else    // use original size if the image is smaller than the window
     {
-        mw->scale = 1.0;
-        image_view_set_scale( (ImageView*)mw->img_view, 1.0, type );
-
-        update_title(NULL, mw);
+        main_win_set_scale(mw, 1.0);
     }
 }
 
-void main_win_fit_window_size(  MainWin* mw, gboolean can_strech, GdkInterpType type )
+void main_win_fit_window_size(MainWin* mw, gboolean can_strech)
 {
     mw->zoom_mode = ZOOM_FIT;
 
     if( mw->pix == NULL )
         return;
-    main_win_fit_size( mw, mw->scroll_allocation.width, mw->scroll_allocation.height, can_strech, type );
+    main_win_fit_size( mw, mw->scroll_allocation.width, mw->scroll_allocation.height, can_strech);
 }
 
 static void main_win_set_zoom_scale(MainWin* mw, double scale)
@@ -1857,7 +1859,7 @@ static void main_win_set_zoom_scale(MainWin* mw, double scale)
         scale = 0.02;
 
     if (mw->scale != scale)
-        main_win_scale_image(mw, scale, GDK_INTERP_BILINEAR);
+        main_win_set_scale(mw, scale);
 
     main_win_update_sensitivity(mw);
 }
@@ -1873,13 +1875,10 @@ static void main_win_set_zoom_mode(MainWin* mw, ZoomMode mode)
 
     if (mode == ZOOM_ORIG)
     {
-        mw->scale = 1.0;
+        main_win_set_scale(mw, 1.0);
+
         if (!mw->pix)
            return;
-
-        update_title(NULL, mw);
-
-        image_view_set_scale( (ImageView*)mw->img_view, 1.0, GDK_INTERP_BILINEAR );
 
         while (gtk_events_pending ())
             gtk_main_iteration ();
@@ -1888,7 +1887,7 @@ static void main_win_set_zoom_mode(MainWin* mw, ZoomMode mode)
     }
     else if (mode == ZOOM_FIT)
     {
-        main_win_fit_window_size( mw, FALSE, GDK_INTERP_BILINEAR );
+        main_win_fit_window_size(mw, FALSE);
     }
 }
 

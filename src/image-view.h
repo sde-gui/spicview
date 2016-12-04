@@ -61,7 +61,7 @@ GtkWidget* image_view_new();
 void image_view_set_pixbuf( ImageView* iv, GdkPixbuf* pixbuf );
 
 gdouble image_view_get_scale( ImageView* iv );
-void image_view_set_scale( ImageView* iv, gdouble new_scale, GdkInterpType type );
+void image_view_set_scale(ImageView * iv, gdouble new_scale, GdkInterpType interp_type);
 void image_view_get_size( ImageView* iv, int* w, int* h );
 
 void image_view_set_adjustments( ImageView* iv,

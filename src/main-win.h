@@ -146,13 +146,14 @@ gboolean main_win_save( MainWin* mw, const char* file_path, const char* type, gb
 
 void main_win_show_error( MainWin* mw, const char* message );
 
-void main_win_fit_size( MainWin* mw, int width, int height, gboolean can_strech, GdkInterpType type );
+void main_win_fit_size( MainWin* mw, int width, int height, gboolean can_strech);
 
-void main_win_fit_window_size( MainWin* mw, gboolean can_strech, GdkInterpType type );
+void main_win_fit_window_size( MainWin* mw, gboolean can_strech);
 
 void main_win_center_image( MainWin* mw );
 
-gboolean main_win_scale_image(  MainWin* mw, double new_scale, GdkInterpType type );
+void main_win_set_scale(MainWin * mw, double new_scale);
+void main_win_on_scale_preferences_changed(MainWin * mw);
 
 void main_win_update_background_color(MainWin* mw);
 

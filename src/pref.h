@@ -23,6 +23,7 @@
 #define _PREF_H_
 
 #include <gtk/gtk.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
 
 G_BEGIN_DECLS
 
@@ -46,6 +47,9 @@ typedef struct _Pref
     gboolean show_toolbar_fullscreen;
     gboolean toolbar_on_top;
     gboolean preload_images;
+
+    GdkInterpType downscale_interpolation_mode;
+    GdkInterpType upscale_interpolation_mode;
 }Pref;
 
 extern Pref pref; /* global variable holding user prerefences */

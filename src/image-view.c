@@ -177,7 +177,7 @@ void image_view_paint( ImageView* iv, GdkEventExpose* evt )
         }
         g_free( rects );
 
-        if( idle_update && 0 == iv->idle_handler )
+        if (idle_update && 0 == iv->idle_handler && iv->interp_type != GDK_INTERP_NEAREST)
             iv->idle_handler = g_idle_add( (GSourceFunc)on_idle, iv );
     }
 }
@@ -218,12 +218,13 @@ void image_view_set_pixbuf( ImageView* iv, GdkPixbuf* pixbuf )
     }
 }
 
-void image_view_set_scale( ImageView* iv, gdouble new_scale, GdkInterpType type )
+void image_view_set_scale(ImageView * iv, gdouble new_scale, GdkInterpType interp_type)
 {
-    if( new_scale == iv->scale )
+    if (new_scale == iv->scale && interp_type == iv->interp_type)
         return;
 //    gdouble factor = new_scale / iv->scale;
     iv->scale = new_scale;
+    iv->interp_type = interp_type;
     if( iv->pix )
     {
         calc_image_area( iv );
