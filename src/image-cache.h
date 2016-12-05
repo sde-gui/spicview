@@ -35,6 +35,7 @@ typedef struct _ImageCacheItem
 extern gboolean image_cache_get(ImageCacheItem* item);
 extern void image_cache_put(ImageCacheItem* item);
 
-unsigned image_cache_get_limit(void);
+extern unsigned int image_cache_get_limit(void);
+extern unsigned int image_cache_get_nr_portected_items(void);
 
 #endif
