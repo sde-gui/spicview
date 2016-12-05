@@ -28,6 +28,11 @@
 
 static ImageCacheItem cache[CACHE_SIZE];
 
+static unsigned long long get_available_mem(void)
+{
+    return sysconf(_SC_AVPHYS_PAGES) * (unsigned long long) sysconf(_SC_PAGE_SIZE);
+}
+
 static unsigned long long get_total_mem(void)
 {
     static unsigned long long totalmem = 0;
@@ -42,12 +47,24 @@ static void get_memory_limits(
     unsigned long long * p_mem_limit1,
     unsigned long long * p_mem_limit2)
 {
-    double f1 = 0.15;
-    double f2 = 0.40;
-    unsigned long long total_mem = get_total_mem();
+    double f1 = 0.10;
+    double f2 = 0.30;
+    double fa = 0.70;
 
-    unsigned long long mem_limit1 = total_mem * f1;
-    unsigned long long mem_limit2 = total_mem * f2 + 1;
+    double f1_max = 0.20;
+    double f2_max = 0.60;
+
+    unsigned long long total_mem = get_total_mem();
+    unsigned long long available_mem = get_available_mem();
+
+    unsigned long long mem_limit1 = total_mem * f1 + available_mem * fa;
+    unsigned long long mem_limit2 = total_mem * f2 + available_mem * fa + 1;
+
+    if (mem_limit1 > total_mem * f1_max)
+        mem_limit1 = total_mem * f1_max;
+
+    if (mem_limit2 > total_mem * f2_max)
+        mem_limit2 = total_mem * f2_max;
 
     if (sizeof(NULL) < 8)
     {
@@ -74,8 +91,8 @@ static unsigned get_cache_limit(void)
     /* some heuristics to estimate cache size limit */
     unsigned long long total_mem = get_total_mem();
     total_mem /= 1024 * 1024; /* to MiB */
-    total_mem /= 6; /* 1/6 of total memory */
-    unsigned limit = 2 + total_mem / 40; /* guess each cache item is about 40MiB */
+    total_mem /= 5; /* 1/5 of total memory */
+    unsigned limit = 2 + total_mem / 30; /* guess each cache item is about 30MiB */
 
     if (limit > CACHE_SIZE)
         limit = CACHE_SIZE;
@@ -138,22 +155,27 @@ static void drop_items(ImageCacheItem* additional_protected_item)
 {
     unsigned i;
 
-    unsigned long long mem_limit1;
-    unsigned long long mem_limit2;
-    get_memory_limits(&mem_limit1, &mem_limit2);
-
     if (DEBUG_PRINT)
     {
+        unsigned long long mem_limit1;
+        unsigned long long mem_limit2;
+        get_memory_limits(&mem_limit1, &mem_limit2);
+
         g_print("******************************\n");
-        g_print("Phys memory:  %5llu M\n", get_total_mem() / (1024 * 1024));
-        g_print("Memory line1: %5llu M\n", mem_limit1 / (1024 * 1024));
-        g_print("Memory line2: %5llu M\n", mem_limit2 / (1024 * 1024));
-        g_print("Memory used:  %5llu M\n", get_cache_memory() / (1024 * 1024));
+        g_print("Phys memory:     %5llu M\n", get_total_mem() / (1024 * 1024));
+        g_print("Avail memory:    %5llu M\n", get_available_mem() / (1024 * 1024));
+        g_print("Memory limit 1:  %5llu M\n", mem_limit1 / (1024 * 1024));
+        g_print("Memory limit 2:  %5llu M\n", mem_limit2 / (1024 * 1024));
+        g_print("Memory used:     %5llu M\n", get_cache_memory() / (1024 * 1024));
     }
 
     for (i = 0; i < get_cache_limit() - get_nr_portected_items(); i++)
     {
         ImageCacheItem* item = &cache[i];
+
+        unsigned long long mem_limit1;
+        unsigned long long mem_limit2;
+        get_memory_limits(&mem_limit1, &mem_limit2);
 
         unsigned long long cache_memory = get_cache_memory();
         if (cache_memory < mem_limit1)
