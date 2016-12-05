@@ -35,3 +35,6 @@ dist-hook:
 	  done \
 	fi
 
+
+cppcheck cppcheck-inconclusive cppcheck-check-config:
+	make -C src $@
