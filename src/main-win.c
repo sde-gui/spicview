@@ -144,7 +144,7 @@ static void main_win_update_zoom_buttons_state(MainWin* mw);
 static void main_win_update_sensitivity(MainWin* mw);
 static void update_title(const char *filename, MainWin *mw );
 static void main_win_update_toolbar_visibility(MainWin *mw );
-static void update_toolbar_position(MainWin *mw);
+static void main_win_update_toolbar_position(MainWin *mw);
 
 static gboolean on_preload_next_timeout(MainWin* mw);
 static gboolean on_preload_prev_timeout(MainWin* mw);
@@ -253,7 +253,7 @@ void main_win_init( MainWin*mw )
 
     // build toolbar
     create_nav_bar( mw, box );
-    update_toolbar_position(mw);
+    main_win_update_toolbar_position(mw);
     gtk_widget_show_all(box);
     main_win_update_toolbar_visibility(mw);
 
@@ -720,7 +720,7 @@ void on_open( GtkWidget* btn, MainWin* mw )
 void on_preference(GtkWidget * btn, MainWin * mw)
 {
     edit_preferences((GtkWindow *) mw);
-    update_toolbar_position(mw);
+    main_win_update_toolbar_position(mw);
     main_win_update_toolbar_visibility(mw);
 }
 
@@ -2012,7 +2012,7 @@ static void main_win_update_toolbar_visibility(MainWin *mw)
     gtk_widget_set_visible(mw->nav_bar_alignment, visible);
 }
 
-void update_toolbar_position(MainWin *mw)
+void main_win_update_toolbar_position(MainWin *mw)
 {
     int position = pref.toolbar_on_top ? 0 : 1;
     gtk_box_reorder_child(GTK_BOX(gtk_widget_get_parent(mw->nav_bar_alignment)), mw->nav_bar_alignment, position);
