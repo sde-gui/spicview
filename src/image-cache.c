@@ -187,8 +187,11 @@ static void drop_items(ImageCacheItem* additional_protected_item)
         if (!item->pix)
             continue;
 
-        double f = (cache_memory - mem_limit1) / (double) (mem_limit2 - mem_limit1) + 0.2;
+        double f = (cache_memory - mem_limit1) / (double) (mem_limit2 - mem_limit1) + 0.20;
         double f_rand = (double)rand() / (double)RAND_MAX;
+
+        gint64 interval = g_get_monotonic_time() - item->cache_atime;
+        f += 0.10 * interval / (1000000.0 * 60.0); /* +10% for every minute*/
 
         if (DEBUG_PRINT)
             g_print("f = %f, f_rand = %f\n", (float) f, (float) f_rand);
@@ -245,6 +248,8 @@ gboolean image_cache_get(ImageCacheItem* item)
     if (item->animation)
         g_object_ref(item->animation);
 
+    item->cache_atime = g_get_monotonic_time();
+
     return TRUE;
 }
 
@@ -296,6 +301,7 @@ void image_cache_put(ImageCacheItem* item)
     if (cache_item->animation)
         g_object_ref(cache_item->animation);
 
+    cache_item->cache_atime = g_get_monotonic_time();
 }
 
 unsigned int image_cache_get_limit(void)

@@ -25,11 +25,16 @@
 
 typedef struct _ImageCacheItem
 {
-    GdkPixbuf* pix;
-    GdkPixbufAnimation* animation;
+    /* key */
     char * name;
     time_t mtime;
     off_t size;
+
+    /* value */
+    GdkPixbuf* pix;
+    GdkPixbufAnimation* animation;
+
+    gint64 cache_atime;
 } ImageCacheItem;
 
 extern gboolean image_cache_get(ImageCacheItem* item);
