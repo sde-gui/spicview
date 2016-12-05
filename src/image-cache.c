@@ -201,7 +201,7 @@ static void drop_items(ImageCacheItem* additional_protected_item)
 
             if (DEBUG_PRINT)
             {
-                g_print("Drop:         %5lu M\n",
+                g_print("Drop:            %5lu M\n",
                     (unsigned long) gdk_pixbuf_get_byte_length (item->pix) / (1024 * 1024));
             }
 
@@ -312,4 +312,9 @@ unsigned int image_cache_get_limit(void)
 unsigned int image_cache_get_nr_portected_items(void)
 {
     return get_nr_portected_items();
+}
+
+void image_cache_yield(void)
+{
+    drop_items(NULL);
 }

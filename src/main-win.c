@@ -149,6 +149,8 @@ static void main_win_update_toolbar_position(MainWin *mw);
 static gboolean on_preload_next_timeout(MainWin* mw);
 static gboolean on_preload_prev_timeout(MainWin* mw);
 
+static gboolean on_image_cache_yield_timeout(MainWin* mw);
+
 // Begin of GObject-related stuff
 
 G_DEFINE_TYPE( MainWin, main_win, GTK_TYPE_WINDOW )
@@ -186,6 +188,9 @@ void main_win_finalize( GObject* obj )
         g_source_remove(mw->preload_next_timeout);
     if (mw->preload_prev_timeout)
         g_source_remove(mw->preload_prev_timeout);
+
+    if (mw->image_cache_yield_timeout)
+        g_source_remove(mw->image_cache_yield_timeout);
 }
 
 GtkWidget* main_win_new()
@@ -1626,6 +1631,9 @@ static gboolean load_image(MainWin* mw, const char* file_path, GdkPixbuf** _pix,
         item.pix = pix;
         item.animation = animation;
         image_cache_put(&item);
+
+        if (mw->image_cache_yield_timeout == 0)
+            mw->image_cache_yield_timeout = g_timeout_add(1000 * 15, (GSourceFunc) on_image_cache_yield_timeout, mw);
     }
 
     if (_pix)
@@ -1783,6 +1791,12 @@ gboolean on_preload_prev_timeout(MainWin* mw)
 
     mw->preload_prev_timeout = 0;
     return FALSE;
+}
+
+gboolean on_image_cache_yield_timeout(MainWin* mw)
+{
+    image_cache_yield();
+    return TRUE;
 }
 
 void main_win_close( MainWin* mw )

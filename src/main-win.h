@@ -129,6 +129,7 @@ typedef struct _MainWin
 
     guint preload_next_timeout;
     guint preload_prev_timeout;
+    guint image_cache_yield_timeout;
 
     GdkColor background_color_from_image;
     gboolean background_color_from_image_valid;
