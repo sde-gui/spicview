@@ -142,7 +142,7 @@ static void main_win_set_zoom_mode(MainWin* mw, ZoomMode mode);
 /* UI state */
 static void main_win_update_zoom_buttons_state(MainWin* mw);
 static void main_win_update_sensitivity(MainWin* mw);
-static void update_title(const char *filename, MainWin *mw );
+static void main_win_update_title(MainWin * mw);
 static void main_win_update_toolbar_visibility(MainWin *mw );
 static void main_win_update_toolbar_position(MainWin *mw);
 
@@ -1048,7 +1048,7 @@ void main_win_set_scale(MainWin * mw, double new_scale)
 
     if (mw->img_view)
         image_view_set_scale((ImageView *) mw->img_view, new_scale, interp);
-    update_title(NULL, mw);
+    main_win_update_title(mw);
 }
 
 void main_win_on_scale_preferences_changed(MainWin * mw)
@@ -1113,7 +1113,7 @@ gboolean main_win_save( MainWin* mw, const char* file_path, const char* type, gb
         mw->saving_is_in_progress = TRUE;
         mw->ui_disabled++;
         main_win_update_sensitivity(mw);
-        update_title(NULL, mw);
+        main_win_update_title(mw);
         gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(mw)), mw->busy_cursor);
         while(gtk_events_pending ())
             gtk_main_iteration();
@@ -1138,7 +1138,7 @@ gboolean main_win_save( MainWin* mw, const char* file_path, const char* type, gb
         mw->saving_is_in_progress = FALSE;
         mw->ui_disabled--;
         main_win_update_sensitivity(mw);
-        update_title(NULL, mw);
+        main_win_update_title(mw);
         gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(mw)), NULL);
     }
 
@@ -1726,12 +1726,9 @@ gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
 
     char* base_name = g_path_get_basename( file_path );
     image_list_set_current( mw->image_list, base_name );
-
-    char* disp_name = g_filename_display_name( base_name );
     g_free( base_name );
 
-    update_title( disp_name, mw );
-    g_free( disp_name );
+    main_win_update_title(mw);
 
     main_win_update_sensitivity(mw);
     main_win_update_zoom_buttons_state(mw);
@@ -1955,31 +1952,40 @@ static void main_win_update_sensitivity(MainWin* mw)
     gtk_widget_set_sensitive(mw->nav_bar, ui_enabled);
 }
 
-static void update_title(const char *filename, MainWin *mw )
+static void main_win_update_title(MainWin * mw)
 {
-    static char fname[50];
-    static int wid, hei;
+    char * empty_string = "";
+    gchar * disp_name = empty_string;
+    gchar * dimensions = empty_string;
 
-    char buf[100];
-
-    if(filename != NULL)
+    if (mw->image_list && image_list_get_current(mw->image_list))
     {
-      strncpy(fname, filename, 49);
-      fname[49] = '\0';
-
-      wid = gdk_pixbuf_get_width( mw->pix );
-      hei = gdk_pixbuf_get_height( mw->pix );
+        disp_name = g_filename_display_name(image_list_get_current(mw->image_list));
     }
 
-    snprintf(buf, 100, "%s (%dx%d) %d%%%s",
-        fname,
-        wid, hei,
-        (int)(mw->scale * 100),
+    if (mw->pix)
+    {
+        dimensions = g_strdup_printf("[%dx%d] ",
+            gdk_pixbuf_get_width(mw->pix),
+            gdk_pixbuf_get_height(mw->pix)
+        );
+    }
+
+    gchar * title = g_strdup_printf("%s %s%d%%%s",
+        disp_name,
+        dimensions,
+        (int) (mw->scale * 100),
         mw->saving_is_in_progress ? _(" [saving the file...]") : "");
 
-    gtk_window_set_title( (GtkWindow*)mw, buf );
+    gtk_window_set_title(GTK_WINDOW(mw), title);
 
-    return;
+    g_free(title);
+
+    if (disp_name != empty_string)
+        g_free(disp_name);
+    if (dimensions != empty_string)
+        g_free(dimensions);
+
 }
 
 void main_win_update_background_color(MainWin* mw)
