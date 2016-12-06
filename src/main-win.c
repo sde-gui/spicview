@@ -435,7 +435,7 @@ gboolean on_win_state_event( GtkWidget* widget, GdkEventWindowState* state )
 {
     MainWin* mw = (MainWin*)widget;
 
-    if ((state->new_window_state &= GDK_WINDOW_STATE_FULLSCREEN) != 0)
+    if ((state->new_window_state & GDK_WINDOW_STATE_FULLSCREEN) != 0)
         mw->full_screen = TRUE;
     else
         mw->full_screen = FALSE;
