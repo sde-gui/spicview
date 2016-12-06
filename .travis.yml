@@ -2,5 +2,6 @@ language: c
 compiler:
   - clang
   - gcc
+sudo: required
 script: ./travis_script build spicview
 before_install: ./travis_script before_install spicview
