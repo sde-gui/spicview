@@ -2,4 +2,5 @@ language: c
 compiler:
   - clang
   - gcc
-script: ./travis_script spicview
+script: ./travis_script build spicview
+before_install: ./travis_script before_install spicview
