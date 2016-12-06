@@ -54,7 +54,7 @@
   UI <------------------------------+
   |                                 |
   v                                 |
-  on_someevent() handlers           UI state control handlers
+  on_some_event() handlers          UI state control handlers
   |                                 ^
   v                                 |
   main_win_action_*() handlers ---> internal functions
@@ -72,11 +72,14 @@ extern int ExifRotate(const char * fname, int new_angle);
 // defined in exif.c
 extern int ExifRotateFlipMapping[9][9];
 
+/* Initialization stuff */
+
 static void main_win_init( MainWin*mw );
 static void main_win_finalize( GObject* obj );
-
 static void create_nav_bar( MainWin* mw, GtkWidget* box);
-// GtkWidget* add_menu_item(  GtkMenuShell* menu, const char* label, const char* icon, GCallback cb, gboolean toggle=FALSE );
+
+/*  */
+
 static void rotate_image( MainWin* mw, int angle );
 static void show_popup_menu( MainWin* mw, GdkEventButton* evt );
 
@@ -146,12 +149,15 @@ static void main_win_update_title(MainWin * mw);
 static void main_win_update_toolbar_visibility(MainWin *mw );
 static void main_win_update_toolbar_position(MainWin *mw);
 
+/* Timeout handlers */
+
 static gboolean on_preload_next_timeout(MainWin* mw);
 static gboolean on_preload_prev_timeout(MainWin* mw);
 
 static gboolean on_image_cache_yield_timeout(MainWin* mw);
 
-// Begin of GObject-related stuff
+
+/* Initialization stuff */
 
 G_DEFINE_TYPE( MainWin, main_win, GTK_TYPE_WINDOW )
 
@@ -161,8 +167,6 @@ void main_win_class_init( MainWinClass* klass )
     GtkWidgetClass *widget_class;
 
     obj_class = ( GObjectClass * ) klass;
-//    obj_class->set_property = _set_property;
-//   obj_class->get_property = _get_property;
     obj_class->finalize = main_win_finalize;
 
     widget_class = GTK_WIDGET_CLASS ( klass );
@@ -197,8 +201,6 @@ GtkWidget* main_win_new()
 {
     return (GtkWidget*)g_object_new ( MAIN_WIN_TYPE, NULL );
 }
-
-// End of GObject-related stuff
 
 void main_win_init( MainWin*mw )
 {
@@ -373,6 +375,8 @@ void create_nav_bar( MainWin* mw, GtkWidget* box )
     gtk_container_add( (GtkContainer*)mw->nav_bar_alignment, mw->nav_bar);
     gtk_box_pack_start( (GtkBox*)box, mw->nav_bar_alignment, FALSE, TRUE, 2);
 }
+
+/*  */
 
 gboolean on_delete_event( GtkWidget* widget, GdkEventAny* evt )
 {
