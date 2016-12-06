@@ -14,7 +14,7 @@ fi
 (
     mkdir -p project-dir
     cd project-dir
-    git clone https://github.com/sde-gui/devel-tools.git
+    git clone https://github.com/sde-gui/devel-tools.git || true
 
     devel-tools/sde-travis-ci-build "$@"
 )
