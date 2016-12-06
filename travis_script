@@ -12,7 +12,7 @@ if [ "x-$TRAVIS" != x-true ] ; then
 fi
 
 (
-    mkdir project-dir
+    mkdir -p project-dir
     cd project-dir
     git clone https://github.com/sde-gui/devel-tools.git
 
