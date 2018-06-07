@@ -1046,11 +1046,11 @@ void rotate_image( MainWin* mw, int angle )
 
 void main_win_set_scale(MainWin * mw, double new_scale)
 {
-    if (new_scale == 1.0)
+/*    if (new_scale == 1.0)
     {
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(mw->btn_zoom_orig), TRUE);
     }
-
+*/
     GdkInterpType interp =
         (new_scale < 1.0) ? pref.downscale_interpolation_mode : pref.upscale_interpolation_mode;
     mw->scale = new_scale;
@@ -1462,7 +1462,8 @@ static void main_win_action_zoom_orig(MainWin* mw)
 {
     if (!mw->zoom_orig_action_enabled)
         return;
-    main_win_set_zoom_mode(mw, ZOOM_ORIG);
+    main_win_set_zoom_mode(mw, ZOOM_SCALE);
+    main_win_set_zoom_scale(mw, 1.0);
 }
 
 static void main_win_action_zoom_fit(MainWin* mw)
@@ -1716,10 +1717,6 @@ gboolean main_win_open( MainWin* mw, const char* file_path, ZoomMode zoom )
     else if (mw->zoom_mode == ZOOM_SCALE)
     {
         main_win_set_scale(mw, mw->scale);
-    }
-    else if (mw->zoom_mode == ZOOM_ORIG)
-    {
-        main_win_set_scale(mw, mw->scale);
         main_win_center_image(mw);
     }
 
@@ -1888,7 +1885,7 @@ static void main_win_set_zoom_mode(MainWin* mw, ZoomMode mode)
 
     main_win_update_zoom_buttons_state(mw);
 
-    if (mode == ZOOM_ORIG)
+    /*if (mode == ZOOM_ORIG)
     {
         main_win_set_scale(mw, 1.0);
 
@@ -1900,7 +1897,7 @@ static void main_win_set_zoom_mode(MainWin* mw, ZoomMode mode)
 
         main_win_center_image( mw ); // FIXME:  mw doesn't work well. Why?
     }
-    else if (mode == ZOOM_FIT)
+    else*/ if (mode == ZOOM_FIT)
     {
         main_win_fit_window_size(mw, FALSE);
     }
@@ -1913,7 +1910,7 @@ static void main_win_set_zoom_mode(MainWin* mw, ZoomMode mode)
 static void main_win_update_zoom_buttons_state(MainWin* mw)
 {
     gboolean button_zoom_fit_active = mw->zoom_mode == ZOOM_FIT;
-    gboolean button_zoom_orig_active = mw->zoom_mode == ZOOM_ORIG;
+    gboolean button_zoom_orig_active = (mw->zoom_mode == ZOOM_SCALE) && (mw->scale == 1.0);
 
     if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(mw->btn_zoom_fit)) != button_zoom_fit_active)
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(mw->btn_zoom_fit), button_zoom_fit_active);

@@ -40,7 +40,6 @@
 typedef enum
 {
      ZOOM_FIT,
-     ZOOM_ORIG,
      ZOOM_SCALE
 } ZoomMode;
 
