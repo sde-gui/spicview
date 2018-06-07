@@ -47,14 +47,14 @@ gchar * get_about_message(void)
 
     g_string_append (text, divider);
 
-    g_string_append_printf (text, _("Homepage: %s\n"), "http://make-linux.org/");
-    g_string_append_printf (text, _("You can take the latest sources at %s\n"), "http://git.make-linux.org/");
-    g_string_append_printf (text, _("Please report bugs and feature requests to %s. We have no bug tracker at the moment, sorry.\n"), "<igeekless@gmail.com>");
+    g_string_append_printf (text, _("Homepage: %s\n"), "https://sde-gui.github.io/spicview/");
+    g_string_append_printf (text, _("You can take the latest sources at %s\n"), "https://github.com/sde-gui/spicview");
+    g_string_append_printf (text, _("Please report bugs and feature requests to %s.\n"), "https://github.com/sde-gui/spicview/issues");
 
     g_string_append (text, divider);
 
     g_string_append (text, _(
-        "Copyright (C) 2013-2016 Vadim Ushakov <igeekless@gmail.com>\n"
+        "Copyright (C) 2013-2018 Vadim Ushakov <igeekless@gmail.com>\n"
         "Copyright (C) 2007 洪任諭 Hong Jen Yee <pcman.tw@gmail.com>\n"
         "Copyright (C) Martin Siggel <martinsiggel@googlemail.com>\n"
         "Copyright (C) Hialan Liu <hialan.liu@gmail.com>\n"
