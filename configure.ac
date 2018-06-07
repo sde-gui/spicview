@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT(spicview, 0.2.4-alpha)
+AC_INIT(spicview, 0.3.0-alpha)
 
 dnl ===================
 
