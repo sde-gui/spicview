@@ -30,7 +30,13 @@ static ImageCacheItem cache[CACHE_SIZE];
 
 static unsigned long long get_available_mem(void)
 {
+#if defined _SC_AVPHYS_PAGES && defined _SC_PAGE_SIZE
+    /* GNU/Linux, Solaris, Cygwin */
     return sysconf(_SC_AVPHYS_PAGES) * (unsigned long long) sysconf(_SC_PAGE_SIZE);
+#else
+    /* TODO: add support for other operating systems */
+    return 0;
+#endif
 }
 
 static unsigned long long get_total_mem(void)
