@@ -1,11 +1,8 @@
 Makefile.in
-aclocal.m4
-compile
-config.h.in
-configure
-depcomp
-install-sh
-ltmain.sh
+/aclocal.m4
+/build-aux
+/config.h.in
+/configure
 */Makefile.in
 */Makefile
 */*.o
@@ -27,7 +24,6 @@ ltmain.sh
 */*/*.a
 */*/*/*.a
 m4/
-missing
 po/Makefile.in.in
 config.guess
 config.h
