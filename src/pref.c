@@ -45,6 +45,8 @@ typedef enum {
     OTYPE_INTERP
 } OptionType;
 
+#define DEBUG_WRONG_OPTION_TYPE(option) g_error("Unknown option type %d (%s) in %s (%s:%d)", (int)option->type, option->name, __FUNCTION__, __FILE__, __LINE__)
+
 typedef struct {
     char * name;
     char * group;
@@ -209,7 +211,7 @@ void load_preferences()
                     kf_get_interp(kf, option->group, option->name, (GdkInterpType *) option->pref_ptr);
                     break;
                 default:
-                    g_error("Unknown option type %d", (int)option->type);
+                    DEBUG_WRONG_OPTION_TYPE(option);
             }
         }
     }
@@ -264,7 +266,7 @@ void save_preferences()
                     break;
                 }
                 default:
-                    g_warning("Unknown option type %d", (int)option->type);
+                    DEBUG_WRONG_OPTION_TYPE(option);
             }
         }
         fclose( f );
@@ -425,7 +427,7 @@ void edit_preferences( GtkWindow* parent )
                 break;
             }
             default:
-                g_warning("Unknown option type %d", (int)option->type);
+                DEBUG_WRONG_OPTION_TYPE(option);
         }
     }
 
@@ -455,12 +457,13 @@ void edit_preferences( GtkWindow* parent )
                 break;
             }
             case OTYPE_COLOR:
+            case OTYPE_INTERP:
             {
                 /* Nothing to do, */
                 break;
             }
             default:
-                g_warning("Unknown option type %d", (int)option->type);
+                DEBUG_WRONG_OPTION_TYPE(option);
         }
     }
 
