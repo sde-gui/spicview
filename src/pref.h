@@ -38,6 +38,7 @@ typedef struct _Pref
     GdkColor background_color;
     GdkColor background_color_fullscreen;
     gboolean background_color_auto_adjust;
+    gboolean colorize_scrollbars;
 
     int jpg_quality;
     int png_compression;
@@ -46,6 +47,7 @@ typedef struct _Pref
     gboolean show_toolbar;
     gboolean show_toolbar_fullscreen;
     gboolean toolbar_on_top;
+    gboolean show_scrollbars;
     gboolean preload_images;
 
     GdkInterpType downscale_interpolation_mode;

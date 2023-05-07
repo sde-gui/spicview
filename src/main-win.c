@@ -148,6 +148,7 @@ static void main_win_update_sensitivity(MainWin* mw);
 static void main_win_update_title(MainWin * mw);
 static void main_win_update_toolbar_visibility(MainWin *mw );
 static void main_win_update_toolbar_position(MainWin *mw);
+static void main_win_update_scrollbars_visibility(MainWin *mw );
 
 /* Timeout handlers */
 
@@ -731,6 +732,7 @@ void on_preference(GtkWidget * btn, MainWin * mw)
     edit_preferences((GtkWindow *) mw);
     main_win_update_toolbar_position(mw);
     main_win_update_toolbar_visibility(mw);
+    main_win_update_scrollbars_visibility(mw);
 }
 
 void on_quit( GtkWidget* btn, MainWin* mw )
@@ -2003,9 +2005,10 @@ static void main_win_update_title(MainWin * mw)
 
 }
 
-void main_win_update_background_color(MainWin* mw)
+void main_win_update_background_color(MainWin * mw)
 {
     GdkColor * color = NULL;
+    GdkColor * scrollbarsColor = NULL;
 
     if (!mw->evt_box)
         return;
@@ -2019,6 +2022,43 @@ void main_win_update_background_color(MainWin* mw)
 
     gtk_widget_modify_bg(mw->evt_box, GTK_STATE_NORMAL, color);
     gtk_widget_queue_draw(mw->evt_box);
+
+    if (pref.colorize_scrollbars)
+        scrollbarsColor = color;
+
+    if (mw->scroll)
+    {
+        GtkWidget *hscroll = gtk_scrolled_window_get_hscrollbar ((GtkScrolledWindow*)mw->scroll);
+        if (hscroll)
+        {
+            gtk_widget_modify_bg(hscroll, GTK_STATE_NORMAL, scrollbarsColor);
+            gtk_widget_modify_bg(hscroll, GTK_STATE_ACTIVE, scrollbarsColor);
+            gtk_widget_modify_bg(hscroll, GTK_STATE_PRELIGHT, scrollbarsColor);
+            gtk_widget_modify_bg(hscroll, GTK_STATE_SELECTED, scrollbarsColor);
+            gtk_widget_modify_bg(hscroll, GTK_STATE_INSENSITIVE, scrollbarsColor);
+        }
+
+        GtkWidget *vscroll = gtk_scrolled_window_get_vscrollbar ((GtkScrolledWindow*)mw->scroll);
+        if (vscroll)
+        {
+            gtk_widget_modify_bg(vscroll, GTK_STATE_NORMAL, scrollbarsColor);
+            gtk_widget_modify_bg(vscroll, GTK_STATE_ACTIVE, scrollbarsColor);
+            gtk_widget_modify_bg(vscroll, GTK_STATE_PRELIGHT, scrollbarsColor);
+            gtk_widget_modify_bg(vscroll, GTK_STATE_SELECTED, scrollbarsColor);
+            gtk_widget_modify_bg(vscroll, GTK_STATE_INSENSITIVE, scrollbarsColor);
+        }
+
+        /*
+            FIXME: This doesn't work. The empty square at the bottom right corner doesn't change its color.
+        */
+        /*
+        gtk_widget_modify_bg(mw->scroll, GTK_STATE_NORMAL, scrollbarsColor);
+        gtk_widget_modify_bg(mw->scroll, GTK_STATE_ACTIVE, scrollbarsColor);
+        gtk_widget_modify_bg(mw->scroll, GTK_STATE_PRELIGHT, scrollbarsColor);
+        gtk_widget_modify_bg(mw->scroll, GTK_STATE_SELECTED, scrollbarsColor);
+        gtk_widget_modify_bg(mw->scroll, GTK_STATE_INSENSITIVE, scrollbarsColor);
+        */
+    }
 }
 
 static void main_win_update_toolbar_visibility(MainWin *mw)
@@ -2033,7 +2073,19 @@ static void main_win_update_toolbar_visibility(MainWin *mw)
     gtk_widget_set_visible(mw->nav_bar_alignment, visible);
 }
 
-void main_win_update_toolbar_position(MainWin *mw)
+static void main_win_update_scrollbars_visibility(MainWin *mw)
+{
+    /*
+        FIXME: This doesn't work. We should create and use scrollbars directly.
+    */
+    gboolean visible = pref.show_scrollbars;
+    GtkWidget *hscroll = gtk_scrolled_window_get_hscrollbar ((GtkScrolledWindow*)mw->scroll);
+    GtkWidget *vscroll = gtk_scrolled_window_get_vscrollbar ((GtkScrolledWindow*)mw->scroll);
+    gtk_widget_set_visible(hscroll, visible);
+    gtk_widget_set_visible(vscroll, visible);
+}
+
+static void main_win_update_toolbar_position(MainWin *mw)
 {
     int position = pref.toolbar_on_top ? 0 : 1;
     gtk_box_reorder_child(GTK_BOX(gtk_widget_get_parent(mw->nav_bar_alignment)), mw->nav_bar_alignment, position);

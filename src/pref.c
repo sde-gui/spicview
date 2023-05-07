@@ -61,11 +61,13 @@ static OptionDef option_defs[] = {
     DEF_OPTION(View, show_toolbar, BOOLEAN)
     DEF_OPTION(View, show_toolbar_fullscreen, BOOLEAN)
     DEF_OPTION(View, toolbar_on_top, BOOLEAN)
+    DEF_OPTION(View, show_scrollbars, BOOLEAN)
     DEF_OPTION(View, preload_images, BOOLEAN)
     DEF_OPTION(View, slide_delay, INT)
-    DEF_OPTION(View, background_color_auto_adjust, BOOLEAN)
     DEF_OPTION(View, background_color, COLOR)
     DEF_OPTION(View, background_color_fullscreen, COLOR)
+    DEF_OPTION(View, background_color_auto_adjust, BOOLEAN)
+    DEF_OPTION(View, colorize_scrollbars, BOOLEAN)
     DEF_OPTION(View, downscale_interpolation_mode, INTERP)
     DEF_OPTION(View, upscale_interpolation_mode, INTERP)
 
@@ -177,6 +179,7 @@ void load_preferences()
     pref.background_color_fullscreen.green = 0;
     pref.background_color_fullscreen.blue = 0;
     pref.background_color_auto_adjust = TRUE;
+    pref.colorize_scrollbars = FALSE;
 
     pref.downscale_interpolation_mode = GDK_INTERP_BILINEAR;
     pref.upscale_interpolation_mode = GDK_INTERP_BILINEAR;
@@ -188,6 +191,7 @@ void load_preferences()
     pref.show_toolbar = TRUE;
     pref.show_toolbar_fullscreen = FALSE;
     pref.preload_images = TRUE;
+    pref.show_scrollbars = TRUE;
 
     kf = g_key_file_new();
     path = g_build_filename( g_get_user_config_dir(),  CFG_FILE, NULL );
@@ -364,7 +368,8 @@ void edit_preferences( GtkWindow* parent )
             case OTYPE_BOOLEAN:
             {
                 gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(widget), * (gboolean *) option->pref_ptr);
-                if (strcmp(option->name, "background_color_auto_adjust") == 0)
+                if (strcmp(option->name, "background_color_auto_adjust") == 0 ||
+                    strcmp(option->name, "colorize_scrollbars") == 0)
                     g_signal_connect(widget, "clicked", G_CALLBACK(on_background_color_auto_adjust), parent);
                 break;
             }
