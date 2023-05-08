@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ru\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-24 16:27+0700\n"
-"PO-Revision-Date: 2016-03-24 16:40+0700\n"
-"Last-Translator: Vadim Ushakov <igeekless@gmail.com>\n"
+"POT-Creation-Date: 2023-05-08 10:30+0700\n"
+"PO-Revision-Date: 2023-05-08 10:37+0700\n"
+"Last-Translator: Vadim Ushakov <wandrien.dev@gmail.com>\n"
 "Language-Team: RUSSIAN <ru@li.org>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Poedit 1.8.5\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Poedit 3.2.2\n"
 
 #: ../src/spicview.c:43
 msgid "SPicView - Lightweight image viewer for SDE project\n"
@@ -40,16 +40,12 @@ msgstr "Свежие исходные коды вы можете скачать 
 
 #: ../src/spicview.c:52
 #, c-format
-msgid ""
-"Please report bugs and feature requests to %s. We have no bug tracker at the "
-"moment, sorry.\n"
-msgstr ""
-"Пожалуйста отправляйте сообщения об ошибках и пожелания на адрес %s. Увы, у "
-"нас в настоящее время отсутствует баг-трекер.\n"
+msgid "Please report bugs and feature requests to %s.\n"
+msgstr "Пожалуйста отправляйте сообщения об ошибках и пожелания на адрес %s.\n"
 
 #: ../src/spicview.c:57
 msgid ""
-"Copyright (C) 2013-2016 Vadim Ushakov <igeekless@gmail.com>\n"
+"Copyright (C) 2013-2018 Vadim Ushakov <igeekless@gmail.com>\n"
 "Copyright (C) 2007 洪任諭 Hong Jen Yee <pcman.tw@gmail.com>\n"
 "Copyright (C) Martin Siggel <martinsiggel@googlemail.com>\n"
 "Copyright (C) Hialan Liu <hialan.liu@gmail.com>\n"
@@ -148,110 +144,110 @@ msgstr ""
 msgid "Start slideshow"
 msgstr "Запуск слайдшоу"
 
-#: ../src/main-win.c:200 ../src/main-win.c:1196 ../spicview.desktop.in.h:2
+#: ../src/main-win.c:208 ../src/main-win.c:1212 ../spicview.desktop.in.h:2
 msgid "Image Viewer"
 msgstr "Просмотр изображений"
 
 #. 1
-#: ../src/main-win.c:329 ../src/main-win.c:1229
+#: ../src/main-win.c:337 ../src/main-win.c:1245
 msgid "Previous"
 msgstr "Предыдущий"
 
 #. 2
-#: ../src/main-win.c:330 ../src/main-win.c:1230
+#: ../src/main-win.c:338 ../src/main-win.c:1246
 msgid "Next"
 msgstr "Следующий"
 
-#: ../src/main-win.c:331 ../src/main-win.c:485
+#: ../src/main-win.c:339 ../src/main-win.c:495
 msgid "Start Slideshow"
 msgstr "Запуск слайдшоу"
 
 #. 4
 #. 5
-#: ../src/main-win.c:335 ../src/main-win.c:1233
+#: ../src/main-win.c:343 ../src/main-win.c:1249
 msgid "Zoom Out"
 msgstr "Уменьшить"
 
 #. 6
-#: ../src/main-win.c:336 ../src/main-win.c:1234
+#: ../src/main-win.c:344 ../src/main-win.c:1250
 msgid "Zoom In"
 msgstr "Увеличить"
 
 #. 7
-#: ../src/main-win.c:338 ../src/main-win.c:1235
+#: ../src/main-win.c:346 ../src/main-win.c:1251
 msgid "Fit Image To Window Size"
 msgstr "Масштабировать к размеру окна"
 
 #. 8
-#: ../src/main-win.c:339 ../src/main-win.c:1236
+#: ../src/main-win.c:347 ../src/main-win.c:1252
 msgid "Original Size"
 msgstr "Масштаб 1:1"
 
 #. 9
 #. 10
-#: ../src/main-win.c:341 ../src/main-win.c:1238
+#: ../src/main-win.c:349 ../src/main-win.c:1254
 msgid "Full Screen"
 msgstr "На полный экран"
 
 #. 11
 #. 12
-#: ../src/main-win.c:345 ../src/main-win.c:1240
+#: ../src/main-win.c:353 ../src/main-win.c:1256
 msgid "Rotate Counterclockwise"
 msgstr "Повернуть против часовой стрелки"
 
 #. 13
-#: ../src/main-win.c:346 ../src/main-win.c:1241
+#: ../src/main-win.c:354 ../src/main-win.c:1257
 msgid "Rotate Clockwise"
 msgstr "Повернуть по часовой стрелке"
 
 #. 14
-#: ../src/main-win.c:348 ../src/main-win.c:1242
+#: ../src/main-win.c:356 ../src/main-win.c:1258
 msgid "Flip Horizontal"
 msgstr "Перевернуть по горизонтали"
 
 #. 15
-#: ../src/main-win.c:349 ../src/main-win.c:1243
+#: ../src/main-win.c:357 ../src/main-win.c:1259
 msgid "Flip Vertical"
 msgstr "Перевернуть по вертикали"
 
 #. 16
 #. 17
-#: ../src/main-win.c:353 ../src/main-win.c:1245
+#: ../src/main-win.c:361 ../src/main-win.c:1261
 msgid "Open File"
 msgstr "Открыть файл"
 
 #. 18
-#: ../src/main-win.c:354 ../src/main-win.c:1246
+#: ../src/main-win.c:362 ../src/main-win.c:1262
 msgid "Save File"
 msgstr "Сохранить файл"
 
-#: ../src/main-win.c:355
+#: ../src/main-win.c:363
 msgid "Save a Copy"
 msgstr "Сохранить копию"
 
 #. 20
-#: ../src/main-win.c:356 ../src/main-win.c:1248
+#: ../src/main-win.c:364 ../src/main-win.c:1264
 msgid "Delete File"
 msgstr "Удалить файл"
 
 #. 21
 #. 22
-#: ../src/main-win.c:360 ../src/main-win.c:1250 ../gresource/ui/pref-dlg.ui.h:1
+#: ../src/main-win.c:368 ../src/main-win.c:1266 ../gresource/ui/pref-dlg.ui.h:1
 msgid "Preferences"
 msgstr "Настройки"
 
 #. 24
 #. 25
 #. 26
-#: ../src/main-win.c:361 ../src/main-win.c:1254
+#: ../src/main-win.c:369 ../src/main-win.c:1270
 msgid "Quit"
 msgstr "Выход"
 
-#: ../src/main-win.c:493
+#: ../src/main-win.c:503
 msgid "Stop Slideshow"
 msgstr "Останов слайдшоу"
 
-#: ../src/main-win.c:1062
+#: ../src/main-win.c:1078
 msgid ""
 "The file name you selected already exists.\n"
 "Do you want to overwrite existing file?\n"
@@ -261,11 +257,11 @@ msgstr ""
 "Вы хотите переписать существующий файл?\n"
 "(Внимание: Качество оригинала может быть потеряно)"
 
-#: ../src/main-win.c:1103
+#: ../src/main-win.c:1119
 msgid "Writing this image format is not supported."
 msgstr "Запись этого формата изображений не поддерживается."
 
-#: ../src/main-win.c:1164
+#: ../src/main-win.c:1180
 #, c-format
 msgid ""
 "Are you sure you want to delete file \"%s\"?\n"
@@ -277,34 +273,34 @@ msgstr ""
 "Внимание: Удаленный файл не может быть восстановлен."
 
 #. 0
-#: ../src/main-win.c:1228
+#: ../src/main-win.c:1244
 msgid "File"
 msgstr "Файл"
 
 #. 3
-#: ../src/main-win.c:1231
+#: ../src/main-win.c:1247
 msgid "Start/Stop Slideshow"
 msgstr "Запуск/останов слайдшоу"
 
 #. 19
-#: ../src/main-win.c:1247
+#: ../src/main-win.c:1263
 msgid "Save a Copy..."
 msgstr "Сохранить копию..."
 
 #. 23
-#: ../src/main-win.c:1251
+#: ../src/main-win.c:1267
 msgid "Show/Hide toolbar"
 msgstr "Показать/скрыть панель"
 
-#: ../src/main-win.c:1343
+#: ../src/main-win.c:1359
 msgid "About SPicView"
 msgstr "О программе SPicView"
 
-#: ../src/main-win.c:1979
+#: ../src/main-win.c:1995
 msgid " [saving the file...]"
-msgstr "[сохранение файла...]"
+msgstr " [сохранение файла...]"
 
-#: ../src/pref.c:226
+#: ../src/pref.c:286
 msgid ""
 "SPicView will become the default viewer for all supported image files on "
 "your system.\n"
@@ -359,38 +355,81 @@ msgid "View your images easily"
 msgstr "Смотрите ваши изображения без проблем"
 
 #: ../gresource/ui/pref-dlg.ui.h:2
-msgid "_Quit on Escape key press"
-msgstr "В_ыход по нажатию на Escape"
-
-#: ../gresource/ui/pref-dlg.ui.h:3
 msgid "Show _Toolbar"
 msgstr "Отображать панель инструментов"
 
-#: ../gresource/ui/pref-dlg.ui.h:4
+#: ../gresource/ui/pref-dlg.ui.h:3
 msgid "Show Toolbar in f_ullscreen mode"
 msgstr "Ото_бражать панель инструментов в полноэкранном режиме"
 
-#: ../gresource/ui/pref-dlg.ui.h:5
+#: ../gresource/ui/pref-dlg.ui.h:4
 msgid "Toolbar on to_p"
 msgstr "Панель инструментов сверху"
 
+#: ../gresource/ui/pref-dlg.ui.h:5
+msgid "Show scroll b_ars"
+msgstr "Отображать полосы прокрутки"
+
+# Нужно проверить интерфейс, т.к. в англ. прил/сущ/гл есть одно слово.
 #: ../gresource/ui/pref-dlg.ui.h:6
+msgid "_Normal:"
+msgstr "Обычный:"
+
+#: ../gresource/ui/pref-dlg.ui.h:7
+msgid "_Fullscreen:"
+msgstr "На полный экран:"
+
+#: ../gresource/ui/pref-dlg.ui.h:8
+msgid "Auto-adjust background color based on the color of the image ed_ge"
+msgstr "Автоподстройка цвета фона в зависимости от цвета изображения"
+
+#: ../gresource/ui/pref-dlg.ui.h:9
+msgid "Also adjust scrollbar color (may not work with every theme)"
+msgstr ""
+"Также изменить цвет полос прокрутки (может работать не на всех\n"
+"темах оформления)"
+
+#: ../gresource/ui/pref-dlg.ui.h:10
+msgid "<b>Background colors</b>"
+msgstr "<b>Цвета фона</b>"
+
+#: ../gresource/ui/pref-dlg.ui.h:11
+msgid "Do_wnscale filter"
+msgstr ""
+
+#: ../gresource/ui/pref-dlg.ui.h:12
+msgid "Up_scale filter"
+msgstr ""
+
+#: ../gresource/ui/pref-dlg.ui.h:13
+msgid "<b>Scale settings</b>"
+msgstr "<b>Настройки масштабирования</b>"
+
+#: ../gresource/ui/pref-dlg.ui.h:14
+msgid "_View"
+msgstr "_Вид"
+
+#: ../gresource/ui/pref-dlg.ui.h:15
+msgid "_Quit on Escape key press"
+msgstr "В_ыход по нажатию на Escape"
+
+#: ../gresource/ui/pref-dlg.ui.h:16
 msgid "_Preload images"
 msgstr "Предварительная загрузка изобра_жений"
 
-#: ../gresource/ui/pref-dlg.ui.h:7
+#: ../gresource/ui/pref-dlg.ui.h:17
 msgid "Ask before _deleting images"
 msgstr "Спрашивать перед удалением изображений"
 
-#: ../gresource/ui/pref-dlg.ui.h:8
+#: ../gresource/ui/pref-dlg.ui.h:18
 msgid "As_k before saving images"
 msgstr "Спрашивать перед сохранением изображений"
 
-#: ../gresource/ui/pref-dlg.ui.h:9
+#: ../gresource/ui/pref-dlg.ui.h:19
 msgid "_Automatically save rotated images"
 msgstr "Автоматически сохранять изображения после поворота"
 
-#: ../gresource/ui/pref-dlg.ui.h:10
+#: ../gresource/ui/pref-dlg.ui.h:20
 msgid ""
 "Rotate JPEG file by changing EXIF orientation value\n"
 "(only if _EXIF orientation tag exists)"
@@ -398,34 +437,21 @@ msgstr ""
 "Поворачивать файлы JPEG,  изменяя значение ориентации EXIF\n"
 "(только если параметр ориентации EXIF присутствует в файле)"
 
-#: ../gresource/ui/pref-dlg.ui.h:12
+#: ../gresource/ui/pref-dlg.ui.h:22
 msgid "Slideshow _interval"
 msgstr "Интервал слайдшоу"
 
-#: ../gresource/ui/pref-dlg.ui.h:13
+#: ../gresource/ui/pref-dlg.ui.h:23
 msgid "sec"
 msgstr "сек"
 
-#: ../gresource/ui/pref-dlg.ui.h:14
+#: ../gresource/ui/pref-dlg.ui.h:24
+msgid "_Behavior"
+msgstr "_Поведение"
+
+#: ../gresource/ui/pref-dlg.ui.h:25
 msgid "Make SPicView the default _viewer for images"
 msgstr "Сделать SPicView программой просмотра изображений по-умолчанию"
-
-# Нужно проверить интерфейс, т.к. в англ. прил/сущ/гл есть одно слово.
-#: ../gresource/ui/pref-dlg.ui.h:15
-msgid "_Normal:"
-msgstr "Обычный:"
-
-#: ../gresource/ui/pref-dlg.ui.h:16
-msgid "_Fullscreen:"
-msgstr "На полный экран:"
-
-#: ../gresource/ui/pref-dlg.ui.h:17
-msgid "Auto-adjust background color based on the color of the image ed_ge"
-msgstr "Автоподстройка цвета фона в зависимости от цвета изображения"
-
-#: ../gresource/ui/pref-dlg.ui.h:18
-msgid "<b>Background colors</b>"
-msgstr "<b>Цвета фона</b>"
 
 #~ msgid "Save File As"
 #~ msgstr "Сохранить файл как"

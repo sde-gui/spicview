@@ -8,143 +8,239 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-21 22:25+0700\n"
+"POT-Creation-Date: 2023-05-08 10:30+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/spicview.c:40
+#: ../src/spicview.c:43
+msgid "SPicView - Lightweight image viewer for SDE project\n"
+msgstr ""
+
+#: ../src/spicview.c:46
+#, c-format
+msgid "Version: %s\n"
+msgstr ""
+
+#: ../src/spicview.c:50
+#, c-format
+msgid "Homepage: %s\n"
+msgstr ""
+
+#: ../src/spicview.c:51
+#, c-format
+msgid "You can take the latest sources at %s\n"
+msgstr ""
+
+#: ../src/spicview.c:52
+#, c-format
+msgid "Please report bugs and feature requests to %s.\n"
+msgstr ""
+
+#: ../src/spicview.c:57
+msgid ""
+"Copyright (C) 2013-2018 Vadim Ushakov <igeekless@gmail.com>\n"
+"Copyright (C) 2007 洪任諭 Hong Jen Yee <pcman.tw@gmail.com>\n"
+"Copyright (C) Martin Siggel <martinsiggel@googlemail.com>\n"
+"Copyright (C) Hialan Liu <hialan.liu@gmail.com>\n"
+"Copyright (C) Marty Jack <martyj19@comcast.net>\n"
+"Copyright (C) Louis Casillas <oxaric@gmail.com>\n"
+"Copyright (C) Will Davies\n"
+msgstr ""
+
+#: ../src/spicview.c:69
+msgid ""
+"This program is free software; you can redistribute it and/or modify it "
+"under the terms of the GNU General Public License as published by the Free "
+"Software Foundation; either version 2 of the License, or (at your option) "
+"any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful,but WITHOUT "
+"ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or "
+"FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for "
+"more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License along with "
+"this program; if not, write to the Free Software Foundation, Inc., 51 "
+"Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.\n"
+msgstr ""
+
+#. TRANSLATORS: Replace this string with your names, one name per line.
+#: ../src/spicview.c:75 ../src/spicview.c:76
+msgid "translator-credits"
+msgstr ""
+
+#: ../src/spicview.c:81
+msgid ""
+"Translators:\n"
+"\n"
+msgstr ""
+
+#: ../src/spicview.c:93
+msgid ""
+"Supported Image Formats:\n"
+"\n"
+msgstr ""
+
+#: ../src/spicview.c:118
+#, c-format
+msgid ""
+"Image loader: GdkPixBuf::%s (%s)\n"
+"    License:    %s\n"
+"    Writable:   %s\n"
+"    Scalable:   %s\n"
+"    MIME types: %s\n"
+"    Extensions: %s\n"
+"\n"
+msgstr ""
+
+#: ../src/spicview.c:127 ../src/spicview.c:128
+msgid "Yes"
+msgstr ""
+
+#: ../src/spicview.c:127 ../src/spicview.c:128
+msgid "No"
+msgstr ""
+
+#: ../src/spicview.c:144
+msgid "Compile-time environment:\n"
+msgstr ""
+
+#: ../src/spicview.c:164
 msgid "[FILE]"
 msgstr ""
 
-#: ../src/spicview.c:42
+#: ../src/spicview.c:166
 msgid "Print version information and exit"
 msgstr ""
 
-#: ../src/spicview.c:44
+#: ../src/spicview.c:168
+msgid "Print copyright notice, license and other information about the program"
+msgstr ""
+
+#: ../src/spicview.c:170
 msgid "Start slideshow"
 msgstr ""
 
-#: ../src/main-win.c:197 ../src/main-win.c:1188 ../spicview.desktop.in.h:2
+#: ../src/main-win.c:208 ../src/main-win.c:1212 ../spicview.desktop.in.h:2
 msgid "Image Viewer"
 msgstr ""
 
 #. 1
-#: ../src/main-win.c:325 ../src/main-win.c:1217
+#: ../src/main-win.c:337 ../src/main-win.c:1245
 msgid "Previous"
 msgstr ""
 
 #. 2
-#: ../src/main-win.c:326 ../src/main-win.c:1218
+#: ../src/main-win.c:338 ../src/main-win.c:1246
 msgid "Next"
 msgstr ""
 
-#: ../src/main-win.c:327 ../src/main-win.c:486
+#: ../src/main-win.c:339 ../src/main-win.c:495
 msgid "Start Slideshow"
 msgstr ""
 
 #. 4
 #. 5
-#: ../src/main-win.c:331 ../src/main-win.c:1221
+#: ../src/main-win.c:343 ../src/main-win.c:1249
 msgid "Zoom Out"
 msgstr ""
 
 #. 6
-#: ../src/main-win.c:332 ../src/main-win.c:1222
+#: ../src/main-win.c:344 ../src/main-win.c:1250
 msgid "Zoom In"
 msgstr ""
 
 #. 7
-#: ../src/main-win.c:334 ../src/main-win.c:1223
+#: ../src/main-win.c:346 ../src/main-win.c:1251
 msgid "Fit Image To Window Size"
 msgstr ""
 
 #. 8
-#: ../src/main-win.c:335 ../src/main-win.c:1224
+#: ../src/main-win.c:347 ../src/main-win.c:1252
 msgid "Original Size"
 msgstr ""
 
 #. 9
 #. 10
-#: ../src/main-win.c:337 ../src/main-win.c:1226
+#: ../src/main-win.c:349 ../src/main-win.c:1254
 msgid "Full Screen"
 msgstr ""
 
 #. 11
 #. 12
-#: ../src/main-win.c:341 ../src/main-win.c:1228
+#: ../src/main-win.c:353 ../src/main-win.c:1256
 msgid "Rotate Counterclockwise"
 msgstr ""
 
 #. 13
-#: ../src/main-win.c:342 ../src/main-win.c:1229
+#: ../src/main-win.c:354 ../src/main-win.c:1257
 msgid "Rotate Clockwise"
 msgstr ""
 
 #. 14
-#: ../src/main-win.c:344 ../src/main-win.c:1230
+#: ../src/main-win.c:356 ../src/main-win.c:1258
 msgid "Flip Horizontal"
 msgstr ""
 
 #. 15
-#: ../src/main-win.c:345 ../src/main-win.c:1231
+#: ../src/main-win.c:357 ../src/main-win.c:1259
 msgid "Flip Vertical"
 msgstr ""
 
 #. 16
 #. 17
-#: ../src/main-win.c:349 ../src/main-win.c:1233
+#: ../src/main-win.c:361 ../src/main-win.c:1261
 msgid "Open File"
 msgstr ""
 
 #. 18
-#: ../src/main-win.c:350 ../src/main-win.c:1234
+#: ../src/main-win.c:362 ../src/main-win.c:1262
 msgid "Save File"
 msgstr ""
 
-#: ../src/main-win.c:351
-msgid "Save File As"
+#: ../src/main-win.c:363
+msgid "Save a Copy"
 msgstr ""
 
-#. PTK_IMG_MENU_ITEM( N_("Save As Other Size"), GTK_STOCK_SAVE_AS, G_CALLBACK(on_save_as), GDK_A, 0 ),
 #. 20
-#: ../src/main-win.c:352 ../src/main-win.c:1237
+#: ../src/main-win.c:364 ../src/main-win.c:1264
 msgid "Delete File"
 msgstr ""
 
 #. 21
 #. 22
-#: ../src/main-win.c:356 ../src/main-win.c:1239 ../data/pref-dlg.ui.h:1
+#: ../src/main-win.c:368 ../src/main-win.c:1266 ../gresource/ui/pref-dlg.ui.h:1
 msgid "Preferences"
 msgstr ""
 
 #. 24
 #. 25
 #. 26
-#: ../src/main-win.c:357 ../src/main-win.c:1243
+#: ../src/main-win.c:369 ../src/main-win.c:1270
 msgid "Quit"
 msgstr ""
 
-#: ../src/main-win.c:494
+#: ../src/main-win.c:503
 msgid "Stop Slideshow"
 msgstr ""
 
-#: ../src/main-win.c:1074
+#: ../src/main-win.c:1078
 msgid ""
 "The file name you selected already exists.\n"
 "Do you want to overwrite existing file?\n"
 "(Warning: The quality of original image might be lost)"
 msgstr ""
 
-#: ../src/main-win.c:1115
+#: ../src/main-win.c:1119
 msgid "Writing this image format is not supported."
 msgstr ""
 
-#: ../src/main-win.c:1156
+#: ../src/main-win.c:1180
 #, c-format
 msgid ""
 "Are you sure you want to delete file \"%s\"?\n"
@@ -153,47 +249,34 @@ msgid ""
 msgstr ""
 
 #. 0
-#: ../src/main-win.c:1216
+#: ../src/main-win.c:1244
 msgid "File"
 msgstr ""
 
 #. 3
-#: ../src/main-win.c:1219
+#: ../src/main-win.c:1247
 msgid "Start/Stop Slideshow"
 msgstr ""
 
 #. 19
-#: ../src/main-win.c:1235
-msgid "Save As"
+#: ../src/main-win.c:1263
+msgid "Save a Copy..."
 msgstr ""
 
 #. 23
-#: ../src/main-win.c:1240
+#: ../src/main-win.c:1267
 msgid "Show/Hide toolbar"
 msgstr ""
 
-#: ../src/main-win.c:1341
-msgid " * Refer to source code of EOG image viewer and GThumb"
+#: ../src/main-win.c:1359
+msgid "About SPicView"
 msgstr ""
 
-#. TRANSLATORS: Replace this string with your names, one name per line.
-#: ../src/main-win.c:1345
-msgid "translator-credits"
+#: ../src/main-win.c:1995
+msgid " [saving the file...]"
 msgstr ""
 
-#: ../src/main-win.c:1351
-msgid "SPicView"
-msgstr ""
-
-#: ../src/main-win.c:1353
-msgid "Copyright (C) 2007 - 2013"
-msgstr ""
-
-#: ../src/main-win.c:1354
-msgid "Lightweight image viewer from Stuurman project"
-msgstr ""
-
-#: ../src/pref.c:218
+#: ../src/pref.c:286
 msgid ""
 "SPicView will become the default viewer for all supported image files on "
 "your system.\n"
@@ -238,56 +321,96 @@ msgstr ""
 msgid "View your images easily"
 msgstr ""
 
-#: ../data/pref-dlg.ui.h:2
+#: ../gresource/ui/pref-dlg.ui.h:2
 msgid "Show _Toolbar"
 msgstr ""
 
-#: ../data/pref-dlg.ui.h:3
+#: ../gresource/ui/pref-dlg.ui.h:3
+msgid "Show Toolbar in f_ullscreen mode"
+msgstr ""
+
+#: ../gresource/ui/pref-dlg.ui.h:4
 msgid "Toolbar on to_p"
 msgstr ""
 
-#: ../data/pref-dlg.ui.h:4
+#: ../gresource/ui/pref-dlg.ui.h:5
+msgid "Show scroll b_ars"
+msgstr ""
+
+#: ../gresource/ui/pref-dlg.ui.h:6
+msgid "_Normal:"
+msgstr ""
+
+#: ../gresource/ui/pref-dlg.ui.h:7
+msgid "_Fullscreen:"
+msgstr ""
+
+#: ../gresource/ui/pref-dlg.ui.h:8
+msgid "Auto-adjust background color based on the color of the image ed_ge"
+msgstr ""
+
+#: ../gresource/ui/pref-dlg.ui.h:9
+msgid "Also adjust scrollbar color (may not work with every theme)"
+msgstr ""
+
+#: ../gresource/ui/pref-dlg.ui.h:10
+msgid "<b>Background colors</b>"
+msgstr ""
+
+#: ../gresource/ui/pref-dlg.ui.h:11
+msgid "Do_wnscale filter"
+msgstr ""
+
+#: ../gresource/ui/pref-dlg.ui.h:12
+msgid "Up_scale filter"
+msgstr ""
+
+#: ../gresource/ui/pref-dlg.ui.h:13
+msgid "<b>Scale settings</b>"
+msgstr ""
+
+#: ../gresource/ui/pref-dlg.ui.h:14
+msgid "_View"
+msgstr ""
+
+#: ../gresource/ui/pref-dlg.ui.h:15
+msgid "_Quit on Escape key press"
+msgstr ""
+
+#: ../gresource/ui/pref-dlg.ui.h:16
+msgid "_Preload images"
+msgstr ""
+
+#: ../gresource/ui/pref-dlg.ui.h:17
 msgid "Ask before _deleting images"
 msgstr ""
 
-#: ../data/pref-dlg.ui.h:5
+#: ../gresource/ui/pref-dlg.ui.h:18
 msgid "As_k before saving images"
 msgstr ""
 
-#: ../data/pref-dlg.ui.h:6
+#: ../gresource/ui/pref-dlg.ui.h:19
 msgid "_Automatically save rotated images"
 msgstr ""
 
-#: ../data/pref-dlg.ui.h:7
+#: ../gresource/ui/pref-dlg.ui.h:20
 msgid ""
 "Rotate JPEG file by changing EXIF orientation value\n"
 "(only if _EXIF orientation tag exists)"
 msgstr ""
 
-#: ../data/pref-dlg.ui.h:9
+#: ../gresource/ui/pref-dlg.ui.h:22
 msgid "Slideshow _interval"
 msgstr ""
 
-#: ../data/pref-dlg.ui.h:10
+#: ../gresource/ui/pref-dlg.ui.h:23
 msgid "sec"
 msgstr ""
 
-#: ../data/pref-dlg.ui.h:11
+#: ../gresource/ui/pref-dlg.ui.h:24
+msgid "_Behavior"
+msgstr ""
+
+#: ../gresource/ui/pref-dlg.ui.h:25
 msgid "Make SPicView the default _viewer for images"
-msgstr ""
-
-#: ../data/pref-dlg.ui.h:12
-msgid "_Normal:"
-msgstr ""
-
-#: ../data/pref-dlg.ui.h:13
-msgid "_Fullscreen:"
-msgstr ""
-
-#: ../data/pref-dlg.ui.h:14
-msgid "Auto-adjust background color based on the color of the image ed_ge"
-msgstr ""
-
-#: ../data/pref-dlg.ui.h:15
-msgid "<b>Background colors</b>"
 msgstr ""
