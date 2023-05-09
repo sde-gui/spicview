@@ -103,22 +103,32 @@
                           <object class="GtkVBox" id="vbox1">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="spacing">4</property>
                             <child>
-                              <object class="GtkHBox" id="hbox1">
+                              <object class="GtkTable" id="table2">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="spacing">12</property>
+                                <property name="n_rows">2</property>
+                                <property name="n_columns">3</property>
+                                <property name="column_spacing">4</property>
+                                <property name="row_spacing">4</property>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
                                 <child>
                                   <object class="GtkLabel" id="label2">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">_Normal:</property>
+                                    <property name="xalign">0</property>
+                                    <property name="label" translatable="yes">_Normal</property>
                                     <property name="use_underline">True</property>
+                                    <property name="mnemonic_widget">background_color</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">0</property>
+                                    <property name="x_options">GTK_SHRINK | GTK_FILL</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -129,22 +139,25 @@
                                     <property name="color">#000000000000</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">1</property>
+                                    <property name="left_attach">1</property>
+                                    <property name="right_attach">2</property>
+                                    <property name="x_options">GTK_SHRINK | GTK_FILL</property>
+                                    <property name="x_padding">20</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="label3">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">_Fullscreen:</property>
+                                    <property name="xalign">0</property>
+                                    <property name="label" translatable="yes">_Fullscreen</property>
                                     <property name="use_underline">True</property>
+                                    <property name="mnemonic_widget">background_color_fullscreen</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">2</property>
+                                    <property name="top_attach">1</property>
+                                    <property name="bottom_attach">2</property>
+                                    <property name="x_options">GTK_SHRINK | GTK_FILL</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -155,9 +168,12 @@
                                     <property name="color">#000000000000</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">3</property>
+                                    <property name="left_attach">1</property>
+                                    <property name="right_attach">2</property>
+                                    <property name="top_attach">1</property>
+                                    <property name="bottom_attach">2</property>
+                                    <property name="x_options">GTK_SHRINK | GTK_FILL</property>
+                                    <property name="x_padding">20</property>
                                   </packing>
                                 </child>
                               </object>
@@ -240,7 +256,7 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="yes">Do_wnscale filter</property>
+                                <property name="label" translatable="yes">Do_wnscale</property>
                                 <property name="use_underline">True</property>
                                 <property name="mnemonic_widget">downscale_interpolation_mode</property>
                               </object>
@@ -253,7 +269,7 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="yes">Up_scale filter</property>
+                                <property name="label" translatable="yes">Up_scale</property>
                                 <property name="use_underline">True</property>
                                 <property name="mnemonic_widget">upscale_interpolation_mode</property>
                               </object>
@@ -293,7 +309,7 @@
                       <object class="GtkLabel" id="label6">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">&lt;b&gt;Scale settings&lt;/b&gt;</property>
+                        <property name="label" translatable="yes">&lt;b&gt;Scale filters&lt;/b&gt;</property>
                         <property name="use_markup">True</property>
                       </object>
                     </child>
@@ -426,6 +442,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Slideshow _interval</property>
                         <property name="use_underline">True</property>
+                        <property name="mnemonic_widget">slide_delay</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
