@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-08 10:30+0700\n"
+"POT-Creation-Date: 2023-05-09 11:54+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -338,11 +338,11 @@ msgid "Show scroll b_ars"
 msgstr ""
 
 #: ../gresource/ui/pref-dlg.ui.h:6
-msgid "_Normal:"
+msgid "_Normal"
 msgstr ""
 
 #: ../gresource/ui/pref-dlg.ui.h:7
-msgid "_Fullscreen:"
+msgid "_Fullscreen"
 msgstr ""
 
 #: ../gresource/ui/pref-dlg.ui.h:8
@@ -358,15 +358,15 @@ msgid "<b>Background colors</b>"
 msgstr ""
 
 #: ../gresource/ui/pref-dlg.ui.h:11
-msgid "Do_wnscale filter"
+msgid "Do_wnscale"
 msgstr ""
 
 #: ../gresource/ui/pref-dlg.ui.h:12
-msgid "Up_scale filter"
+msgid "Up_scale"
 msgstr ""
 
 #: ../gresource/ui/pref-dlg.ui.h:13
-msgid "<b>Scale settings</b>"
+msgid "<b>Scale filters</b>"
 msgstr ""
 
 #: ../gresource/ui/pref-dlg.ui.h:14

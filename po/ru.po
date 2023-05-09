@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ru\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-08 10:30+0700\n"
-"PO-Revision-Date: 2023-05-08 12:32+0700\n"
+"POT-Creation-Date: 2023-05-09 11:54+0700\n"
+"PO-Revision-Date: 2023-05-09 11:54+0700\n"
 "Last-Translator: Vadim Ushakov <wandrien.dev@gmail.com>\n"
 "Language-Team: RUSSIAN <ru@li.org>\n"
 "Language: ru\n"
@@ -371,12 +371,12 @@ msgid "Show scroll b_ars"
 msgstr "Отображать полосы прокрутки"
 
 #: ../gresource/ui/pref-dlg.ui.h:6
-msgid "_Normal:"
-msgstr "Обычный режим:"
+msgid "_Normal"
+msgstr "Обычный режим"
 
 #: ../gresource/ui/pref-dlg.ui.h:7
-msgid "_Fullscreen:"
-msgstr "Полноэкранный режим:"
+msgid "_Fullscreen"
+msgstr "Полноэкранный режим"
 
 #: ../gresource/ui/pref-dlg.ui.h:8
 msgid "Auto-adjust background color based on the color of the image ed_ge"
@@ -393,16 +393,16 @@ msgid "<b>Background colors</b>"
 msgstr "<b>Цвета фона</b>"
 
 #: ../gresource/ui/pref-dlg.ui.h:11
-msgid "Do_wnscale filter"
-msgstr "Фильтр при уменьшении изображения"
+msgid "Do_wnscale"
+msgstr "При уменьшении"
 
 #: ../gresource/ui/pref-dlg.ui.h:12
-msgid "Up_scale filter"
-msgstr "Фильтр при увеличении изображения"
+msgid "Up_scale"
+msgstr "При увеличении"
 
 #: ../gresource/ui/pref-dlg.ui.h:13
-msgid "<b>Scale settings</b>"
-msgstr "<b>Настройки масштабирования</b>"
+msgid "<b>Scale filters</b>"
+msgstr "<b>Фильтры масштабирования</b>"
 
 #: ../gresource/ui/pref-dlg.ui.h:14
 msgid "_View"
