@@ -38,3 +38,5 @@ dist-hook:
 
 cppcheck cppcheck-inconclusive cppcheck-check-config:
 	make -C src $@
+
+ACLOCAL_AMFLAGS =  -I m4
